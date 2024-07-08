@@ -36,7 +36,7 @@ param principalType string = 'ServicePrincipal'
 
 param promptFlowWorkerNum string = '1'
 param promptFlowServingEngine string = 'fastapi'
-
+ 
 var _abbrs = loadJsonContent('./abbreviations.json')
 param deploymentTimestamp string = utcNow()
 var _resourceToken = toLower(uniqueString(subscription().id, environmentName, location, deploymentTimestamp))
