@@ -38,7 +38,8 @@ param promptFlowWorkerNum string = '1'
 param promptFlowServingEngine string = 'fastapi'
 
 var _abbrs = loadJsonContent('./abbreviations.json')
-var _resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
+param deploymentTimestamp string = utcNow()
+var _resourceToken = toLower(uniqueString(subscription().id, environmentName, location, deploymentTimestamp))
 var _keyVaultName = !empty(keyVaultName) ? keyVaultName : '${_abbrs.keyVaultVaults}${_resourceToken}'
 
 // tags that should be applied to all resources.
