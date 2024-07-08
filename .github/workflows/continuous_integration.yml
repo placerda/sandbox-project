@@ -58,25 +58,45 @@ jobs:
           echo "azd ${{ vars.AZURE_ENV_NAME }} environment variables"
 
           AZURE_SEARCH_ENDPOINT=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_SEARCH_ENDPOINT | cut -d'=' -f2 | tr -d '"')
+          echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT"
           echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT" >> variables.env
+
           AZURE_CONTAINER_REGISTRY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_NAME | cut -d'=' -f2 | tr -d '"')
+          echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"
           echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME" >> variables.env
+
           AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"')
+          echo "AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME"
           echo "AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME" >> variables.env
+
           AZURE_OPENAI_CHAT_DEPLOYMENT=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_OPENAI_CHAT_DEPLOYMENT | cut -d'=' -f2 | tr -d '"')
+          echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT"
           echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT" >> variables.env
+
           AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_DEPLOYMENT | cut -d'=' -f2 | tr -d '"')
-          echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT" >> variables.env          
+          echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT"
+          echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT" >> variables.env
+
           AZURE_OPENAI_EMBEDDING_MODEL=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_MODEL | cut -d'=' -f2 | tr -d '"')
-          echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL" >> variables.env          
+          echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL"
+          echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL" >> variables.env
+
           AZURE_OPENAI_API_VERSION=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_OPENAI_API_VERSION | cut -d'=' -f2 | tr -d '"')
+          echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION"
           echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION" >> variables.env
+
           AZURE_OPENAI_ENDPOINT=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_OPENAI_ENDPOINT | cut -d'=' -f2 | tr -d '"')
-          echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT" >> variables.env      
+          echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT"
+          echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT" >> variables.env
+
           PROMPTFLOW_WORKER_NUM=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep PROMPTFLOW_WORKER_NUM | cut -d'=' -f2 | tr -d '"')
-          echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM" >> variables.env                   
+          echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM"
+          echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM" >> variables.env
+
           PROMPTFLOW_SERVING_ENGINE=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep PROMPTFLOW_SERVING_ENGINE | cut -d'=' -f2 | tr -d '"')
-          echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE" >> variables.env                   
+          echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE"
+          echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE" >> variables.env
+              
 
       - name: Set image tag
         run: |
