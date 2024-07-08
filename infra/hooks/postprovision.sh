@@ -13,7 +13,9 @@ searchService=$AZURE_SEARCH_NAME
 openAiService=$AZURE_OPENAI_NAME
 subscriptionId=$AZURE_SUBSCRIPTION_ID
 mlProjectName=$AZUREAI_PROJECT_NAME
-indexSampleData=$([ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" -o "$AZURE_SEARCH_INDEX_SAMPLE_DATA" == "true" ] && echo true || echo false)
+echo AZURE_SEARCH_INDEX_SAMPLE_DATA=$AZURE_SEARCH_INDEX_SAMPLE_DATA
+indexSampleData=$([ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ] || [ "$AZURE_SEARCH_INDEX_SAMPLE_DATA" == "true" ] && echo true || echo false)
+echo indexSampleData=$indexSampleData
 
 # Ensure all required environment variables are set
 if [ -z "$resourceGroupName" ] || [ -z "$searchService" ] || [ -z "$openAiService" ] || [ -z "$subscriptionId" ] || [ -z "$mlProjectName" ]; then
