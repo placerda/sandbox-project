@@ -13,7 +13,7 @@ searchService=$AZURE_SEARCH_NAME
 openAiService=$AZURE_OPENAI_NAME
 subscriptionId=$AZURE_SUBSCRIPTION_ID
 mlProjectName=$AZUREAI_PROJECT_NAME
-echo AZURE_SEARCH_INDEX_SAMPLE_DATA=$AZURE_SEARCH_INDEX_SAMPLE_DATA
+echo AZURE_SEARCH_INDEX_SAMPLE_DATA is $AZURE_SEARCH_INDEX_SAMPLE_DATA
 indexSampleData=$([ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ] || [ "$AZURE_SEARCH_INDEX_SAMPLE_DATA" == "true" ] && echo true || echo false)
 echo indexSampleData=$indexSampleData
 
@@ -38,15 +38,19 @@ echo "{\"subscription_id\": \"$subscriptionId\", \"resource_group\": \"$resource
 
 echo "--- ✅ | 1. Post-provisioning - env configured ---"
 
-# Setup to run notebooks
-echo 'Installing dependencies from "requirements.txt"'
-python -m pip install -r requirements.txt > /dev/null
-python -m pip install ipython ipykernel > /dev/null      # Install ipython and ipykernel
-ipython kernel install --name=python3 --user > /dev/null # Configure the IPython kernel
-jupyter kernelspec list > /dev/null                      # Verify kernelspec list isn't empty
-echo "--- ✅ | 2. Post-provisioning - ready execute notebooks ---"
-
 if [ $indexSampleData = "true" ]; then
+
+    # Setup to run notebooks
+    echo 'Installing dependencies from "requirements.txt"'
+    python -m pip install -r requirements.txt > /dev/null
+    echo 'Install ipython and ipykernel'
+    python -m pip install ipython ipykernel > /dev/null
+    echo 'Configure the IPython kernel'
+    ipython kernel install --name=python3 --user > /dev/null
+    echo 'Verify kernelspec list isn't empty'
+    jupyter kernelspec list > /dev/null
+    echo "--- ✅ | 2. Post-provisioning - ready execute notebooks ---"
+
     echo "Populating sample data ...."
     jupyter nbconvert --execute --to python --ExecutePreprocessor.timeout=-1 data/sample-documents-indexing.ipynb > /dev/null
     echo "--- ✅ | 3. Post-provisioning - populated data ---"
