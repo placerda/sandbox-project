@@ -27,41 +27,53 @@ sku="F1"
 verbose=false
 
 ####################### Parse and validate args ############################
+echo "Arguments received: $@"
+
 while [ $# -gt 0 ]; do
+  echo "Processing argument: $1"
   case "$1" in
     -i|-image_tag|--image_tag)
       image_tag="$2"
+      echo "Set image_tag to $image_tag"
       shift
       ;;
     -r|-registry|--registry)
       registry_name="$2"
+      echo "Set registry_name to $registry_name"
       shift
       ;;
     -n|-name|--name)
       name="$2"
+      echo "Set name to $name"
       shift
       ;;
     -l|-location|--location)
       location="$2"
+      echo "Set location to $location"
       shift
       ;;
     -sku|--sku)
       sku="$2"
+      echo "Set sku to $sku"
       shift
       ;;
     -g|-resource_group|--resource_group)
       resource_group="$2"
+      echo "Set resource_group to $resource_group"
       shift
       ;;
     -subscription|--subscription)
       subscription="$2"
+      echo "Set subscription to $subscription"
       shift
       ;;
     -v|-verbose|--verbose)
       verbose=true
+      echo "Set verbose to true"
       ;;
     -p|-path|--path)
       path="$2"
+      echo "Set path to $path"
       shift
       ;;
     *)
@@ -73,6 +85,19 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+
+# Add a print statement to verify all variables
+echo "Final values:"
+echo "image_tag=$image_tag"
+echo "registry_name=$registry_name"
+echo "name=$name"
+echo "location=$location"
+echo "sku=$sku"
+echo "resource_group=$resource_group"
+echo "subscription=$subscription"
+echo "verbose=$verbose"
+echo "path=$path"
+
 
 
 # fail if image_tag not provided
