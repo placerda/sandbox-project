@@ -87,7 +87,7 @@ module appServicePlan './core/host/appserviceplan.bicep' =  {
   name: 'appserviceplan'
   scope: rg
   params: {
-    name: !empty(appServicePlanName) ? resourceGroupName : '${_abbrs.webServerFarms}${environmentName}${_resourceToken}'
+    name: !empty(appServicePlanName) ? resourceGroupName : '${_abbrs.webServerFarms}${_resourceToken}'
     location: location
     tags: _tags
     sku: {
@@ -102,7 +102,7 @@ module appService  'core/host/appservice.bicep'  = {
   name: 'appService'
   scope: rg
   params: {
-    name: !empty(appServiceName) ? resourceGroupName : '${_abbrs.webSitesAppService}${environmentName}${_resourceToken}'
+    name: !empty(appServiceName) ? resourceGroupName : '${_abbrs.webSitesAppService}${_resourceToken}'
     applicationInsightsName: ai.outputs.appInsightsName
     runtimeName: 'DOCKER'
     runtimeVersion: '${containerRegistryRepositoryName}:dummy'

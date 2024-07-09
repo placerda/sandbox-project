@@ -194,7 +194,8 @@ if [ -z "$app_exists" ]; then
 else
   # Update app
   echo "Updating app...$name"
-  command="az webapp update --name $name --resource-group $resource_group --set containerSettings.imageName=$image_tag"
+#   command="az webapp update --name $name --resource-group $resource_group --set containerSettings.imageName=$image_tag"
+  command="az webapp config container set --name $name --resource-group $resource_group --container-image-name $image_tag"
   command=$(append_to_command "$command")
   echo "$command"
   eval "$command"
