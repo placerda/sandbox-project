@@ -262,6 +262,7 @@ output AZURE_CONTAINER_REGISTRY_ENDPOINT string = ai.outputs.containerRegistryEn
 
 output AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME string = containerRegistryRepositoryName
 
+output AZURE_APP_SERVICE_PLAN_NAME string = appServicePlan.outputs.name
 output AZURE_APP_SERVICE_NAME string = appService.outputs.name
 
 output AZURE_KEY_VAULT_NAME string = ai.outputs.keyVaultName

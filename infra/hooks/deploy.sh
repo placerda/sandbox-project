@@ -8,9 +8,8 @@ function usage {
     echo "usage: $program_name [-i|-image_tag|--image_tag]"
     echo "  -i|-image_tag|--image_tag                     specify container image tag"
     echo "  -r|-registry|--registry                       specify container registry name, for example 'xx.azurecr.io'"
+    echo "  -plan|--plan                                  specify app service plan name."
     echo "  -n|-name|--name                               specify app name to produce a unique FQDN as AppName.azurewebsites.net."
-    echo "  -l|-location|--location                       specify app location, default to 'centralus'"
-    echo "  -sku|--sku                                    specify app sku, default to 'F1'(free)"
     echo "  -g|-resource_group|--resource_group           specify app resource group"
     echo "  -subscription|--subscription                  specify app subscription, default using az account subscription"
     echo "  -v|-verbose|--verbose                         specify verbose mode"
@@ -22,8 +21,6 @@ if [ "$1" == "-help" ] || [ "$1" == "-h" ]; then
   exit 0
 fi
 
-location="eastus"
-sku="F1"
 verbose=false
 
 ####################### Parse and validate args ############################
@@ -42,19 +39,14 @@ while [ $# -gt 0 ]; do
       echo "Set registry_name to $registry_name"
       shift
       ;;
+    -plan|--plan)
+      service_plan_name="$2"
+      echo "Set service_plan_name to $service_plan_name"
+      shift
+      ;;
     -n|-name|--name)
       name="$2"
       echo "Set name to $name"
-      shift
-      ;;
-    -l|-location|--location)
-      location="$2"
-      echo "Set location to $location"
-      shift
-      ;;
-    -sku|--sku)
-      sku="$2"
-      echo "Set sku to $sku"
       shift
       ;;
     -g|-resource_group|--resource_group)
@@ -90,9 +82,8 @@ done
 echo "Final values:"
 echo "image_tag=$image_tag"
 echo "registry_name=$registry_name"
+echo "service_plan_name=$service_plan_name"
 echo "name=$name"
-echo "location=$location"
-echo "sku=$sku"
 echo "resource_group=$resource_group"
 echo "subscription=$subscription"
 echo "verbose=$verbose"
@@ -190,12 +181,24 @@ function append_to_command {
 }
 
 
-# Create app
-echo "Creating app...$name"
-command="az webapp create --name $name -p $service_plan_name --deployment-container-image-name $image_tag --startup-file 'bash start.sh' -g $resource_group"
-command=$(append_to_command "$command")
-echo "$command"
-eval "$command"
+# Check if the app exists
+app_exists=$(az webapp show --name $name --resource-group $resource_group --query "name" -o tsv)
+
+if [ -z "$app_exists" ]; then
+  # Create app
+  echo "Creating app...$name"
+  command="az webapp create --name $name -p $service_plan_name --deployment-container-image-name $image_tag --startup-file 'bash start.sh' -g $resource_group"
+  command=$(append_to_command "$command")
+  echo "$command"
+  eval "$command"
+else
+  # Update app
+  echo "Updating app...$name"
+  command="az webapp update --name $name --resource-group $resource_group --set containerSettings.imageName=$image_tag"
+  command=$(append_to_command "$command")
+  echo "$command"
+  eval "$command"
+fi
 
 # Config environment variable
 echo "Config app...$name"

@@ -50,8 +50,8 @@ jobs:
 
           azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
 
-          # check if provisioned if not provision
-          # azd provision --no-prompt
+          # provision what is needed
+          azd provision --no-prompt
 
           azd env refresh
           echo "azd ${{ vars.AZURE_ENV_NAME }} environment variables"
@@ -100,6 +100,10 @@ jobs:
           echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME" >> $GITHUB_ENV
           echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME"
 
+          AZURE_APP_SERVICE_PLAN_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_PLAN_NAME | cut -d'=' -f2 | tr -d '"')
+          echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME" >> $GITHUB_ENV
+          echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME"
+
           AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"')
           echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> $GITHUB_ENV
           echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
@@ -144,4 +148,4 @@ jobs:
 
       - name: Deploy Flow
         run: |
-            bash ./infra/hooks/deploy.sh --path dist -i $IMAGE_TAG --name $AZURE_APP_SERVICE_NAME -r $AZURE_CONTAINER_REGISTRY_NAME.azurecr.io -g $AZURE_RESOURCE_GROUP            
+            bash ./infra/hooks/deploy.sh --path dist -i $IMAGE_TAG --plan $AZURE_APP_SERVICE_PLAN_NAME --name $AZURE_APP_SERVICE_NAME -r $AZURE_CONTAINER_REGISTRY_NAME.azurecr.io -g $AZURE_RESOURCE_GROUP        
