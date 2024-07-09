@@ -51,7 +51,7 @@ jobs:
           azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
 
           # provision what is needed
-          azd provision --no-prompt
+          azd provision --no-prompt 
 
           azd env refresh
           echo "azd ${{ vars.AZURE_ENV_NAME }} environment variables"
