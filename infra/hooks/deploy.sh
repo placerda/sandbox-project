@@ -31,40 +31,49 @@ while [ $# -gt 0 ]; do
   case "$1" in
     -i|-image_tag|--image_tag)
       image_tag="$2"
+      shift
       ;;
     -r|-registry|--registry)
       registry_name="$2"
+      shift
       ;;
     -n|-name|--name)
       name="$2"
+      shift
       ;;
     -l|-location|--location)
       location="$2"
+      shift
       ;;
     -sku|--sku)
       sku="$2"
+      shift
       ;;
     -g|-resource_group|--resource_group)
       resource_group="$2"
+      shift
       ;;
     -subscription|--subscription)
       subscription="$2"
+      shift
       ;;
     -v|-verbose|--verbose)
       verbose=true
       ;;
     -p|-path|--path)
       path="$2"
+      shift
       ;;
     *)
-    printf "***************************\n"
-    printf "* Error: Invalid argument.*\n"
-    printf "***************************\n"
-    exit 1
+      printf "***************************\n"
+      printf "* Error: Invalid argument.*\n"
+      printf "***************************\n"
+      exit 1
+      ;;
   esac
   shift
-  shift
 done
+
 
 # fail if image_tag not provided
 if [ -z "$image_tag" ]; then
