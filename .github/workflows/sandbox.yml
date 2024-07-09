@@ -97,6 +97,10 @@ jobs:
           echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE" >> $GITHUB_ENV
           echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE"            
 
+          AZURE_APP_SERVICE_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_NAME | cut -d'=' -f2 | tr -d '"')
+          echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME" >> $GITHUB_ENV
+          echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME"
+
       - name: Set image tag
         run: |
           AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"')
