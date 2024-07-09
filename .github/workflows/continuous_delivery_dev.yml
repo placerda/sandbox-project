@@ -101,27 +101,31 @@ jobs:
           echo "AZURE_RESOURCE_GROUP is $AZURE_RESOURCE_GROUP"
           echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> $GITHUB_ENV
 
-      - name: Deploy to Azure App Service
-        run: |
-          echo "AZURE_CONTAINER_REGISTRY_NAME is $AZURE_CONTAINER_REGISTRY_NAME"
-          echo "AZURE_APP_SERVICE_NAME is $AZURE_APP_SERVICE_NAME"
-          echo "AZURE_RESOURCE_GROUP is $AZURE_RESOURCE_GROUP"
-          echo "IMAGE_TAG is ${{ github.event.inputs.image_tag }}"
+      - name: Deploy Flow
+        run: | 
+          bash ./infra/hooks/deploy.sh --path dist -i ${{ github.event.inputs.image_tag }} --name $AZURE_APP_SERVICE_NAME -r $AZURE_CONTAINER_REGISTRY_NAME.azurecr.io -g $AZURE_RESOURCE_GROUP
 
-          # Enable admin user for ACR
-          az acr update --name $AZURE_CONTAINER_REGISTRY_NAME --admin-enabled true          
+      # - name: Deploy to Azure App Service
+      #   run: |
+      #     echo "AZURE_CONTAINER_REGISTRY_NAME is $AZURE_CONTAINER_REGISTRY_NAME"
+      #     echo "AZURE_APP_SERVICE_NAME is $AZURE_APP_SERVICE_NAME"
+      #     echo "AZURE_RESOURCE_GROUP is $AZURE_RESOURCE_GROUP"
+      #     echo "IMAGE_TAG is ${{ github.event.inputs.image_tag }}"
 
-          # Configure Web App to use ACR
-          ACR_LOGIN_SERVER=$(az acr show --name $AZURE_CONTAINER_REGISTRY_NAME --query loginServer --output tsv)
-          az webapp config container set --name $AZURE_APP_SERVICE_NAME --resource-group $AZURE_RESOURCE_GROUP --container-image-name $ACR_LOGIN_SERVER/${{ github.event.inputs.image_tag }} --container-registry-url https://$ACR_LOGIN_SERVER
+      #     # Enable admin user for ACR
+      #     az acr update --name $AZURE_CONTAINER_REGISTRY_NAME --admin-enabled true          
 
-          # Set ACR credentials
-          ACR_USERNAME=$(az acr credential show --name $AZURE_CONTAINER_REGISTRY_NAME --query username --output tsv)
-          ACR_PASSWORD=$(az acr credential show --name $AZURE_CONTAINER_REGISTRY_NAME --query passwords[0].value --output tsv)
-          az webapp config container set --name $AZURE_APP_SERVICE_NAME --resource-group $AZURE_RESOURCE_GROUP --docker-registry-server-user $ACR_USERNAME --docker-registry-server-password $ACR_PASSWORD
+      #     # Configure Web App to use ACR
+      #     ACR_LOGIN_SERVER=$(az acr show --name $AZURE_CONTAINER_REGISTRY_NAME --query loginServer --output tsv)
+      #     az webapp config container set --name $AZURE_APP_SERVICE_NAME --resource-group $AZURE_RESOURCE_GROUP --container-image-name $ACR_LOGIN_SERVER/${{ github.event.inputs.image_tag }} --container-registry-url https://$ACR_LOGIN_SERVER
 
-          # Restart Web App
-          az webapp restart --name $AZURE_APP_SERVICE_NAME --resource-group $AZURE_RESOURCE_GROUP
+      #     # Set ACR credentials
+      #     ACR_USERNAME=$(az acr credential show --name $AZURE_CONTAINER_REGISTRY_NAME --query username --output tsv)
+      #     ACR_PASSWORD=$(az acr credential show --name $AZURE_CONTAINER_REGISTRY_NAME --query passwords[0].value --output tsv)
+      #     az webapp config container set --name $AZURE_APP_SERVICE_NAME --resource-group $AZURE_RESOURCE_GROUP --docker-registry-server-user $ACR_USERNAME --docker-registry-server-password $ACR_PASSWORD
+
+      #     # Restart Web App
+      #     az webapp restart --name $AZURE_APP_SERVICE_NAME --resource-group $AZURE_RESOURCE_GROUP
 
       - name: GitHub Summary Step
         if: ${{ success() }}

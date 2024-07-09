@@ -55,10 +55,3 @@ if [ $indexSampleData = "true" ]; then
     jupyter nbconvert --execute --to python --ExecutePreprocessor.timeout=-1 data/sample-documents-indexing.ipynb > /dev/null
     echo "--- ✅ | 3. Post-provisioning - populated data ---"
 fi
-
-
-#echo "Running evaluations ...."
-#jupyter nbconvert --execute --to python --ExecutePreprocessor.timeout=-1 evaluations/evaluate-chat-flow-sdk.ipynb
-#jupyter nbconvert --execute --to python --ExecutePreprocessor.timeout=-1 evaluations/evaluate-chat-flow-custom-no-sdk.ipynb
-#jupyter nbconvert --execute --to python --ExecutePreprocessor.timeout=-1 evaluations/evaluate-chat-flow-custom.ipynb
-#echo "--- ✅ | 4. Post-provisioning - ran evaluations ---"
