@@ -9,25 +9,26 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
+param aiHubName string = ''
+param aiProjectName string = ''
+param aiResourceGroupName string = ''
 param appInsightsName string = ''
-param openAiName string = ''
+param appServiceName string = ''
+param appServicePlanName string = ''
 param containerRegistryName string = ''
 param containerRegistryRepositoryName string = 'rag-project'
 param keyVaultName string = ''
+param logAnalyticsName string = ''
+param openAiName string = ''
 param resourceGroupName string = ''
 param searchServiceName string = ''
 param storageAccountName string = ''
-param aiResourceGroupName string = ''
-param aiProjectName string = ''
-param aiHubName string = ''
+
 param oaiApiVersion string = '2023-05-15'
 param oaiChatDeployment string = 'gpt-35-turbo'
 param oaiEmbeddingDeployment string = 'text-embedding-ada-002'
 param oaiEmbeddingModel string = 'text-embedding-ada-002'
 
-param logAnalyticsName string = ''
-param appServicePlanName string = ''
-param appServiceName string = ''
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
 param principalType string = 'ServicePrincipal'
@@ -66,17 +67,11 @@ module ai 'core/host/ai-environment.bicep' = {
     tags: _tags
     hubName: !empty(aiHubName) ? aiHubName : 'ai-hub-${_resourceToken}'
     projectName: !empty(aiProjectName) ? aiProjectName : 'ai-project-${_resourceToken}'
-    logAnalyticsName: !empty(logAnalyticsName)
-      ? logAnalyticsName
-      : '${_abbrs.operationalInsightsWorkspaces}${_resourceToken}'
+    logAnalyticsName: !empty(logAnalyticsName) ? logAnalyticsName  : '${_abbrs.operationalInsightsWorkspaces}${_resourceToken}'
     appInsightsName: !empty(appInsightsName) ? appInsightsName : '${_abbrs.insightsComponents}${_resourceToken}'
-    containerRegistryName: !empty(containerRegistryName)
-      ? containerRegistryName
-      : '${_abbrs.containerRegistryRegistries}${_resourceToken}'
+    containerRegistryName: !empty(containerRegistryName) ? containerRegistryName : '${_abbrs.containerRegistryRegistries}${_resourceToken}'
     keyVaultName: _keyVaultName
-    storageAccountName: !empty(storageAccountName)
-      ? storageAccountName
-      : '${_abbrs.storageStorageAccounts}${_resourceToken}'
+    storageAccountName: !empty(storageAccountName)? storageAccountName : '${_abbrs.storageStorageAccounts}${_resourceToken}'
     openAiName: !empty(openAiName) ? openAiName : 'aoai-${_resourceToken}'
     openAiModelDeployments: _openAiModelDeployments
     searchName: !empty(searchServiceName) ? searchServiceName : 'srch-${_resourceToken}'
@@ -102,7 +97,7 @@ module appService  'core/host/appservice.bicep'  = {
   name: 'appService'
   scope: rg
   params: {
-    name: !empty(appServiceName) ? resourceGroupName : '${_abbrs.webSitesAppService}${_resourceToken}'
+    name: !empty(appServiceName) ? appServiceName : '${_abbrs.webSitesAppService}${_resourceToken}'
     applicationInsightsName: ai.outputs.appInsightsName
     runtimeName: 'DOCKER'
     runtimeVersion: '${containerRegistryRepositoryName}:dummy'
@@ -244,29 +239,28 @@ output AZURE_TENANT_ID string = tenant().tenantId
 output AZURE_SUBSCRIPTION_ID string = subscription().subscriptionId
 output AZURE_RESOURCE_GROUP string = rg.name
 
-output AZUREAI_HUB_NAME string = ai.outputs.hubName
-output AZUREAI_PROJECT_NAME string = ai.outputs.projectName
-
-output AZURE_OPENAI_NAME string = ai.outputs.openAiName
 output AZURE_OPENAI_ENDPOINT string = ai.outputs.openAiEndpoint
 output AZURE_OPENAI_API_VERSION string = oaiApiVersion
 output AZURE_OPENAI_CHAT_DEPLOYMENT string =  oaiChatDeployment
 output AZURE_OPENAI_EMBEDDING_DEPLOYMENT string =  oaiEmbeddingDeployment
 output AZURE_OPENAI_EMBEDDING_MODEL string =  oaiEmbeddingModel
 
-output AZURE_SEARCH_NAME string = ai.outputs.searchName
+output AZURE_CONTAINER_REGISTRY_ENDPOINT string = ai.outputs.containerRegistryEndpoint
+output AZURE_KEY_VAULT_ENDPOINT string = ai.outputs.keyVaultEndpoint
 output AZURE_SEARCH_ENDPOINT string = ai.outputs.searchEndpoint
 
-output AZURE_CONTAINER_REGISTRY_NAME string = ai.outputs.containerRegistryName
-output AZURE_CONTAINER_REGISTRY_ENDPOINT string = ai.outputs.containerRegistryEndpoint
-
-output AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME string = containerRegistryRepositoryName
-
-output AZURE_APP_SERVICE_PLAN_NAME string = appServicePlan.outputs.name
+output AZUREAI_HUB_NAME string = ai.outputs.hubName
+output AZUREAI_PROJECT_NAME string = ai.outputs.projectName
+output AZURE_APP_INSIGHTS_NAME string = ai.outputs.appInsightsName 
 output AZURE_APP_SERVICE_NAME string = appService.outputs.name
-
+output AZURE_APP_SERVICE_PLAN_NAME string = appServicePlan.outputs.name
+output AZURE_CONTAINER_REGISTRY_NAME string = ai.outputs.containerRegistryName
+output AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME string = containerRegistryRepositoryName
 output AZURE_KEY_VAULT_NAME string = ai.outputs.keyVaultName
-output AZURE_KEY_VAULT_ENDPOINT string = ai.outputs.keyVaultEndpoint
+output AZURE_LOG_ANALYTICS_NAME string = ai.outputs.logAnalyticsWorkspaceName
+output AZURE_OPENAI_NAME string = ai.outputs.openAiName
+output AZURE_SEARCH_NAME string = ai.outputs.searchName
+output AZURE_STORAGE_ACCOUNT_NAME string = ai.outputs.storageAccountName
 
 output PROMPTFLOW_WORKER_NUM string = promptFlowWorkerNum
 output PROMPTFLOW_SERVING_ENGINE string = promptFlowServingEngine
