@@ -9,7 +9,7 @@ on:
     branches:
       - develop
 
-jobs:  
+jobs:
   build_and_deploy:
     if: ${{ github.repository != 'Azure/llmops-project-template' }}
     runs-on: ubuntu-latest
@@ -18,16 +18,15 @@ jobs:
       AZURE_DEV_COLLECT_TELEMETRY: no    
     steps:
       - uses: actions/checkout@v4
-
       - name: Check GitHub env variables
         run: |
           if [ -z "${{ vars.AZURE_ENV_NAME }}" ] || [ -z "${{ secrets.AZURE_CREDENTIALS }}" ]; then
-            echo "Make sure AZURE_ENV_NAME, AZURE_SUBSCRIPTION_ID, AZURE_LOCATION and AZURE_CREDENTIALS are set in the GitHub environment."
-            exit 1
+              echo "Make sure AZURE_ENV_NAME, AZURE_SUBSCRIPTION_ID, AZURE_LOCATION and AZURE_CREDENTIALS are set in the GitHub environment."
+              exit 1
           else
-            echo "AZURE_ENV_NAME is set to ${{ vars.AZURE_ENV_NAME }}"
-            export AZURE_DEV_COLLECT_TELEMETRY=no            
-          fi
+              echo "AZURE_ENV_NAME is set to ${{ vars.AZURE_ENV_NAME }}"
+              export AZURE_DEV_COLLECT_TELEMETRY=no            
+          fi      
 
       - name: Install azd
         uses: Azure/setup-azd@v1.0.0
@@ -103,14 +102,14 @@ jobs:
 
           AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"')
           echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> $GITHUB_ENV
-          echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"          
+          echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
 
       - name: Set image tag
         run: |
-          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"')
-          echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" >> $GITHUB_ENV
-          echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" 
-      
+            AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"')
+            echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" >> $GITHUB_ENV
+            echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" 
+    
       - name: Setup Python 
         uses: actions/setup-python@v5
         with:
@@ -130,7 +129,7 @@ jobs:
             # reference: https://github.com/microsoft/promptflow/tree/main/examples/tutorials/flow-deploy/azure-app-service
             pf flow build --source src --output dist --format docker
             # mkdir -p dist/connections
-            # touch dist/connections/placeholder
+            # touch dist/connections/placeholder          
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -138,6 +137,11 @@ jobs:
             name: build-artifacts
             path: dist/
 
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Deploy Flow
         run: |
-            bash ./infra/hooks/deploy.sh --path dist -i $IMAGE_TAG --name $AZURE_APP_SERVICE_NAME -r $AZURE_CONTAINER_REGISTRY_NAME.azurecr.io -g $AZURE_RESOURCE_GROUP
+            bash ./infra/hooks/deploy.sh --path dist -i $IMAGE_TAG --name $AZURE_APP_SERVICE_NAME -r $AZURE_CONTAINER_REGISTRY_NAME.azurecr.io -g $AZURE_RESOURCE_GROUP            
