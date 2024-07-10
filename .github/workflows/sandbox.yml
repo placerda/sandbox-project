@@ -43,10 +43,10 @@ jobs:
           azd auth login --client-id $CLIENT_ID --client-secret $CLIENT_SECRET --tenant-id $TENANT_ID        
 
           SUBSCRIPTION_ID=${{ vars.AZURE_SUBSCRIPTION_ID }}
-          echo "SUBSCRIPTION_ID=$SUBSCRIPTION_ID" >> variables.env
+          echo "SUBSCRIPTION_ID=$SUBSCRIPTION_ID" >> $GITHUB_ENV
 
           LOCATION=${{ vars.AZURE_LOCATION }}
-          echo "LOCATION=$LOCATION" >> variables.env          
+          echo "LOCATION=$LOCATION" >> $GITHUB_ENV         
 
           azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
 
