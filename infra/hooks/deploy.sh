@@ -201,6 +201,11 @@ else
   eval "$command"
 fi
 
+# Set ACR credentials
+acr_username=$(az acr credential show --name $registry_name --query username --output tsv)
+acr_password=$(az acr credential show --name $registry_name --query passwords[0].value --output tsv)
+az webapp config container set --name $name --resource-group $resource_group --docker-registry-server-user $acr_username --docker-registry-server-password $acr_password
+
 # Config environment variable
 echo "Config app...$name"
 

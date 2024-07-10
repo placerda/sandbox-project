@@ -50,9 +50,6 @@ jobs:
 
           azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
 
-          # provision what is needed
-          azd provision --no-prompt 
-
           azd env refresh
           echo "azd ${{ vars.AZURE_ENV_NAME }} environment variables"
           
@@ -107,6 +104,9 @@ jobs:
           AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"')
           echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> $GITHUB_ENV
           echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
+
+          # provision if needed
+          azd provision --no-prompt 
 
       - name: Set image tag
         run: |
