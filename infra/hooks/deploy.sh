@@ -200,14 +200,14 @@ else
   echo "$command"
   eval "$command"
 fi
-
+ 
 # Set ACR credentials
 acr_username=$(az acr credential show --name $registry_name --query username --output tsv)
 acr_password=$(az acr credential show --name $registry_name --query passwords[0].value --output tsv)
 az webapp config container set --name $name --resource-group $resource_group --docker-registry-server-user $acr_username --docker-registry-server-password $acr_password
 
 # Config environment variable
-echo "Config app...$name"
+echo "Config  app...$name"
 
 # Port default to 8080 corresponding to the DockerFile
 command="az webapp config appsettings set -g $resource_group --name $name --settings USER_AGENT=promptflow-appservice WEBSITES_PORT=8080 @settings.json "
