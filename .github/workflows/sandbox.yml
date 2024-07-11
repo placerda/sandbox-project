@@ -226,7 +226,7 @@ jobs:
         run: | 
           pip cache purge
           pip install --upgrade pip setuptools
-          pip install -r src/requirements.txt --verbose
+          pip install -r src/requirements.txt
 
 
       - name: Create flow docker files
@@ -251,4 +251,4 @@ jobs:
 
       - name: Deploy Flow
         run: |
-            bash ./infra/hooks/deploy.sh --path dist -i $IMAGE_TAG --plan $AZURE_APP_SERVICE_PLAN_NAME --name $AZURE_APP_SERVICE_NAME -r $AZURE_CONTAINER_REGISTRY_NAME.azurecr.io -g $AZURE_RESOURCE_GROUP --verbose
+            bash ./infra/hooks/deploy.sh --path dist -i $IMAGE_TAG --plan $AZURE_APP_SERVICE_PLAN_NAME --name $AZURE_APP_SERVICE_NAME -r $AZURE_CONTAINER_REGISTRY_NAME -g $AZURE_RESOURCE_GROUP --verbose

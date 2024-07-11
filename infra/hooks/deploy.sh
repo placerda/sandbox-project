@@ -7,7 +7,7 @@ program_name=$0
 function usage {
     echo "usage: $program_name [-i|-image_tag|--image_tag]"
     echo "  -i|-image_tag|--image_tag                     specify container image tag"
-    echo "  -r|-registry|--registry                       specify container registry name, for example 'xx.azurecr.io'"
+    echo "  -r|-registry|--registry                       specify container registry name, for example 'crqdoafceaueyoo'"
     echo "  -plan|--plan                                  specify app service plan name."
     echo "  -n|-name|--name                               specify app name to produce a unique FQDN as AppName.azurewebsites.net."
     echo "  -g|-resource_group|--resource_group           specify app resource group"
@@ -16,6 +16,7 @@ function usage {
     echo "  -p|-path|--path                               specify folder path to be deployed"
     exit 1
 }
+
 if [ "$1" == "-help" ] || [ "$1" == "-h" ]; then
   usage
   exit 0
@@ -37,6 +38,8 @@ while [ $# -gt 0 ]; do
     -r|-registry|--registry)
       registry_name="$2"
       echo "Set registry_name to $registry_name"
+      full_registry_name="$2.azurecr.io"
+      echo "Set full_registry_name to $full_registry_name"
       shift
       ;;
     -plan|--plan)
@@ -82,6 +85,7 @@ done
 echo "Final values:"
 echo "image_tag=$image_tag"
 echo "registry_name=$registry_name"
+echo "full_registry_name=$full_registry_name"
 echo "service_plan_name=$service_plan_name"
 echo "name=$name"
 echo "resource_group=$resource_group"
@@ -99,15 +103,6 @@ if [ -z "$image_tag" ]; then
     exit 1
 fi
 
-# check if : in image_tag
-if [[ $image_tag == *":"* ]]; then
-    echo "image_tag: $image_tag"
-else
-    version="v$(date '+%Y%m%d-%H%M%S')"
-
-    image_tag="$image_tag:$version"
-    echo "image_tag: $image_tag"
-fi
 
 # fail if registry_name not provided
 if [ -z "$registry_name" ]; then
@@ -146,11 +141,11 @@ echo "Change working directory to $path"
 cd "$path"
 docker build -t "$image_tag" .
 
-if [[ $registry_name == *"azurecr.io" ]]; then
-    echo "Trying to login to $registry_name..."
-    az acr login -n "$registry_name"
+if [[ $full_registry_name == *"azurecr.io" ]]; then
+    echo "Trying to login to $full_registry_name..."
+    az acr login -n "$full_registry_name"
 
-    acr_image_tag=$registry_name/$image_tag
+    acr_image_tag=$full_registry_name/$image_tag
     echo "ACR image tag: $acr_image_tag"
     docker tag "$image_tag" "$acr_image_tag"
     image_tag=$acr_image_tag
@@ -160,7 +155,7 @@ else
     printf "* WARN: Make sure you have docker account login!!!*\n"
     printf "***************************************************\n"
 
-    docker_image_tag=$registry_name/$image_tag
+    docker_image_tag=$full_registry_name/$image_tag
 
     echo "Docker image tag: $docker_image_tag"
     docker tag "$image_tag" "$docker_image_tag"
@@ -185,6 +180,7 @@ function append_to_command {
 
 
 # Check if the app exists
+echo "Checking if the app exists..."
 app_exists=$(az webapp show --name $name --resource-group $resource_group --query "name" -o tsv)
 
 if [ -z "$app_exists" ]; then
@@ -205,8 +201,10 @@ else
 fi
  
 # Set ACR credentials
-acr_username=$(az acr credential show --name $registry_name --query username --output tsv)
-acr_password=$(az acr credential show --name $registry_name --query passwords[0].value --output tsv)
+echo "Setting ACR credentials..."
+acr_username=$(az acr credential show --name $full_registry_name --query username --output tsv)
+acr_password=$(az acr credential show --name $full_registry_name --query passwords[0].value --output tsv)
+az acr update -n $registry_name --admin-enabled true
 az webapp config container set --name $name --resource-group $resource_group --docker-registry-server-user $acr_username --docker-registry-server-password $acr_password
 
 # Config environment variable
