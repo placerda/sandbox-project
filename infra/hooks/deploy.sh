@@ -137,6 +137,7 @@ if [ -z "$path" ]; then
 fi
 
 ####################### Build and push image ############################
+echo "Building docker image..."
 echo "Change working directory to $path"
 cd "$path"
 docker build -t "$image_tag" .
@@ -202,9 +203,9 @@ fi
  
 # Set ACR credentials
 echo "Setting ACR credentials..."
-acr_username=$(az acr credential show --name $full_registry_name --query username --output tsv)
-acr_password=$(az acr credential show --name $full_registry_name --query passwords[0].value --output tsv)
 az acr update -n $registry_name --admin-enabled true
+acr_username=$(az acr credential show --name $registry_name --query username --output tsv)
+acr_password=$(az acr credential show --name $registry_name --query passwords[0].value --output tsv)
 az webapp config container set --name $name --resource-group $resource_group --docker-registry-server-user $acr_username --docker-registry-server-password $acr_password
 
 # Config environment variable
