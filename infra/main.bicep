@@ -82,7 +82,7 @@ module appServicePlan './core/host/appserviceplan.bicep' =  {
   name: 'appserviceplan'
   scope: rg
   params: {
-    name: !empty(appServicePlanName) ? resourceGroupName : '${_abbrs.webServerFarms}${_resourceToken}'
+    name: !empty(appServicePlanName) ? appServicePlanName : '${_abbrs.webServerFarms}${_resourceToken}'
     location: location
     tags: _tags
     sku: {

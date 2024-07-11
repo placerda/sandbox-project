@@ -194,7 +194,7 @@ jobs:
           echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
 
           if [ "$job_provisioned_environment" = "false" ]; then
-            echo "Reprovisioing environment if needed..."
+            echo "Reprovisioing environment if needed."
             echo "Running azd provision --no-prompt..."
             azd provision --no-prompt
             job_provisioned_environment=true
