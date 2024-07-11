@@ -34,7 +34,7 @@ jobs:
       - name: Install azd
         uses: Azure/setup-azd@v1.0.0
 
-      - name: Provision and get env variables 
+      - name: Configure environment 
         run: |
           echo "Logging to AZD..."
 
@@ -223,7 +223,11 @@ jobs:
             pf --version  
 
       - name: Install required dependencies
-        run: pip install -r src/requirements.txt
+        run: | 
+          pip cache purge
+          pip install --upgrade pip setuptools
+          pip install -r src/requirements.txt --verbose
+
 
       - name: Create flow docker files
         run: |
