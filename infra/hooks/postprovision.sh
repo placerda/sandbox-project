@@ -3,8 +3,12 @@
 # Check if running in GitHub Workspace
 if [ -z "$GITHUB_WORKSPACE" ]; then
     # The GITHUB_WORKSPACE is not set, meaning this is not running in a GitHub Action
+    echo "GITHUB_WORKSPACE is not set. Running outside of GitHub Actions."
     DIR=$(dirname "$(realpath "$0")")
+    echo "Executing login script at $DIR/login.sh"
     "$DIR/login.sh"
+else
+    echo "GITHUB_WORKSPACE is set. Running inside GitHub Actions."
 fi
 
 # Retrieve service names, resource group name, and other values from environment variables
