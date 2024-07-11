@@ -216,7 +216,9 @@ command="az webapp config appsettings set -g $resource_group --name $name --sett
 command=$(append_to_command "$command")
 echo "$command"
 eval "$command"
-echo "Please go to https://portal.azure.com/ to config environment variables and restart the app: $name at (Settings>Configuration) or (Settings>Environment variables)"
+az webapp restart --name $name --resource-group $resource_group
+
+echo "Please go to https://portal.azure.com/ to config environment variables of $name app at (Settings>Configuration) or (Settings>Environment variables)"
 echo "Reach deployment logs at (Deployment>Deployment Central) and app logs at (Monitoring>Log stream)"
 echo "Reach advanced deployment tools at https://$name.scm.azurewebsites.net/"
 echo "Reach more details about app service at https://learn.microsoft.com/en-us/azure/app-service/"
