@@ -114,6 +114,7 @@ if [ -z "$registry_name" ]; then
     printf "***************************\n"
     printf "* Error: registry is required.*\n"
     printf "***************************\n"
+    exit 1    
 fi
 
 # fail if name not provided
@@ -121,6 +122,7 @@ if [ -z "$name" ]; then
     printf "***************************\n"
     printf "* Error: name is required.*\n"
     printf "***************************\n"
+    exit 1
 fi
 
 # fail if resource_group not provided
@@ -128,6 +130,7 @@ if [ -z "$resource_group" ]; then
     printf "***************************\n"
     printf "* Error: resource_group is required.*\n"
     printf "***************************\n"
+    exit 1    
 fi
 
 # fail if path not provided

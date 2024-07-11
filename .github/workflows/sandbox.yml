@@ -50,102 +50,125 @@ jobs:
 
           azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
 
-          azd env refresh
-          echo "azd ${{ vars.AZURE_ENV_NAME }} environment variables"
-          
-          AZURE_SEARCH_ENDPOINT=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_SEARCH_ENDPOINT | cut -d'=' -f2 | tr -d '"')
-          echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT" >> $GITHUB_ENV
-          echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT"
-          
-          AZURE_CONTAINER_REGISTRY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_NAME | cut -d'=' -f2 | tr -d '"')
-          echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME" >> $GITHUB_ENV
-          echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"
-          
-          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"')
-          echo "AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME" >> $GITHUB_ENV
-          echo "AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME"
-          
-          AZURE_OPENAI_CHAT_DEPLOYMENT=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_OPENAI_CHAT_DEPLOYMENT | cut -d'=' -f2 | tr -d '"')
-          echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT" >> $GITHUB_ENV
-          echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT"
-          
-          AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_DEPLOYMENT | cut -d'=' -f2 | tr -d '"')
-          echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT" >> $GITHUB_ENV
-          echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT"
-          
-          AZURE_OPENAI_EMBEDDING_MODEL=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_MODEL | cut -d'=' -f2 | tr -d '"')
-          echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL" >> $GITHUB_ENV
-          echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL"
-          
-          AZURE_OPENAI_API_VERSION=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_OPENAI_API_VERSION | cut -d'=' -f2 | tr -d '"')
-          echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION" >> $GITHUB_ENV
-          echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION"
-          
-          AZURE_OPENAI_ENDPOINT=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_OPENAI_ENDPOINT | cut -d'=' -f2 | tr -d '"')
-          echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT" >> $GITHUB_ENV
-          echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT"
-          
-          PROMPTFLOW_WORKER_NUM=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep PROMPTFLOW_WORKER_NUM | cut -d'=' -f2 | tr -d '"')
-          echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM" >> $GITHUB_ENV
-          echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM"
-          
-          PROMPTFLOW_SERVING_ENGINE=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep PROMPTFLOW_SERVING_ENGINE | cut -d'=' -f2 | tr -d '"')
-          echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE" >> $GITHUB_ENV
-          echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE"            
+          # Run azd env refresh and capture the output
+          output=$(azd env refresh)
 
-          AZURE_APP_SERVICE_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_NAME | cut -d'=' -f2 | tr -d '"')
-          echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME" >> $GITHUB_ENV
-          echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME"
+          # Check if the output contains "SUCCESS"
+          if echo "$output" | grep -q "SUCCESS"; then
+              deploy_exists=true
+          elif echo "$output" | grep -q "ERROR"; then
+              deploy_exists=false
+          else
+              echo "Unexpected output from azd env refresh command."
+              exit 1
+          fi
 
-          AZURE_APP_SERVICE_PLAN_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_PLAN_NAME | cut -d'=' -f2 | tr -d '"')
-          echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME" >> $GITHUB_ENV
-          echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME"
+          echo "deploy_exists=$deploy_exists"
+          echo "deploy_exists=$deploy_exists" >> $GITHUB_ENV
 
-          AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"')
-          echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> $GITHUB_ENV
-          echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
+          if [ "$deploy_exists" = false ]; then
+              echo "Running azd provision --no-prompt..."
+              # azd provision --no-prompt
+          else
+              echo "Deployment exists. No action needed."
+          fi
 
-          # provision if needed
-          azd provision --no-prompt 
+      #     azd env refresh
+      #     echo "azd ${{ vars.AZURE_ENV_NAME }} environment variables"
+          
+      #     AZURE_SEARCH_ENDPOINT=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_SEARCH_ENDPOINT | cut -d'=' -f2 | tr -d '"')
+      #     echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT" >> $GITHUB_ENV
+      #     echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT"
+          
+      #     AZURE_CONTAINER_REGISTRY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_NAME | cut -d'=' -f2 | tr -d '"')
+      #     echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME" >> $GITHUB_ENV
+      #     echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"
+          
+      #     AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"')
+      #     echo "AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME" >> $GITHUB_ENV
+      #     echo "AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME"
+          
+      #     AZURE_OPENAI_CHAT_DEPLOYMENT=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_OPENAI_CHAT_DEPLOYMENT | cut -d'=' -f2 | tr -d '"')
+      #     echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT" >> $GITHUB_ENV
+      #     echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT"
+          
+      #     AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_DEPLOYMENT | cut -d'=' -f2 | tr -d '"')
+      #     echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT" >> $GITHUB_ENV
+      #     echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT"
+          
+      #     AZURE_OPENAI_EMBEDDING_MODEL=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_MODEL | cut -d'=' -f2 | tr -d '"')
+      #     echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL" >> $GITHUB_ENV
+      #     echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL"
+          
+      #     AZURE_OPENAI_API_VERSION=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_OPENAI_API_VERSION | cut -d'=' -f2 | tr -d '"')
+      #     echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION" >> $GITHUB_ENV
+      #     echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION"
+          
+      #     AZURE_OPENAI_ENDPOINT=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_OPENAI_ENDPOINT | cut -d'=' -f2 | tr -d '"')
+      #     echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT" >> $GITHUB_ENV
+      #     echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT"
+          
+      #     PROMPTFLOW_WORKER_NUM=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep PROMPTFLOW_WORKER_NUM | cut -d'=' -f2 | tr -d '"')
+      #     echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM" >> $GITHUB_ENV
+      #     echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM"
+          
+      #     PROMPTFLOW_SERVING_ENGINE=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep PROMPTFLOW_SERVING_ENGINE | cut -d'=' -f2 | tr -d '"')
+      #     echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE" >> $GITHUB_ENV
+      #     echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE"            
 
-      - name: Set image tag
-        run: |
-            AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"')
-            echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" >> $GITHUB_ENV
-            echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" 
+      #     AZURE_APP_SERVICE_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_NAME | cut -d'=' -f2 | tr -d '"')
+      #     echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME" >> $GITHUB_ENV
+      #     echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME"
+
+      #     AZURE_APP_SERVICE_PLAN_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_PLAN_NAME | cut -d'=' -f2 | tr -d '"')
+      #     echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME" >> $GITHUB_ENV
+      #     echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME"
+
+      #     AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"')
+      #     echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> $GITHUB_ENV
+      #     echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
+
+      #     # provision if needed
+      #     azd provision --no-prompt 
+
+      # - name: Set image tag
+      #   run: |
+      #       AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"')
+      #       echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" >> $GITHUB_ENV
+      #       echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" 
     
-      - name: Setup Python 
-        uses: actions/setup-python@v5
-        with:
-            python-version: 3.8
+      # - name: Setup Python 
+      #   uses: actions/setup-python@v5
+      #   with:
+      #       python-version: 3.8
 
-      - name: Install Promptflow CLI
-        run: |
-            python -m pip install --upgrade pip
-            pip install promptflow --upgrade
-            pf --version  
+      # - name: Install Promptflow CLI
+      #   run: |
+      #       python -m pip install --upgrade pip
+      #       pip install promptflow --upgrade
+      #       pf --version  
 
-      - name: Install required dependencies
-        run: pip install -r src/requirements.txt
+      # - name: Install required dependencies
+      #   run: pip install -r src/requirements.txt
 
-      - name: Create flow docker files
-        run: |
-            # reference: https://github.com/microsoft/promptflow/tree/main/examples/tutorials/flow-deploy/azure-app-service
-            pf flow build --source src --output dist --format docker
-            # mkdir -p dist/connections
-            # touch dist/connections/placeholder          
+      # - name: Create flow docker files
+      #   run: |
+      #       # reference: https://github.com/microsoft/promptflow/tree/main/examples/tutorials/flow-deploy/azure-app-service
+      #       pf flow build --source src --output dist --format docker
+      #       # mkdir -p dist/connections
+      #       # touch dist/connections/placeholder          
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-            name: build-artifacts
-            path: dist/
+      # - name: Upload build artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #       name: build-artifacts
+      #       path: dist/
 
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-         creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # - name: Login to Azure
+      #   uses: azure/login@v2
+      #   with:
+      #    creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy Flow
-        run: |
-            bash ./infra/hooks/deploy.sh --path dist -i $IMAGE_TAG --plan $AZURE_APP_SERVICE_PLAN_NAME --name $AZURE_APP_SERVICE_NAME -r $AZURE_CONTAINER_REGISTRY_NAME.azurecr.io -g $AZURE_RESOURCE_GROUP --verbose
+      # - name: Deploy Flow
+      #   run: |
+      #       bash ./infra/hooks/deploy.sh --path dist -i $IMAGE_TAG --plan $AZURE_APP_SERVICE_PLAN_NAME --name $AZURE_APP_SERVICE_NAME -r $AZURE_CONTAINER_REGISTRY_NAME.azurecr.io -g $AZURE_RESOURCE_GROUP --verbose
