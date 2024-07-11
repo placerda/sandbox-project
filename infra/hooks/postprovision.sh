@@ -28,11 +28,10 @@ if [ -z "$resourceGroupName" ] || [ -z "$searchService" ] || [ -z "$openAiServic
     exit 1
 fi
 
-# Set additional environment variables expected by app
-# TODO: Standardize these and remove need for setting here
-# azd env set AZURE_OPENAI_API_VERSION 2023-03-15-preview
-# azd env set AZURE_OPENAI_CHAT_DEPLOYMENT gpt-35-turbo
-# azd env set AZURE_SEARCH_ENDPOINT $AZURE_SEARCH_ENDPOINT
+# Environment variables expected by app
+echo "AZURE_OPENAI_API_VERSION: $AZURE_OPENAI_API_VERSION"
+echo "AZURE_OPENAI_CHAT_DEPLOYMENT: $AZURE_OPENAI_CHAT_DEPLOYMENT"
+echo "AZURE_SEARCH_ENDPOINT: $AZURE_SEARCH_ENDPOINT"
 
 # Output environment variables to .env file using azd env get-values
 azd env get-values >.env
@@ -42,20 +41,28 @@ echo "{\"subscription_id\": \"$subscriptionId\", \"resource_group\": \"$resource
 
 echo "--- ✅ | 1. Post-provisioning - env configured ---"
 
-# if [ $indexSampleData = "true" ]; then
+if [ $indexSampleData = "true" ]; then
 
-#     # Setup to run notebooks
-#     echo 'Installing dependencies from "requirements.txt"'
-#     python -m pip install -r requirements.txt > /dev/null
-#     echo "Install ipython and ipykernel"
-#     python -m pip install ipython ipykernel > /dev/null
-#     echo "Configure the IPython kernel"
-#     ipython kernel install --name=python3 --user > /dev/null
-#     echo "Verify kernelspec list isn't empty"
-#     jupyter kernelspec list > /dev/null
-#     echo "--- ✅ | 2. Post-provisioning - ready execute notebooks ---"
+    # Setup to run notebooks
+    echo 'Installing dependencies from "requirements.txt"'
+    pip cache purge > /dev/null
+    pip install --upgrade pip setuptools > /dev/null
+    python -m pip install -r requirements.txt > /dev/null
 
-#     echo "Populating sample data ...."
-#     jupyter nbconvert --execute --to python --ExecutePreprocessor.timeout=-1 data/sample-documents-indexing.ipynb > /dev/null
-#     echo "--- ✅ | 3. Post-provisioning - populated data ---"
-# fi
+    echo "Populating sample data ...."
+    python data/sample-documents-indexing.py > /dev/null
+
+    echo "--- ✅ | 2. Post-provisioning - populated data ---"
+
+    # echo "Install ipython and ipykernel"
+    # python -m pip install ipython ipykernel > /dev/null
+    # echo "Configure the IPython kernel"
+    # ipython kernel install --name=python3 --user > /dev/null
+    # echo "Verify kernelspec list isn't empty"
+    # jupyter kernelspec list > /dev/null
+    # echo "--- ✅ | 2. Post-provisioning - ready execute notebooks ---"
+
+    # echo "Populating sample data ...."
+    # jupyter nbconvert --execute --to python --ExecutePreprocessor.timeout=-1 data/sample-documents-indexing.ipynb > /dev/null
+    # echo "--- ✅ | 3. Post-provisioning - populated data ---"
+fi
