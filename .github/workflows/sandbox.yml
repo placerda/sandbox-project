@@ -72,8 +72,9 @@ jobs:
           azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
 
           # Run azd env refresh and capture the output
-          echo "output=\$(azd env refresh -e ${{ vars.AZURE_ENV_NAME }})"    
-          output=$(azd env refresh -e ${{ vars.AZURE_ENV_NAME }})
+          echo "output=\$(azd env refresh -e ${{ vars.AZURE_ENV_NAME }})"
+          azd env refresh -e ${{ vars.AZURE_ENV_NAME }}
+          # output=$(azd env refresh -e ${{ vars.AZURE_ENV_NAME }})
           
           # Check if the output contains "SUCCESS"
           if echo "$output" | grep -q "SUCCESS"; then
