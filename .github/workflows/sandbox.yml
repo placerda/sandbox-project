@@ -92,23 +92,6 @@ jobs:
             echo "Previous deployment exists."
             deploy_exists=true
           fi
-
-          # echo "output=\$(azd env refresh -e ${{ vars.AZURE_ENV_NAME }})"
-          # azd env refresh -e ${{ vars.AZURE_ENV_NAME }}
-          # output=$(azd env refresh -e ${{ vars.AZURE_ENV_NAME }})
-          
-          # Check if the output contains "SUCCESS"
-          # if echo "$output" | grep -q "SUCCESS"; then
-          #     echo "Previous deployment exists."
-          #     deploy_exists=true
-          # elif echo "$output" | grep -q "ERROR"; then
-          #     echo "No previous deployment exists."
-          #     deploy_exists=false
-          # else
-          #     echo "Unexpected output from azd env refresh command."
-          #     exit 1
-          # fi
-          # echo "deploy_exists=$deploy_exists"
           
           echo "deploy_exists=$deploy_exists" >> $GITHUB_ENV
 
@@ -116,7 +99,7 @@ jobs:
           
           if [ "$deploy_exists" = false ]; then
               echo "No previous deployment exists."
-              echo "Running azd provision --no-prompt..."
+              echo "Running azd provision --no-prompt since deployment doesn't exist..." 
               azd provision --no-prompt
               job_provisioned_environment=true
           fi
@@ -232,22 +215,10 @@ jobs:
           echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> $GITHUB_ENV
           echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
 
-          # # 3. Force reprovision if deployment exists but resource group doesn't.
-
-          # resource_group_exists=$(az group exists --name "$RESOURCE_GROUP_NAME")          
-          # echo "resource_group_exists=$resource_group_exists"
-
-          # if [ "$job_provisioned_environment" = false ] && [ resource_group_exists = false ]; then
-          #     echo "Previous deployment exists and resource group is empty."
-          #     echo "Running azd provision --no-prompt --force..."
-          #     azd provision --no-prompt --force
-          #     job_provisioned_environment=true
-          # fi
-
           # 3. Perform normal provisioning to update resources as needed.      
 
           if [ "$job_provisioned_environment" = false ]; then
-            echo "Running azd provision --no-prompt..."
+            echo "Running azd provision --no-prompt to update resources as needed..."
             azd provision --no-prompt
             job_provisioned_environment=true
           fi          
