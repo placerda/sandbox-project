@@ -222,10 +222,14 @@ jobs:
 
           if [ "$resource_group_exist" = false ]; then          
             echo "# Deployment exists but resource group $AZURE_RESOURCE_GROUP don't."
-            echo "# Reset azd env to force provisioning..."
-            rm -rf .azure
-            echo "azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID"
-            azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
+            # echo "# Reset azd env to force provisioning..."
+            # rm -rf .azure
+            # echo "azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID"
+            # azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
+            # echo "azd down --force"
+            azd down --force
+            # echo "azd down --purge"
+            azd down --purge            
             echo "Running azd provision --no-prompt ..."
             azd provision --no-prompt
             job_provisioned_environment=true
@@ -239,17 +243,11 @@ jobs:
 
       # Build
 
-      - name: Set image tag
-        run: |
-            AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"')
-            echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" >> $GITHUB_ENV
-            echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" 
-    
       - name: Setup Python 
         uses: actions/setup-python@v5
         with:
             python-version: 3.8
-
+    
       - name: Install Promptflow CLI
         run: |
             python -m pip install --upgrade pip
@@ -274,6 +272,12 @@ jobs:
         with:
             name: build-artifacts
             path: dist/
+
+      - name: Set image tag
+        run: |
+            AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"')
+            echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" >> $GITHUB_ENV
+            echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" 
 
       # Deploy
 
