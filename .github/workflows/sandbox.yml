@@ -74,10 +74,8 @@ jobs:
           echo "azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID"
           azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
 
-          set -e
-
           # Run azd env refresh and capture its output
-          output=$(azd env refresh -e "${{ vars.AZURE_ENV_NAME }}" 2>&1)
+          output=$(azd env refresh -e "${{ vars.AZURE_ENV_NAME }}" 2>&1 || true)
           exit_code=$?
 
           echo "azd env refresh output:"
