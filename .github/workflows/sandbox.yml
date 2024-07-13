@@ -217,7 +217,20 @@ jobs:
 
           # 3. Perform normal provisioning to update resources as needed.      
 
-          if [ "$job_provisioned_environment" = false ]; then
+          # Check if the resource group exists
+          resource_group_exist=$(az group exists --name "$AZURE_RESOURCE_GROUP")
+
+          if [ "$resource_group_exist" = false ]; then          
+            echo "# Deployment exists but resource group $AZURE_RESOURCE_GROUP don't."
+            echo "# Reset azd env to force provisioning..."
+            rm -rf .azure
+            echo "azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID"
+            azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
+            echo "Running azd provision --no-prompt ..."
+            azd provision --no-prompt
+            job_provisioned_environment=true
+          elif [ "$job_provisioned_environment" = false ]; then
+            echo "# Resource group $AZURE_RESOURCE_GROUP exists."
             echo "# Perform normal provisioning to update resources as needed..."
             echo "Running azd provision --no-prompt ..."
             azd provision --no-prompt
