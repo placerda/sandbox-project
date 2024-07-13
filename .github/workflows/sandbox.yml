@@ -31,7 +31,7 @@ jobs:
               export AZURE_DEV_COLLECT_TELEMETRY=no            
           fi      
 
-      - name: Install azd
+      - name: Install Azure Developer CLI 
         uses: Azure/setup-azd@v1.0.0
 
         # Environment Provisioning Logic:
@@ -48,7 +48,7 @@ jobs:
 
       - name: Login to Azure Developer CLI 
         run: |
-          echo "Logging to AZD..."
+          echo "Logging to Azure Developer CLI..."
 
           AZURE_CREDENTIALS=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .)
           CLIENT_ID=$(echo $AZURE_CREDENTIALS | jq -r .clientId)
@@ -59,7 +59,7 @@ jobs:
 
       - name: Provision environment 
         run: |
-        
+
           SUBSCRIPTION_ID=${{ vars.AZURE_SUBSCRIPTION_ID }}
           echo "SUBSCRIPTION_ID=$SUBSCRIPTION_ID" >> $GITHUB_ENV
 
