@@ -60,6 +60,9 @@ jobs:
       - name: Provision environment 
         run: |
 
+          # initialize variables
+          job_provisioned_environment=false
+
           SUBSCRIPTION_ID=${{ vars.AZURE_SUBSCRIPTION_ID }}
           echo "SUBSCRIPTION_ID=$SUBSCRIPTION_ID"
           echo "SUBSCRIPTION_ID=$SUBSCRIPTION_ID" >> $GITHUB_ENV
@@ -71,27 +74,36 @@ jobs:
           echo "azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID"
           azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
 
-          # Run azd env refresh and capture the output
-          echo "output=\$(azd env refresh -e ${{ vars.AZURE_ENV_NAME }})"
-          azd env refresh -e ${{ vars.AZURE_ENV_NAME }}
+          # Run azd env refresh and capture its output
+          output=$(azd env refresh -e "${{ vars.AZURE_ENV_NAME }}" 2>&1)
+          exit_code=$?
+          # Check the exit code to determine if the command was successful
+          if [ $exit_code -ne 0 ]; then
+            echo "No previous deployment exists."
+            deploy_exists=false
+          else
+            echo "Previous deployment exists."
+            deploy_exists=true
+          fi
+
+          # echo "output=\$(azd env refresh -e ${{ vars.AZURE_ENV_NAME }})"
+          # azd env refresh -e ${{ vars.AZURE_ENV_NAME }}
           # output=$(azd env refresh -e ${{ vars.AZURE_ENV_NAME }})
           
           # Check if the output contains "SUCCESS"
-          if echo "$output" | grep -q "SUCCESS"; then
-              echo "Previous deployment exists."
-              deploy_exists=true
-          elif echo "$output" | grep -q "ERROR"; then
-              echo "No previous deployment exists."
-              deploy_exists=false
-          else
-              echo "Unexpected output from azd env refresh command."
-              exit 1
-          fi
-
-          echo "deploy_exists=$deploy_exists"
+          # if echo "$output" | grep -q "SUCCESS"; then
+          #     echo "Previous deployment exists."
+          #     deploy_exists=true
+          # elif echo "$output" | grep -q "ERROR"; then
+          #     echo "No previous deployment exists."
+          #     deploy_exists=false
+          # else
+          #     echo "Unexpected output from azd env refresh command."
+          #     exit 1
+          # fi
+          # echo "deploy_exists=$deploy_exists"
+          
           echo "deploy_exists=$deploy_exists" >> $GITHUB_ENV
-
-          job_provisioned_environment=false
 
           # 1. Provision the environment if deployment doesn't exist.
           
