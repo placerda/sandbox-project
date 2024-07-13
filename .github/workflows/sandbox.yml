@@ -41,7 +41,12 @@ jobs:
         # 3. Force provision the resource group if it doesn't exist.
         # 4. Perform normal provisioning to update as needed.
 
-      - name: Provision environment 
+      - name: Login to Azure CLI
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Login to Azure Developer CLI 
         run: |
           echo "Logging to AZD..."
 
@@ -50,8 +55,11 @@ jobs:
           CLIENT_SECRET=$(echo $AZURE_CREDENTIALS | jq -r .clientSecret)
           TENANT_ID=$(echo $AZURE_CREDENTIALS | jq -r .tenantId)
 
-          azd auth login --client-id $CLIENT_ID --client-secret $CLIENT_SECRET --tenant-id $TENANT_ID        
+          azd auth login --client-id $CLIENT_ID --client-secret $CLIENT_SECRET --tenant-id $TENANT_ID
 
+      - name: Provision environment 
+        run: |
+        
           SUBSCRIPTION_ID=${{ vars.AZURE_SUBSCRIPTION_ID }}
           echo "SUBSCRIPTION_ID=$SUBSCRIPTION_ID" >> $GITHUB_ENV
 
@@ -202,7 +210,7 @@ jobs:
 
           resource_group_exists=$(az group exists --name "$RESOURCE_GROUP_NAME")          
           echo "resource_group_exists=$resource_group_exists"
-          
+
           if [ "$job_provisioned_environment" = false ] && [ resource_group_exists = false ]; then
               echo "Previous deployment exists and resource group is empty."
               echo "Running azd provision --no-prompt --force..."
@@ -257,11 +265,6 @@ jobs:
             path: dist/
 
       # Deploy
-
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy Flow
         run: |
