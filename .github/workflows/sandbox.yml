@@ -95,10 +95,9 @@ jobs:
           
           echo "deploy_exists=$deploy_exists" >> $GITHUB_ENV
 
-          # 1. Provision the environment if deployment doesn't exist.
+          # 1. Provision the environment if deployment doesn't exist. 
           
           if [ "$deploy_exists" = false ]; then
-              echo "No previous deployment exists."
               echo "Running azd provision --no-prompt since deployment doesn't exist..." 
               azd provision --no-prompt
               job_provisioned_environment=true
