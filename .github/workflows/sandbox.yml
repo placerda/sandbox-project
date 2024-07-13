@@ -66,10 +66,11 @@ jobs:
           LOCATION=${{ vars.AZURE_LOCATION }}
           echo "LOCATION=$LOCATION" >> $GITHUB_ENV         
 
-          azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
+          azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID --debug
 
           # Run azd env refresh and capture the output
-          output=$(azd env refresh)
+          output=$(azd env refresh -e ${{ vars.AZURE_ENV_NAME }})
+          echo "refresh_result=$output"
 
           # Check if the output contains "SUCCESS"
           if echo "$output" | grep -q "SUCCESS"; then
