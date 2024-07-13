@@ -200,8 +200,10 @@ jobs:
 
           # 3. Force reprovision if deployment exists but resource group doesn't.
 
-          resource_group=$AZURE_RESOURCE_GROUP
-          if [ "$job_provisioned_environment" = false ] && [ -z "$AZURE_RESOURCE_GROUP" ]; then
+          resource_group_exists=$(az group exists --name "$RESOURCE_GROUP_NAME")          
+          echo "resource_group_exists=$resource_group_exists"
+          
+          if [ "$job_provisioned_environment" = false ] && [ resource_group_exists = false ]; then
               echo "Previous deployment exists and resource group is empty."
               echo "Running azd provision --no-prompt --force..."
               azd provision --no-prompt --force
