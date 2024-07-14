@@ -105,6 +105,7 @@ jobs:
           fi
 
           # Check if the resource group exists
+          echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
           if [ -z "$AZURE_RESOURCE_GROUP" ]; then
             resource_group_exist=false 
             echo "resource_group_exist=$resource_group_exist 01"
