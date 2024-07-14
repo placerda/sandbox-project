@@ -307,6 +307,8 @@ jobs:
       #       path: dist/
 
       - name: Set image tag
+        env:
+          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{needs.setup-env.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME}}      
         run: |
             AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"')
             echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" >> $GITHUB_OUTPUT
