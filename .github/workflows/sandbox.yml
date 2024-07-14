@@ -106,7 +106,7 @@ jobs:
 
           # Check if the resource group exists
           if [ -z "$AZURE_RESOURCE_GROUP" ]; then
-            resource_group_exist=false
+            resource_group_exist=false 
           else
             resource_group_exist=$(az group exists --name "$AZURE_RESOURCE_GROUP")
           fi
