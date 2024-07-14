@@ -110,11 +110,12 @@ jobs:
           else
             resource_group_exist=$(az group exists --name "$AZURE_RESOURCE_GROUP")
           fi
-          if [ $deploy_exists" = true && "$resource_group_exist" = false ]; then          
+          
+          if [ "$deploy_exists" = true && "$resource_group_exist" = false ]; then          
             echo "# Deployment exists but resource group $AZURE_RESOURCE_GROUP doesn't."
-            echo "# Clean up any residue and do a new deployment."
+            echo "# Clean up any residue and do a new."
             echo "azd down --force --purge"
-            azd down --force --purge            
+            azd down --force --purge
             echo "Running azd provision --no-prompt ..."
             azd provision --no-prompt
             job_provisioned_environment=true
