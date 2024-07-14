@@ -113,6 +113,7 @@ jobs:
           azd env get-values
 
           # Check if the resource group exists
+          AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"')
           if [ -z "$AZURE_RESOURCE_GROUP" ]; then
             resource_group_exist=false
           else
