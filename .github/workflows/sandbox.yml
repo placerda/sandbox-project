@@ -122,7 +122,7 @@ jobs:
             azd provision --no-prompt
             job_provisioned_environment=true
           fi
-          # 2. Reuse variables from the last deployment to avoid duplicating services.
+          # 2. Reuse variables from the last deployment to avoid duplicating services. d
           #   Reuse the last deployment variable if not set in GitHub Environment.    
 
           echo "azd ${{ vars.AZURE_ENV_NAME }} environment variables"
@@ -134,7 +134,7 @@ jobs:
           else
             AZURE_CONTAINER_REGISTRY_NAME="${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}"
           fi
-          echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME" >> $GITHUB_ENV
+          echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME" >> $GITHUB_ENV 
           echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"
 
           if [ -z "${{ vars.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME }}" ]; then
