@@ -106,11 +106,9 @@ jobs:
 
           # Check if the resource group exists
           if [ -z "$AZURE_RESOURCE_GROUP" ]; then
-            resource_group_exist=false 
-            echo "resource_group_exist=$resource_group_exist 01"
+            resource_group_exist=false
           else
-            resource_group_exist=$(az group exists --name "$AZURE_RESOURCE_GROUP")
-            echo "resource_group_exist=$resource_group_exist 02"            
+            resource_group_exist=$(az group exists --name "$AZURE_RESOURCE_GROUP")  
           fi
 
           if [ "$deploy_exists" = true ] && [ "$resource_group_exist" = false ]; then
@@ -125,7 +123,7 @@ jobs:
             job_provisioned_environment=true
           fi
           # 2. Reuse variables from the last deployment to avoid duplicating services.
-          #   Reuse the last deployment variable if not set in GitHub Environment.
+          #   Reuse the last deployment variable if not set in GitHub Environment.    
 
           echo "azd ${{ vars.AZURE_ENV_NAME }} environment variables"
 
