@@ -127,7 +127,7 @@ jobs:
 
           echo "azd ${{ vars.AZURE_ENV_NAME }} environment variables"
 
-          # Set environment variables getting them from the last deployment if the GitHub environment variable is not set
+          # Set environment variables getting them from the last deployment if the GitHub environment variable is not set 
 
           if [ -z "${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}" ]; then
             AZURE_CONTAINER_REGISTRY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_NAME | cut -d'=' -f2 | tr -d '"')
