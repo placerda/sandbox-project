@@ -311,7 +311,6 @@ jobs:
         env:
           AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{needs.setup-env.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME}}      
         run: |
-            AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"')
             echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" >> "$GITHUB_OUTPUT"
             echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}"
 
@@ -334,6 +333,8 @@ jobs:
           AZURE_APP_SERVICE_PLAN_NAME: ${{needs.setup-env.outputs.AZURE_APP_SERVICE_PLAN_NAME}}
         run: |
             echo "Building Image..."
+            echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"
+            echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
             # bash ./infra/hooks/build.sh --path dist -i $IMAGE_TAG --plan $AZURE_APP_SERVICE_PLAN_NAME --name $AZURE_APP_SERVICE_NAME -r $AZURE_CONTAINER_REGISTRY_NAME -g $AZURE_RESOURCE_GROUP --subscription $SUBSCRIPTION_ID --verbose
 
     
