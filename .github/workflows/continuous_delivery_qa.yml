@@ -7,6 +7,8 @@ on:
 
 jobs:
 
+  TODO: ADD setup-env job
+
   qa-flow-evaluation:
     if: ${{ github.repository != 'Azure/llmops-project-template' }}    
     runs-on: ubuntu-latest
@@ -24,6 +26,8 @@ jobs:
       - name: Integration Tests
         run: |
           echo "Run QA Integration Tests"
+
+  TODO: copy image in qa ACR          
 
   provision-and-deploy:
     runs-on: ubuntu-latest

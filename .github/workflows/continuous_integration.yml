@@ -70,11 +70,11 @@ jobs:
 
           SUBSCRIPTION_ID=${{ vars.AZURE_SUBSCRIPTION_ID }}
           echo "SUBSCRIPTION_ID=$SUBSCRIPTION_ID"
-          echo "SUBSCRIPTION_ID=$SUBSCRIPTION_ID" >> $GITHUB_OUTPUT
+          echo "SUBSCRIPTION_ID=$SUBSCRIPTION_ID" >> "$GITHUB_OUTPUT"
 
           LOCATION=${{ vars.AZURE_LOCATION }}
           echo "LOCATION=$LOCATION"
-          echo "LOCATION=$LOCATION" >> $GITHUB_OUTPUT
+          echo "LOCATION=$LOCATION" >> "$GITHUB_OUTPUT"
 
           echo "azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID"
           azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
@@ -98,7 +98,7 @@ jobs:
             deploy_exists=true
           fi
           
-          echo "deploy_exists=$deploy_exists" >> $GITHUB_OUTPUT
+          echo "deploy_exists=$deploy_exists" >> "$GITHUB_OUTPUT"
 
           # 1. Provision the environment if deployment doesn't exist. 
           
@@ -144,7 +144,7 @@ jobs:
           else
             AZURE_CONTAINER_REGISTRY_NAME="${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}"
           fi
-          echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME" >> $GITHUB_OUTPUT 
+          echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME" >> "$GITHUB_OUTPUT" 
           echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"
 
           if [ -z "${{ vars.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME }}" ]; then
@@ -152,7 +152,7 @@ jobs:
           else
             AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME="${{ vars.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME }}"
           fi
-          echo "AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME" >> $GITHUB_OUTPUT
+          echo "AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME" >> "$GITHUB_OUTPUT"
           echo "AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME"
 
           if [ -z "${{ vars.AZURE_SEARCH_ENDPOINT }}" ]; then
@@ -160,7 +160,7 @@ jobs:
           else
             AZURE_SEARCH_ENDPOINT="${{ vars.AZURE_SEARCH_ENDPOINT }}"
           fi
-          echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT" >> $GITHUB_OUTPUT
+          echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT" >> "$GITHUB_OUTPUT"
           echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT"
           
           if [ -z "${{ vars.AZURE_OPENAI_CHAT_DEPLOYMENT }}" ]; then
@@ -168,7 +168,7 @@ jobs:
           else
             AZURE_OPENAI_CHAT_DEPLOYMENT="${{ vars.AZURE_OPENAI_CHAT_DEPLOYMENT }}"
           fi
-          echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT" >> $GITHUB_OUTPUT
+          echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT" >> "$GITHUB_OUTPUT"
           echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT"
           
           if [ -z "${{ vars.AZURE_OPENAI_EMBEDDING_DEPLOYMENT }}" ]; then
@@ -176,7 +176,7 @@ jobs:
           else
             AZURE_OPENAI_EMBEDDING_DEPLOYMENT="${{ vars.AZURE_OPENAI_EMBEDDING_DEPLOYMENT }}"
           fi
-          echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT" >> $GITHUB_OUTPUT
+          echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT" >> "$GITHUB_OUTPUT"
           echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT"
           
           if [ -z "${{ vars.AZURE_OPENAI_EMBEDDING_MODEL }}" ]; then
@@ -184,7 +184,7 @@ jobs:
           else
             AZURE_OPENAI_EMBEDDING_MODEL="${{ vars.AZURE_OPENAI_EMBEDDING_MODEL }}"
           fi
-          echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL" >> $GITHUB_OUTPUT
+          echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL" >> "$GITHUB_OUTPUT"
           echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL"
           
           if [ -z "${{ vars.AZURE_OPENAI_API_VERSION }}" ]; then
@@ -192,7 +192,7 @@ jobs:
           else
             AZURE_OPENAI_API_VERSION="${{ vars.AZURE_OPENAI_API_VERSION }}"
           fi
-          echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION" >> $GITHUB_OUTPUT
+          echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION" >> "$GITHUB_OUTPUT"
           echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION"
           
           if [ -z "${{ vars.AZURE_OPENAI_ENDPOINT }}" ]; then
@@ -200,7 +200,7 @@ jobs:
           else
             AZURE_OPENAI_ENDPOINT="${{ vars.AZURE_OPENAI_ENDPOINT }}"
           fi
-          echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT" >> $GITHUB_OUTPUT
+          echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT" >> "$GITHUB_OUTPUT"
           echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT"
           
           if [ -z "${{ vars.PROMPTFLOW_WORKER_NUM }}" ]; then
@@ -208,7 +208,7 @@ jobs:
           else
             PROMPTFLOW_WORKER_NUM="${{ vars.PROMPTFLOW_WORKER_NUM }}"
           fi
-          echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM" >> $GITHUB_OUTPUT
+          echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM" >> "$GITHUB_OUTPUT"
           echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM"
           
           if [ -z "${{ vars.PROMPTFLOW_SERVING_ENGINE }}" ]; then
@@ -216,7 +216,7 @@ jobs:
           else
             PROMPTFLOW_SERVING_ENGINE="${{ vars.PROMPTFLOW_SERVING_ENGINE }}"
           fi
-          echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE" >> $GITHUB_OUTPUT
+          echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE" >> "$GITHUB_OUTPUT"
           echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE"            
 
           if [ -z "${{ vars.AZURE_APP_SERVICE_NAME }}" ]; then
@@ -224,7 +224,7 @@ jobs:
           else
             AZURE_APP_SERVICE_NAME="${{ vars.AZURE_APP_SERVICE_NAME }}"
           fi
-          echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME" >> $GITHUB_OUTPUT
+          echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME" >> "$GITHUB_OUTPUT"
           echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME"
 
           if [ -z "${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}" ]; then
@@ -232,7 +232,7 @@ jobs:
           else
             AZURE_APP_SERVICE_PLAN_NAME="${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}"
           fi
-          echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME" >> $GITHUB_OUTPUT
+          echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME" >> "$GITHUB_OUTPUT"
           echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME"
 
           if [ -z "${{ vars.AZURE_RESOURCE_GROUP }}" ]; then
@@ -240,7 +240,7 @@ jobs:
           else
             AZURE_RESOURCE_GROUP="${{ vars.AZURE_RESOURCE_GROUP }}"
           fi
-          echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> $GITHUB_OUTPUT
+          echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> "$GITHUB_OUTPUT"
           echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
 
           # 3. Perform normal provisioning to update resources as needed.      
@@ -311,7 +311,7 @@ jobs:
           AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{needs.setup-env.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME}}      
         run: |
             AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ vars.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"')
-            echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" >> $GITHUB_OUTPUT
+            echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" >> "$GITHUB_OUTPUT"
             echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}"
 
       - name: Build Image

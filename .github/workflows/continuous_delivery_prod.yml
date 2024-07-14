@@ -7,6 +7,8 @@ on:
 
 jobs:
   
+  TODO: ADD setup-env job
+
   integration-testing:
     if: ${{ github.repository != 'Azure/llmops-project-template' }}    
     runs-on: ubuntu-latest
@@ -15,7 +17,9 @@ jobs:
       - name: Integration Tests
         run: |
           echo "Run PROD Integration Tests"
-            
+
+  TODO: copy image in prod ACR          
+
   provision-and-deploy:
     needs: integration-testing
     runs-on: ubuntu-latest
