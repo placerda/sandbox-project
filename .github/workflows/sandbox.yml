@@ -227,7 +227,7 @@ jobs:
             # echo "azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID"
             # azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
             # echo "azd down --force"
-            azd down --force
+            # azd down --force
             # echo "azd down --purge"
             azd down --purge            
             echo "Running azd provision --no-prompt ..."
