@@ -119,6 +119,8 @@ jobs:
             echo "azd down --force --purge"
             azd down --force --purge
             echo "Running azd provision --no-prompt ... "
+            rm -rf .azure
+            azd init -e ${{ vars.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
             azd provision --no-prompt
             job_provisioned_environment=true
           fi
