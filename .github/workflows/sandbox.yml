@@ -107,8 +107,10 @@ jobs:
           # Check if the resource group exists
           if [ -z "$AZURE_RESOURCE_GROUP" ]; then
             resource_group_exist=false 
+            echo "resource_group_exist=$resource_group_exist 01"
           else
             resource_group_exist=$(az group exists --name "$AZURE_RESOURCE_GROUP")
+            echo "resource_group_exist=$resource_group_exist 02"            
           fi
 
           if [ "$deploy_exists" = true && "$resource_group_exist" = false ]; then          
