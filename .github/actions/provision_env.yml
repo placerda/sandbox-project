@@ -1,0 +1,343 @@
+name: Provision Environment
+description: Provision a development environment in Azure
+inputs:
+  AZURE_CREDENTIALS:
+    description: 'Azure credentials'
+    required: true
+  AZURE_ENV_NAME:
+    description: 'Azure environment name'
+    required: true
+  AZURE_SUBSCRIPTION_ID:
+    description: 'Azure subscription ID'
+    required: true
+  AZURE_LOCATION:
+    description: 'Azure location'
+    required: true
+  AZURE_RESOURCE_GROUP:
+    description: 'Azure resource group'
+    required: true
+  AZURE_CONTAINER_REGISTRY_NAME:
+    description: 'Azure container registry name'
+    required: true
+  AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:
+    description: 'Azure container registry repository name'
+    required: true
+  AZURE_SEARCH_ENDPOINT:
+    description: 'Azure search endpoint'
+    required: true
+  AZURE_OPENAI_CHAT_DEPLOYMENT:
+    description: 'Azure OpenAI chat deployment'
+    required: true
+  AZURE_OPENAI_EMBEDDING_DEPLOYMENT:
+    description: 'Azure OpenAI embedding deployment'
+    required: true
+  AZURE_OPENAI_EMBEDDING_MODEL:
+    description: 'Azure OpenAI embedding model'
+    required: true
+  AZURE_OPENAI_API_VERSION:
+    description: 'Azure OpenAI API version'
+    required: true
+  AZURE_OPENAI_ENDPOINT:
+    description: 'Azure OpenAI endpoint'
+    required: true
+  PROMPTFLOW_WORKER_NUM:
+    description: 'PromptFlow worker number'
+    required: true
+  PROMPTFLOW_SERVING_ENGINE:
+    description: 'PromptFlow serving engine'
+    required: true
+  AZURE_APP_SERVICE_NAME:
+    description: 'Azure App Service name'
+    required: true
+  AZURE_APP_SERVICE_PLAN_NAME:
+    description: 'Azure App Service plan name'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check GitHub env variables
+      run: |
+        if [ -z "${{ inputs.AZURE_ENV_NAME }}" ] || [ -z "${{ inputs.AZURE_CREDENTIALS }}" ]; then 
+            echo "Make sure AZURE_ENV_NAME, AZURE_SUBSCRIPTION_ID, AZURE_LOCATION and AZURE_CREDENTIALS are set."
+            exit 1
+        else
+            echo "AZURE_ENV_NAME is set to ${{ inputs.AZURE_ENV_NAME }}"
+            export AZURE_DEV_COLLECT_TELEMETRY=no            
+        fi      
+
+    - name: Install Azure Developer CLI 
+      uses: Azure/setup-azd@v1.0.0
+
+    - name: Login to Azure CLI
+      uses: azure/login@v2
+      with:
+        creds: ${{ inputs.AZURE_CREDENTIALS }}
+
+    - name: Login to Azure Developer CLI 
+      run: |
+        echo "Logging to Azure Developer CLI..."
+
+        AZURE_CREDENTIALS=$(echo '${{ inputs.AZURE_CREDENTIALS }}' | jq -r .)
+        CLIENT_ID=$(echo $AZURE_CREDENTIALS | jq -r .clientId)
+        CLIENT_SECRET=$(echo $AZURE_CREDENTIALS | jq -r .clientSecret)
+        TENANT_ID=$(echo $AZURE_CREDENTIALS | jq -r .tenantId)
+
+        azd auth login --client-id $CLIENT_ID --client-secret $CLIENT_SECRET --tenant-id $TENANT_ID
+
+    - name: Setup Python 
+      uses: actions/setup-python@v5
+      with:
+          python-version: 3.8
+
+    - name: Provision environment
+      id: setup-env-step
+      run: |
+
+        # initialize azd
+        job_provisioned_environment=false
+
+        SUBSCRIPTION_ID=${{ inputs.AZURE_SUBSCRIPTION_ID }}
+        echo "SUBSCRIPTION_ID=$SUBSCRIPTION_ID"
+        echo "SUBSCRIPTION_ID=$SUBSCRIPTION_ID" >> "$GITHUB_OUTPUT"
+
+        LOCATION=${{ inputs.AZURE_LOCATION }}
+        echo "LOCATION=$LOCATION"
+        echo "LOCATION=$LOCATION" >> "$GITHUB_OUTPUT"
+
+        echo "azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID"
+        azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
+
+        # Run azd env refresh and capture last deployment outputs
+        echo "Run azd env refresh and capture outputs"
+        set +e
+        output=$(azd env refresh -e "${{ inputs.AZURE_ENV_NAME }}" 2>&1)
+        exit_code=$?
+        set -e
+        echo "azd env refresh exit code: $exit_code"
+        echo "azd env refresh output:"
+        echo "$output"
+
+        # Check the exit code to determine if there was a previous deployment
+        echo "Check if there was a previous deployment"
+        if [ $exit_code -ne 0 ]; then
+          echo "# No previous deployment exists."
+          deploy_exists=false
+        else
+          echo "# Previous deployment exists."
+          deploy_exists=true
+        fi
+        echo "deploy_exists=$deploy_exists" >> "$GITHUB_OUTPUT"
+
+        # List azd env variables before provisioning
+
+        echo "Azd env variables before provisioning..."
+        azd env get-values
+
+        # 1. Provision the environment if it doesn't exist.
+
+        if [ "$deploy_exists" = false ]; then
+            echo "# Provision the environment since deployment doesn't exist."
+            echo "Running azd provision --no-prompt..." 
+            azd provision --no-prompt
+            job_provisioned_environment=true
+        fi
+
+        # Check if the resource group exists
+
+        echo "Checking if the resource group exists"
+        AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"')
+        if [ -z "$AZURE_RESOURCE_GROUP" ]; then
+          resource_group_exist=false
+        else
+          resource_group_exist=$(az group exists --name "$AZURE_RESOURCE_GROUP")  
+        fi
+
+        # 2. Force provision if the previous deployment was made but the resource group doesn't exist.
+        #    This situation occurs if you made a deployment and then deleted the resource group to force reprovisioning.
+
+        echo "Checking if the resource group exists"          
+        if [ "$deploy_exists" = true ] && [ "$resource_group_exist" = false ]; then
+          echo "# Deployment exists but resource group $AZURE_RESOURCE_GROUP doesn't."
+          echo "# Clean up any residue and do a new."
+          echo "azd down --force --purge"
+          azd down --force --purge
+          echo "Running azd provision --no-prompt ... "
+          rm -rf .azure
+          azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
+          azd provision --no-prompt
+          job_provisioned_environment=true
+        fi          
+
+        # 3. Reuse output values from the last deployment to reuse resource names and avoid duplicating resources.
+        #    If the variable with the resource name is set in the GitHub Environment, don't reuse the last deployment parameter value.
+
+        echo "azd ${{ inputs.AZURE_ENV_NAME }} environment variables"
+
+        # Set environment variables getting them from the last deployment if the GitHub environment variable is not set 
+
+        if [ -z "${{ inputs.AZURE_CONTAINER_REGISTRY_NAME }}" ]; then
+          AZURE_CONTAINER_REGISTRY_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_NAME | cut -d'=' -f2 | tr -d '"')
+        else
+          AZURE_CONTAINER_REGISTRY_NAME="${{ inputs.AZURE_CONTAINER_REGISTRY_NAME }}"
+        fi
+        echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME" >> "$GITHUB_OUTPUT" 
+        echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"
+
+        if [ -z "${{ inputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME }}" ]; then
+          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"')
+        else
+          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME="${{ inputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME }}"
+        fi
+        echo "AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME" >> "$GITHUB_OUTPUT"
+        echo "AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME"
+
+        if [ -z "${{ inputs.AZURE_SEARCH_ENDPOINT }}" ]; then
+          AZURE_SEARCH_ENDPOINT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_ENDPOINT | cut -d'=' -f2 | tr -d '"')
+        else
+          AZURE_SEARCH_ENDPOINT="${{ inputs.AZURE_SEARCH_ENDPOINT }}"
+        fi
+        echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT" >> "$GITHUB_OUTPUT"
+        echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT"
+        
+        if [ -z "${{ inputs.AZURE_OPENAI_CHAT_DEPLOYMENT }}" ]; then
+          AZURE_OPENAI_CHAT_DEPLOYMENT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_CHAT_DEPLOYMENT | cut -d'=' -f2 | tr -d '"')
+        else
+          AZURE_OPENAI_CHAT_DEPLOYMENT="${{ inputs.AZURE_OPENAI_CHAT_DEPLOYMENT }}"
+        fi
+        echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT" >> "$GITHUB_OUTPUT"
+        echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT"
+        
+        if [ -z "${{ inputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT }}" ]; then
+          AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_DEPLOYMENT | cut -d'=' -f2 | tr -d '"')
+        else
+          AZURE_OPENAI_EMBEDDING_DEPLOYMENT="${{ inputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT }}"
+        fi
+        echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT" >> "$GITHUB_OUTPUT"
+        echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT"
+        
+        if [ -z "${{ inputs.AZURE_OPENAI_EMBEDDING_MODEL }}" ]; then
+          AZURE_OPENAI_EMBEDDING_MODEL=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_MODEL | cut -d'=' -f2 | tr -d '"')
+        else
+          AZURE_OPENAI_EMBEDDING_MODEL="${{ inputs.AZURE_OPENAI_EMBEDDING_MODEL }}"
+        fi
+        echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL" >> "$GITHUB_OUTPUT"
+        echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL"
+        
+        if [ -z "${{ inputs.AZURE_OPENAI_API_VERSION }}" ]; then
+          AZURE_OPENAI_API_VERSION=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_API_VERSION | cut -d'=' -f2 | tr -d '"')
+        else
+          AZURE_OPENAI_API_VERSION="${{ inputs.AZURE_OPENAI_API_VERSION }}"
+        fi
+        echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION" >> "$GITHUB_OUTPUT"
+        echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION"
+        
+        if [ -z "${{ inputs.AZURE_OPENAI_ENDPOINT }}" ]; then
+          AZURE_OPENAI_ENDPOINT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_ENDPOINT | cut -d'=' -f2 | tr -d '"')
+        else
+          AZURE_OPENAI_ENDPOINT="${{ inputs.AZURE_OPENAI_ENDPOINT }}"
+        fi
+        echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT" >> "$GITHUB_OUTPUT"
+        echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT"
+        
+        if [ -z "${{ inputs.PROMPTFLOW_WORKER_NUM }}" ]; then
+          PROMPTFLOW_WORKER_NUM=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep PROMPTFLOW_WORKER_NUM | cut -d'=' -f2 | tr -d '"')
+        else
+          PROMPTFLOW_WORKER_NUM="${{ inputs.PROMPTFLOW_WORKER_NUM }}"
+        fi
+        echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM" >> "$GITHUB_OUTPUT"
+        echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM"
+        
+        if [ -z "${{ inputs.PROMPTFLOW_SERVING_ENGINE }}" ]; then
+          PROMPTFLOW_SERVING_ENGINE=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep PROMPTFLOW_SERVING_ENGINE | cut -d'=' -f2 | tr -d '"')
+        else
+          PROMPTFLOW_SERVING_ENGINE="${{ inputs.PROMPTFLOW_SERVING_ENGINE }}"
+        fi
+        echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE" >> "$GITHUB_OUTPUT"
+        echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE"            
+
+        if [ -z "${{ inputs.AZURE_APP_SERVICE_NAME }}" ]; then
+          AZURE_APP_SERVICE_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_NAME | cut -d'=' -f2 | tr -d '"')
+        else
+          AZURE_APP_SERVICE_NAME="${{ inputs.AZURE_APP_SERVICE_NAME }}"
+        fi
+        echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME" >> "$GITHUB_OUTPUT"
+        echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME"
+
+        if [ -z "${{ inputs.AZURE_APP_SERVICE_PLAN_NAME }}" ]; then
+          AZURE_APP_SERVICE_PLAN_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_PLAN_NAME | cut -d'=' -f2 | tr -d '"')
+        else
+          AZURE_APP_SERVICE_PLAN_NAME="${{ inputs.AZURE_APP_SERVICE_PLAN_NAME }}"
+        fi
+        echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME" >> "$GITHUB_OUTPUT"
+        echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME"
+
+        if [ -z "${{ inputs.AZURE_RESOURCE_GROUP }}" ]; then
+          AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"')
+        else
+          AZURE_RESOURCE_GROUP="${{ inputs.AZURE_RESOURCE_GROUP }}"
+        fi
+        echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> "$GITHUB_OUTPUT"
+        echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
+
+        # 4. Update provisioned resources in case you made some changes in the Bicep template.   
+
+        if [ "$job_provisioned_environment" = false ]; then
+          echo "# Resource group $AZURE_RESOURCE_GROUP exists."
+          echo "# Perform normal provisioning to update resources as needed..."
+          echo "Running azd provision --no-prompt ..."
+          azd provision --no-prompt
+          job_provisioned_environment=true
+        fi  
+
+        # "List azd env variables after provisioning..."
+        
+        echo "Azd env variables after provisioning..."
+        azd env get-values
+
+outputs:
+  LOCATION:
+    description: 'Azure location'
+    value: ${{ steps.setup-env-step.outputs.LOCATION }}
+  AZURE_RESOURCE_GROUP:
+    description: 'Azure resource group'
+    value: ${{ steps.setup-env-step.outputs.AZURE_RESOURCE_GROUP }}
+  AZURE_CONTAINER_REGISTRY_NAME:
+    description: 'Azure Container Registry Name'
+    value: ${{ steps.setup-env-step.outputs.AZURE_CONTAINER_REGISTRY_NAME }}
+  AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:
+    description: 'Azure Container Registry Repository Name'
+    value: ${{ steps.setup-env-step.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME }}
+  SUBSCRIPTION_ID:
+    description: 'Azure subscription ID'
+    value: ${{ steps.setup-env-step.outputs.SUBSCRIPTION_ID }}
+  AZURE_SEARCH_ENDPOINT:
+    description: 'Azure Search Endpoint'
+    value: ${{ steps.setup-env-step.outputs.AZURE_SEARCH_ENDPOINT }}
+  AZURE_OPENAI_CHAT_DEPLOYMENT:
+    description: 'Azure OpenAI Chat Deployment'
+    value: ${{ steps.setup-env-step.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT }}
+  AZURE_OPENAI_EMBEDDING_DEPLOYMENT:
+    description: 'Azure OpenAI Embedding Deployment'
+    value: ${{ steps.setup-env-step.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT }}
+  AZURE_OPENAI_EMBEDDING_MODEL:
+    description: 'Azure OpenAI Embedding Model'
+    value: ${{ steps.setup-env-step.outputs.AZURE_OPENAI_EMBEDDING_MODEL }}
+  AZURE_OPENAI_API_VERSION:
+    description: 'Azure OpenAI API Version'
+    value: ${{ steps.setup-env-step.outputs.AZURE_OPENAI_API_VERSION }}
+  AZURE_OPENAI_ENDPOINT:
+    description: 'Azure OpenAI Endpoint'
+    value: ${{ steps.setup-env-step.outputs.AZURE_OPENAI_ENDPOINT }}
+  PROMPTFLOW_WORKER_NUM:
+    description: 'Promptflow Worker Number'
+    value: ${{ steps.setup-env-step.outputs.PROMPTFLOW_WORKER_NUM }}
+  PROMPTFLOW_SERVING_ENGINE:
+    description: 'Promptflow Serving Engine'
+    value: ${{ steps.setup-env-step.outputs.PROMPTFLOW_SERVING_ENGINE }}
+  AZURE_APP_SERVICE_NAME:
+    description: 'Azure App Service Name'
+    value: ${{ steps.setup-env-step.outputs.AZURE_APP_SERVICE_NAME }}
+  AZURE_APP_SERVICE_PLAN_NAME:
+    description: 'Azure App Service Plan Name'
+    value: ${{ steps.setup-env-step.outputs.AZURE_APP_SERVICE_PLAN_NAME }}
