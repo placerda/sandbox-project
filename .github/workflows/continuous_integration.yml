@@ -365,7 +365,7 @@ jobs:
 
             echo "Building docker image..."
             path=dist
-            image_tag=$IMAGE_TAG
+            image_tag=${{ steps.set-image-tag.outputs.IMAGE_TAG }}
             full_registry_name="$image_tag.azurecr.io"
             echo "Change working directory to $path"
             cd "$path"
