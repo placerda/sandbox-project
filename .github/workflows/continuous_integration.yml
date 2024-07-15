@@ -30,7 +30,8 @@ jobs:
       PROMPTFLOW_SERVING_ENGINE: ${{ steps.provision-env.outputs.PROMPTFLOW_SERVING_ENGINE }}
       AZURE_APP_SERVICE_NAME: ${{ steps.provision-env.outputs.AZURE_APP_SERVICE_NAME }}
       AZURE_APP_SERVICE_PLAN_NAME: ${{ steps.provision-env.outputs.AZURE_APP_SERVICE_PLAN_NAME }}
-    steps:
+    steps: 
+      - uses: actions/checkout@v4   
       - name: Provision dev environment
         uses: ./.github/actions/provision-env
         id: provision-env
@@ -39,6 +40,7 @@ jobs:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}          
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+        env:
           AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
           AZURE_CONTAINER_REGISTRY_NAME: ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}
           AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{ vars.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME }}
@@ -51,7 +53,7 @@ jobs:
           PROMPTFLOW_WORKER_NUM: ${{ vars.PROMPTFLOW_WORKER_NUM }}
           PROMPTFLOW_SERVING_ENGINE: ${{ vars.PROMPTFLOW_SERVING_ENGINE }}
           AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
-          AZURE_APP_SERVICE_PLAN_NAME: ${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}     
+          AZURE_APP_SERVICE_PLAN_NAME: ${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}
 
   unit-testing:
     runs-on: ubuntu-latest
