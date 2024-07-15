@@ -141,7 +141,6 @@ jobs:
           if [ "$deploy_exists" = true ] && [ "$resource_group_exist" = false ]; then
             echo "# Deployment exists but resource group $AZURE_RESOURCE_GROUP doesn't."
             echo "# Clean up any residue and do a new."
-            exit 1
             echo "azd down --force --purge"
             azd down --force --purge
             echo "Running azd provision --no-prompt ... "
