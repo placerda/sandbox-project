@@ -61,16 +61,16 @@ runs:
         # initialize azd
         job_provisioned_environment=false
 
-        SUBSCRIPTION_ID=${{ inputs.AZURE_SUBSCRIPTION_ID }}
-        echo "SUBSCRIPTION_ID=$SUBSCRIPTION_ID"
-        echo "SUBSCRIPTION_ID=$SUBSCRIPTION_ID" >> "$GITHUB_OUTPUT"
+        AZURE_SUBSCRIPTION_ID=${{ inputs.AZURE_SUBSCRIPTION_ID }}
+        echo "AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID"
+        echo "AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID" >> "$GITHUB_OUTPUT"
 
-        LOCATION=${{ inputs.AZURE_LOCATION }}
-        echo "LOCATION=$LOCATION"
-        echo "LOCATION=$LOCATION" >> "$GITHUB_OUTPUT"
+        AZURE_LOCATION=${{ inputs.AZURE_LOCATION }}
+        echo "AZURE_LOCATION=$AZURE_LOCATION"
+        echo "AZURE_LOCATION=$AZURE_LOCATION" >> "$GITHUB_OUTPUT"
 
-        echo "azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID"
-        azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
+        echo "azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $AZURE_LOCATION -s $AZURE_SUBSCRIPTION_ID"
+        azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $AZURE_LOCATION -s $AZURE_SUBSCRIPTION_ID
 
         # Run azd env refresh and capture last deployment outputs
         echo "Run azd env refresh and capture outputs"
@@ -127,7 +127,7 @@ runs:
           azd down --force --purge
           echo "Running azd provision --no-prompt ... "
           rm -rf .azure
-          azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $LOCATION -s $SUBSCRIPTION_ID
+          azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $AZURE_LOCATION -s $AZURE_SUBSCRIPTION_ID
           azd provision --no-prompt
           job_provisioned_environment=true
         fi          
@@ -247,7 +247,7 @@ runs:
 
         if [ "$job_provisioned_environment" = false ]; then
           echo "# Resource group $AZURE_RESOURCE_GROUP exists."
-          echo "# Perform normal provisioning to update resources as needed..."
+          echo "# Update provisioned resources in case the IaaC template has changed."
           echo "Running azd provision --no-prompt ..."
           azd provision --no-prompt
           job_provisioned_environment=true
@@ -259,9 +259,9 @@ runs:
         azd env get-values
 
 outputs:
-  LOCATION:
+  AZURE_LOCATION:
     description: 'Azure location'
-    value: ${{ steps.setup-env-step.outputs.LOCATION }}
+    value: ${{ steps.setup-env-step.outputs.AZURE_LOCATION }}
   AZURE_RESOURCE_GROUP:
     description: 'Azure resource group'
     value: ${{ steps.setup-env-step.outputs.AZURE_RESOURCE_GROUP }}
@@ -271,9 +271,9 @@ outputs:
   AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:
     description: 'Azure Container Registry Repository Name'
     value: ${{ steps.setup-env-step.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME }}
-  SUBSCRIPTION_ID:
+  AZURE_SUBSCRIPTION_ID:
     description: 'Azure subscription ID'
-    value: ${{ steps.setup-env-step.outputs.SUBSCRIPTION_ID }}
+    value: ${{ steps.setup-env-step.outputs.AZURE_SUBSCRIPTION_ID }}
   AZURE_SEARCH_ENDPOINT:
     description: 'Azure Search Endpoint'
     value: ${{ steps.setup-env-step.outputs.AZURE_SEARCH_ENDPOINT }}

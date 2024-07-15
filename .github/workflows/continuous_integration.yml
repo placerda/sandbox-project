@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     outputs:
-      SUBSCRIPTION_ID: ${{ steps.provision-env.outputs.SUBSCRIPTION_ID }}
-      LOCATION: ${{ steps.provision-env.outputs.LOCATION }}
+      AZURE_SUBSCRIPTION_ID: ${{ steps.provision-env.outputs.AZURE_SUBSCRIPTION_ID }}
+      AZURE_LOCATION: ${{ steps.provision-env.outputs.AZURE_LOCATION }}
       AZURE_RESOURCE_GROUP: ${{ steps.provision-env.outputs.AZURE_RESOURCE_GROUP }}
       AZURE_CONTAINER_REGISTRY_NAME: ${{ steps.provision-env.outputs.AZURE_CONTAINER_REGISTRY_NAME }}
       AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{ steps.provision-env.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME }}
@@ -140,8 +140,8 @@ jobs:
 
       - name: Run Container
         env:
-          SUBSCRIPTION_ID: ${{needs.setup-env-job.outputs.SUBSCRIPTION_ID}}
-          LOCATION: ${{needs.setup-env-job.outputs.LOCATION}}
+          AZURE_SUBSCRIPTION_ID: ${{needs.setup-env-job.outputs.AZURE_SUBSCRIPTION_ID}}
+          AZURE_LOCATION: ${{needs.setup-env-job.outputs.AZURE_LOCATION}}
           AZURE_RESOURCE_GROUP: ${{needs.setup-env-job.outputs.AZURE_RESOURCE_GROUP}}
           AZURE_SEARCH_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_SEARCH_ENDPOINT}}
           AZURE_OPENAI_CHAT_DEPLOYMENT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT}}
@@ -153,7 +153,7 @@ jobs:
           PROMPTFLOW_SERVING_ENGINE: ${{needs.setup-env-job.outputs.PROMPTFLOW_SERVING_ENGINE}}
         run: |
           echo "Run image..."
-          docker run -p 8080:8080 -e PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE -e PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM ${{ steps.set-image-tag.outputs.IMAGE_TAG }}
+          docker run -d -p 8080:8080 -e PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE -e PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM ${{ steps.set-image-tag.outputs.IMAGE_TAG }}
 
       - name: Register Image
         env:
