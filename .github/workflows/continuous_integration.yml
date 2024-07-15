@@ -10,10 +10,28 @@ on:
       - develop
 
 jobs:
-  setup-env:
+  setup-env-job:
     if: ${{ github.repository != 'Azure/llmops-project-template' }}
     runs-on: ubuntu-latest
     environment: dev
+
+    outputs:
+      SUBSCRIPTION_ID: ${{ steps.setup-env-step.outputs.SUBSCRIPTION_ID }}
+      LOCATION: ${{ steps.setup-env-step.outputs.LOCATION }}
+      AZURE_RESOURCE_GROUP: ${{ steps.setup-env-step.outputs.AZURE_RESOURCE_GROUP }}
+      AZURE_CONTAINER_REGISTRY_NAME: ${{ steps.setup-env-step.outputs.AZURE_CONTAINER_REGISTRY_NAME }}
+      AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{ steps.setup-env-step.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME }}
+      AZURE_SEARCH_ENDPOINT: ${{ steps.setup-env-step.outputs.AZURE_SEARCH_ENDPOINT }}
+      AZURE_OPENAI_CHAT_DEPLOYMENT: ${{ steps.setup-env-step.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT }}
+      AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{ steps.setup-env-step.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT }}
+      AZURE_OPENAI_EMBEDDING_MODEL: ${{ steps.setup-env-step.outputs.AZURE_OPENAI_EMBEDDING_MODEL }}
+      AZURE_OPENAI_API_VERSION: ${{ steps.setup-env-step.outputs.AZURE_OPENAI_API_VERSION }}
+      AZURE_OPENAI_ENDPOINT: ${{ steps.setup-env-step.outputs.AZURE_OPENAI_ENDPOINT }}
+      PROMPTFLOW_WORKER_NUM: ${{ steps.setup-env-step.outputs.PROMPTFLOW_WORKER_NUM }}
+      PROMPTFLOW_SERVING_ENGINE: ${{ steps.setup-env-step.outputs.PROMPTFLOW_SERVING_ENGINE }}
+      AZURE_APP_SERVICE_NAME: ${{ steps.setup-env-step.outputs.AZURE_APP_SERVICE_NAME }}
+      AZURE_APP_SERVICE_PLAN_NAME: ${{ steps.setup-env-step.outputs.AZURE_APP_SERVICE_PLAN_NAME }}
+
     env:
       AZURE_DEV_COLLECT_TELEMETRY: no    
     steps:
@@ -62,7 +80,8 @@ jobs:
       # 3. Force provision if resource group doesn't exist.
       # 4. Perform normal provisioning to update as needed.
 
-      - name: Provision dev environment 
+      - name: Provision dev environment
+        id: setup-env-step
         run: |
 
           # initialize variables
@@ -256,7 +275,7 @@ jobs:
 
   unit-testing:
     runs-on: ubuntu-latest
-    needs: setup-env    
+    needs: setup-env-job    
     environment: dev
     steps:
       - name: Unit tests
@@ -264,7 +283,7 @@ jobs:
           echo "Run Pytest"
 
   code-standard-check:
-    needs: [setup-env]    
+    needs: [setup-env-job]    
     runs-on: ubuntu-latest
     environment: dev
     steps:
@@ -274,7 +293,7 @@ jobs:
 
   build-image:
     runs-on: ubuntu-latest
-    needs: [setup-env, unit-testing, code-standard-check]    
+    needs: [setup-env-job, unit-testing, code-standard-check]    
     environment: dev    
     steps:
       # - name: Setup Python 
@@ -309,28 +328,28 @@ jobs:
 
       - name: Set image tag
         env:
-          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{needs.setup-env.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME}}      
+          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME}}      
         run: |
             echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}" >> "$GITHUB_OUTPUT"
             echo "IMAGE_TAG=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:${{ github.sha }}"
 
       - name: Build Image
         env:
-          SUBSCRIPTION_ID: ${{needs.setup-env.outputs.SUBSCRIPTION_ID}}
-          LOCATION: ${{needs.setup-env.outputs.LOCATION}}
-          AZURE_RESOURCE_GROUP: ${{needs.setup-env.outputs.AZURE_RESOURCE_GROUP}}
-          AZURE_CONTAINER_REGISTRY_NAME: ${{needs.setup-env.outputs.AZURE_CONTAINER_REGISTRY_NAME}}
-          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{needs.setup-env.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME}}
-          AZURE_SEARCH_ENDPOINT: ${{needs.setup-env.outputs.AZURE_SEARCH_ENDPOINT}}
-          AZURE_OPENAI_CHAT_DEPLOYMENT: ${{needs.setup-env.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT}}
-          AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{needs.setup-env.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT}}
-          AZURE_OPENAI_EMBEDDING_MODEL: ${{needs.setup-env.outputs.AZURE_OPENAI_EMBEDDING_MODEL}}
-          AZURE_OPENAI_API_VERSION: ${{needs.setup-env.outputs.AZURE_OPENAI_API_VERSION}}
-          AZURE_OPENAI_ENDPOINT: ${{needs.setup-env.outputs.AZURE_OPENAI_ENDPOINT}}
-          PROMPTFLOW_WORKER_NUM: ${{needs.setup-env.outputs.PROMPTFLOW_WORKER_NUM}}
-          PROMPTFLOW_SERVING_ENGINE: ${{needs.setup-env.outputs.PROMPTFLOW_SERVING_ENGINE}}
-          AZURE_APP_SERVICE_NAME: ${{needs.setup-env.outputs.AZURE_APP_SERVICE_NAME}}
-          AZURE_APP_SERVICE_PLAN_NAME: ${{needs.setup-env.outputs.AZURE_APP_SERVICE_PLAN_NAME}}
+          SUBSCRIPTION_ID: ${{needs.setup-env-job.outputs.SUBSCRIPTION_ID}}
+          LOCATION: ${{needs.setup-env-job.outputs.LOCATION}}
+          AZURE_RESOURCE_GROUP: ${{needs.setup-env-job.outputs.AZURE_RESOURCE_GROUP}}
+          AZURE_CONTAINER_REGISTRY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REGISTRY_NAME}}
+          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME}}
+          AZURE_SEARCH_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_SEARCH_ENDPOINT}}
+          AZURE_OPENAI_CHAT_DEPLOYMENT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT}}
+          AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT}}
+          AZURE_OPENAI_EMBEDDING_MODEL: ${{needs.setup-env-job.outputs.AZURE_OPENAI_EMBEDDING_MODEL}}
+          AZURE_OPENAI_API_VERSION: ${{needs.setup-env-job.outputs.AZURE_OPENAI_API_VERSION}}
+          AZURE_OPENAI_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_ENDPOINT}}
+          PROMPTFLOW_WORKER_NUM: ${{needs.setup-env-job.outputs.PROMPTFLOW_WORKER_NUM}}
+          PROMPTFLOW_SERVING_ENGINE: ${{needs.setup-env-job.outputs.PROMPTFLOW_SERVING_ENGINE}}
+          AZURE_APP_SERVICE_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_NAME}}
+          AZURE_APP_SERVICE_PLAN_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_PLAN_NAME}}
         run: |
             echo "Building Image..."
             echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"
@@ -340,78 +359,78 @@ jobs:
     
   test-image:
     runs-on: ubuntu-latest
-    needs: [setup-env, build-image]    
+    needs: [setup-env-job, build-image]    
     environment: dev    
     steps:
       - name: Run Image
         env:
-          SUBSCRIPTION_ID: ${{needs.setup-env.outputs.SUBSCRIPTION_ID}}
-          LOCATION: ${{needs.setup-env.outputs.LOCATION}}
-          AZURE_RESOURCE_GROUP: ${{needs.setup-env.outputs.AZURE_RESOURCE_GROUP}}
-          AZURE_CONTAINER_REGISTRY_NAME: ${{needs.setup-env.outputs.AZURE_CONTAINER_REGISTRY_NAME}}
-          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{needs.setup-env.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME}}
-          AZURE_SEARCH_ENDPOINT: ${{needs.setup-env.outputs.AZURE_SEARCH_ENDPOINT}}
-          AZURE_OPENAI_CHAT_DEPLOYMENT: ${{needs.setup-env.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT}}
-          AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{needs.setup-env.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT}}
-          AZURE_OPENAI_EMBEDDING_MODEL: ${{needs.setup-env.outputs.AZURE_OPENAI_EMBEDDING_MODEL}}
-          AZURE_OPENAI_API_VERSION: ${{needs.setup-env.outputs.AZURE_OPENAI_API_VERSION}}
-          AZURE_OPENAI_ENDPOINT: ${{needs.setup-env.outputs.AZURE_OPENAI_ENDPOINT}}
-          PROMPTFLOW_WORKER_NUM: ${{needs.setup-env.outputs.PROMPTFLOW_WORKER_NUM}}
-          PROMPTFLOW_SERVING_ENGINE: ${{needs.setup-env.outputs.PROMPTFLOW_SERVING_ENGINE}}
-          AZURE_APP_SERVICE_NAME: ${{needs.setup-env.outputs.AZURE_APP_SERVICE_NAME}}
-          AZURE_APP_SERVICE_PLAN_NAME: ${{needs.setup-env.outputs.AZURE_APP_SERVICE_PLAN_NAME}}
+          SUBSCRIPTION_ID: ${{needs.setup-env-job.outputs.SUBSCRIPTION_ID}}
+          LOCATION: ${{needs.setup-env-job.outputs.LOCATION}}
+          AZURE_RESOURCE_GROUP: ${{needs.setup-env-job.outputs.AZURE_RESOURCE_GROUP}}
+          AZURE_CONTAINER_REGISTRY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REGISTRY_NAME}}
+          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME}}
+          AZURE_SEARCH_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_SEARCH_ENDPOINT}}
+          AZURE_OPENAI_CHAT_DEPLOYMENT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT}}
+          AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT}}
+          AZURE_OPENAI_EMBEDDING_MODEL: ${{needs.setup-env-job.outputs.AZURE_OPENAI_EMBEDDING_MODEL}}
+          AZURE_OPENAI_API_VERSION: ${{needs.setup-env-job.outputs.AZURE_OPENAI_API_VERSION}}
+          AZURE_OPENAI_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_ENDPOINT}}
+          PROMPTFLOW_WORKER_NUM: ${{needs.setup-env-job.outputs.PROMPTFLOW_WORKER_NUM}}
+          PROMPTFLOW_SERVING_ENGINE: ${{needs.setup-env-job.outputs.PROMPTFLOW_SERVING_ENGINE}}
+          AZURE_APP_SERVICE_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_NAME}}
+          AZURE_APP_SERVICE_PLAN_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_PLAN_NAME}}
           IMAGE_TAG: ${{needs.build-image.outputs.IMAGE_TAG}}
         run: |
           echo "Running Image..."
 
   register-image:
     runs-on: ubuntu-latest
-    needs: [setup-env, build-image, test-image]    
+    needs: [setup-env-job, build-image, test-image]    
     environment: dev    
     steps:
       - name: Register Image
         env:
-          SUBSCRIPTION_ID: ${{needs.setup-env.outputs.SUBSCRIPTION_ID}}
-          LOCATION: ${{needs.setup-env.outputs.LOCATION}}
-          AZURE_RESOURCE_GROUP: ${{needs.setup-env.outputs.AZURE_RESOURCE_GROUP}}
-          AZURE_CONTAINER_REGISTRY_NAME: ${{needs.setup-env.outputs.AZURE_CONTAINER_REGISTRY_NAME}}
-          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{needs.setup-env.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME}}
-          AZURE_SEARCH_ENDPOINT: ${{needs.setup-env.outputs.AZURE_SEARCH_ENDPOINT}}
-          AZURE_OPENAI_CHAT_DEPLOYMENT: ${{needs.setup-env.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT}}
-          AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{needs.setup-env.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT}}
-          AZURE_OPENAI_EMBEDDING_MODEL: ${{needs.setup-env.outputs.AZURE_OPENAI_EMBEDDING_MODEL}}
-          AZURE_OPENAI_API_VERSION: ${{needs.setup-env.outputs.AZURE_OPENAI_API_VERSION}}
-          AZURE_OPENAI_ENDPOINT: ${{needs.setup-env.outputs.AZURE_OPENAI_ENDPOINT}}
-          PROMPTFLOW_WORKER_NUM: ${{needs.setup-env.outputs.PROMPTFLOW_WORKER_NUM}}
-          PROMPTFLOW_SERVING_ENGINE: ${{needs.setup-env.outputs.PROMPTFLOW_SERVING_ENGINE}}
-          AZURE_APP_SERVICE_NAME: ${{needs.setup-env.outputs.AZURE_APP_SERVICE_NAME}}
-          AZURE_APP_SERVICE_PLAN_NAME: ${{needs.setup-env.outputs.AZURE_APP_SERVICE_PLAN_NAME}}
+          SUBSCRIPTION_ID: ${{needs.setup-env-job.outputs.SUBSCRIPTION_ID}}
+          LOCATION: ${{needs.setup-env-job.outputs.LOCATION}}
+          AZURE_RESOURCE_GROUP: ${{needs.setup-env-job.outputs.AZURE_RESOURCE_GROUP}}
+          AZURE_CONTAINER_REGISTRY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REGISTRY_NAME}}
+          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME}}
+          AZURE_SEARCH_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_SEARCH_ENDPOINT}}
+          AZURE_OPENAI_CHAT_DEPLOYMENT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT}}
+          AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT}}
+          AZURE_OPENAI_EMBEDDING_MODEL: ${{needs.setup-env-job.outputs.AZURE_OPENAI_EMBEDDING_MODEL}}
+          AZURE_OPENAI_API_VERSION: ${{needs.setup-env-job.outputs.AZURE_OPENAI_API_VERSION}}
+          AZURE_OPENAI_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_ENDPOINT}}
+          PROMPTFLOW_WORKER_NUM: ${{needs.setup-env-job.outputs.PROMPTFLOW_WORKER_NUM}}
+          PROMPTFLOW_SERVING_ENGINE: ${{needs.setup-env-job.outputs.PROMPTFLOW_SERVING_ENGINE}}
+          AZURE_APP_SERVICE_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_NAME}}
+          AZURE_APP_SERVICE_PLAN_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_PLAN_NAME}}
           IMAGE_TAG: ${{needs.build-image.outputs.IMAGE_TAG}}
         run: |
           echo "Register Image..."
 
   trigger-cd-pipeline:
     runs-on: ubuntu-latest
-    needs: [setup-env, build-image, register-image]    
+    needs: [setup-env-job, build-image, register-image]    
     environment: dev    
     steps:
       - name: Trigger CD pipeline
         env:
-          SUBSCRIPTION_ID: ${{needs.setup-env.outputs.SUBSCRIPTION_ID}}
-          LOCATION: ${{needs.setup-env.outputs.LOCATION}}
-          AZURE_RESOURCE_GROUP: ${{needs.setup-env.outputs.AZURE_RESOURCE_GROUP}}
-          AZURE_CONTAINER_REGISTRY_NAME: ${{needs.setup-env.outputs.AZURE_CONTAINER_REGISTRY_NAME}}
-          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{needs.setup-env.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME}}
-          AZURE_SEARCH_ENDPOINT: ${{needs.setup-env.outputs.AZURE_SEARCH_ENDPOINT}}
-          AZURE_OPENAI_CHAT_DEPLOYMENT: ${{needs.setup-env.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT}}
-          AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{needs.setup-env.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT}}
-          AZURE_OPENAI_EMBEDDING_MODEL: ${{needs.setup-env.outputs.AZURE_OPENAI_EMBEDDING_MODEL}}
-          AZURE_OPENAI_API_VERSION: ${{needs.setup-env.outputs.AZURE_OPENAI_API_VERSION}}
-          AZURE_OPENAI_ENDPOINT: ${{needs.setup-env.outputs.AZURE_OPENAI_ENDPOINT}}
-          PROMPTFLOW_WORKER_NUM: ${{needs.setup-env.outputs.PROMPTFLOW_WORKER_NUM}}
-          PROMPTFLOW_SERVING_ENGINE: ${{needs.setup-env.outputs.PROMPTFLOW_SERVING_ENGINE}}
-          AZURE_APP_SERVICE_NAME: ${{needs.setup-env.outputs.AZURE_APP_SERVICE_NAME}}
-          AZURE_APP_SERVICE_PLAN_NAME: ${{needs.setup-env.outputs.AZURE_APP_SERVICE_PLAN_NAME}}
+          SUBSCRIPTION_ID: ${{needs.setup-env-job.outputs.SUBSCRIPTION_ID}}
+          LOCATION: ${{needs.setup-env-job.outputs.LOCATION}}
+          AZURE_RESOURCE_GROUP: ${{needs.setup-env-job.outputs.AZURE_RESOURCE_GROUP}}
+          AZURE_CONTAINER_REGISTRY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REGISTRY_NAME}}
+          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME}}
+          AZURE_SEARCH_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_SEARCH_ENDPOINT}}
+          AZURE_OPENAI_CHAT_DEPLOYMENT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT}}
+          AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT}}
+          AZURE_OPENAI_EMBEDDING_MODEL: ${{needs.setup-env-job.outputs.AZURE_OPENAI_EMBEDDING_MODEL}}
+          AZURE_OPENAI_API_VERSION: ${{needs.setup-env-job.outputs.AZURE_OPENAI_API_VERSION}}
+          AZURE_OPENAI_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_ENDPOINT}}
+          PROMPTFLOW_WORKER_NUM: ${{needs.setup-env-job.outputs.PROMPTFLOW_WORKER_NUM}}
+          PROMPTFLOW_SERVING_ENGINE: ${{needs.setup-env-job.outputs.PROMPTFLOW_SERVING_ENGINE}}
+          AZURE_APP_SERVICE_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_NAME}}
+          AZURE_APP_SERVICE_PLAN_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_PLAN_NAME}}
           IMAGE_TAG: ${{needs.build-image.outputs.IMAGE_TAG}}
         run: |
           echo "Trigger CD Pipeline..."
