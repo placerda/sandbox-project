@@ -296,6 +296,7 @@ jobs:
     outputs:
       IMAGE_TAG: ${{ steps.set-image-tag.outputs.IMAGE_TAG }}    
     steps:
+      - uses: actions/checkout@v4      
       - name: Setup Python 
         uses: actions/setup-python@v5
         with:
