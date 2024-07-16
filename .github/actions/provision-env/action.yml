@@ -61,7 +61,7 @@ runs:
         # initialize azd
         job_provisioned_environment=false
 
-        AZURE_SUBSCRIPTION_ID="${{ inputs.AZURE_SUBSCRIPTION_ID }}"
+        export AZURE_SUBSCRIPTION_ID="${{ inputs.AZURE_SUBSCRIPTION_ID }}"
         echo "AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID" >> "$GITHUB_OUTPUT"
         echo "AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID"
 
