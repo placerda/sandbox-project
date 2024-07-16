@@ -58,7 +58,7 @@ jobs:
           AZURE_OPENAI_NAME: ${{vars.AZURE_OPENAI_NAME}}
           AZUREAI_PROJECT_NAME: ${{vars.AZUREAI_PROJECT_NAME}}
           AZURE_SEARCH_INDEX_SAMPLE_DATA: ${{vars.AZURE_SEARCH_INDEX_SAMPLE_DATA}}
-
+          
   unit-testing:
     runs-on: ubuntu-latest
     needs: setup-env-job    

@@ -150,7 +150,7 @@ if __name__ == "__main__":
     print(f"index {index_name} created")
 
     print(f"indexing documents")
-    docs = gen_documents("sample-documents.csv")
+    docs = gen_documents("data/sample-documents.csv")
     search_client = SearchClient(
         endpoint=rag_search,
         index_name=index_name,

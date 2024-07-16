@@ -5,12 +5,10 @@ resourceGroupName=$AZURE_RESOURCE_GROUP
 searchService=$AZURE_SEARCH_NAME
 openAiService=$AZURE_OPENAI_NAME
 
-echo "depois > AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID"
-
 subscriptionId=$AZURE_SUBSCRIPTION_ID
 mlProjectName=$AZUREAI_PROJECT_NAME
 
-echo "AZURE_SEARCH_INDEX_SAMPLE_DATA is$AZURE_SEARCH_INDEX_SAMPLE_DATA"
+echo "AZURE_SEARCH_INDEX_SAMPLE_DATA is $AZURE_SEARCH_INDEX_SAMPLE_DATA"
 echo "Resource Group Name: $resourceGroupName"
 echo "Search Service: $searchService"
 echo "OpenAI Service: $openAiService"
@@ -39,7 +37,7 @@ azd env get-values >.env
 # Create config.json with required Azure AI project config information
 echo "{\"subscription_id\": \"$subscriptionId\", \"resource_group\": \"$resourceGroupName\", \"workspace_name\": \"$mlProjectName\"}" > config.json
 
-echo "--- ✅ | 1. Post-provisioning - env configured ---"
+echo "✅ | 1. Post-provisioning - env configured"
 
 if [ $indexSampleData = "true" ]; then
 
@@ -52,8 +50,8 @@ if [ $indexSampleData = "true" ]; then
     echo "Populating sample data ...."
     python data/sample-documents-indexing.py > /dev/null
 
-    echo "--- ✅ | 2. Post-provisioning - populated data ---"
+    echo "✅ | 2. Post-provisioning - populated data"
 
 else
-    echo "--- ℹ️ | 2. Post-provisioning - sample data not generated ---"
+    echo "ℹ️ | 2. Post-provisioning - sample data not generated"
 fi
