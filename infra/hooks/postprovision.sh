@@ -37,8 +37,6 @@ azd env get-values >.env
 # Create config.json with required Azure AI project config information
 echo "{\"subscription_id\": \"$subscriptionId\", \"resource_group\": \"$resourceGroupName\", \"workspace_name\": \"$mlProjectName\"}" > config.json
 
-echo "✅ | 1. Post-provisioning - env configured"
-
 if [ $indexSampleData = "true" ]; then
 
     # Setup to run notebooks
@@ -50,8 +48,8 @@ if [ $indexSampleData = "true" ]; then
     echo "Populating sample data ...."
     python data/sample-documents-indexing.py > /dev/null
 
-    echo "✅ | 2. Post-provisioning - populated data"
+    echo "✅ | Post-provisioning - populated data"
 
 else
-    echo "ℹ️ | 2. Post-provisioning - sample data not generated"
+    echo "✅ | Post-provisioning - sample data not generated"
 fi
