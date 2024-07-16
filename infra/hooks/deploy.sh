@@ -208,14 +208,18 @@ acr_username=$(az acr credential show --name $registry_name --query username --o
 acr_password=$(az acr credential show --name $registry_name --query passwords[0].value --output tsv)
 az webapp config container set --name $name --resource-group $resource_group --docker-registry-server-user $acr_username --docker-registry-server-password $acr_password
 
-# Config environment variable
-echo "Config  app...$name"
+# Config environment variables
+echo "Config app environment variables $name ..."
 
 # Port default to 8080 corresponding to the DockerFile
-command="az webapp config appsettings set -g $resource_group --name $name --settings USER_AGENT=promptflow-appservice WEBSITES_PORT=8080 @settings.json "
+# command="az webapp config appsettings set -g $resource_group --name $name --settings USER_AGENT=promptflow-appservice WEBSITES_PORT=8080 @settings.json "
+command="az webapp config appsettings set -g $resource_group --name $name --settings USER_AGENT=promptflow-appservice WEBSITES_PORT=8080"
 command=$(append_to_command "$command")
 echo "$command"
 eval "$command"
+
+# Restarting app
+echo "Restarting app $name ..."
 az webapp restart --name $name --resource-group $resource_group
 
 echo "Please go to https://portal.azure.com/ to config environment variables of $name app at (Settings>Configuration) or (Settings>Environment variables)"

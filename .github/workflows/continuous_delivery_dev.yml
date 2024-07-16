@@ -123,7 +123,7 @@ jobs:
           AZURE_APP_SERVICE_PLAN_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_PLAN_NAME}}
         shell: bash             
         run: | 
-          echo "Deploying to Azure"
+          echo "# Deploying to Azure"
           image_tag="${AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME}:${{ github.sha }}"
           name="${AZURE_APP_SERVICE_NAME}"
           service_plan_name="${AZURE_APP_SERVICE_PLAN_NAME}"
@@ -143,19 +143,19 @@ jobs:
           }
 
           # Check if the app exists
-          echo "Checking if the app exists..."
+          echo "# Checking if the app exists..."
           app_exists=$(az webapp show --name $name --resource-group $resource_group --query "name" -o tsv)
 
           if [ -z "$app_exists" ]; then
             # Create app
-            echo "Creating app...$name"
+            echo "# Creating app...$name"
             command="az webapp create --name $name -p $service_plan_name --deployment-container-image-name $image_tag --startup-file 'bash start.sh' -g $resource_group"
             command=$(append_to_command "$command")
             echo "$command"
             eval "$command"
           else
             # Update app
-            echo "Updating app...$name"
+            echo "# Updating app...$name"
             command="az webapp config container set --name $name --resource-group $resource_group --container-image-name $image_tag"
             command=$(append_to_command "$command")
             echo "$command"
@@ -163,20 +163,22 @@ jobs:
           fi
           
           # Set ACR credentials
-          echo "Setting ACR credentials..."
+          echo "# Setting ACR credentials..."
           az acr update -n $registry_name --admin-enabled true
           acr_username=$(az acr credential show --name $registry_name --query username --output tsv)
           acr_password=$(az acr credential show --name $registry_name --query passwords[0].value --output tsv)
-          az webapp config container set --name $name --resource-group $resource_group --docker-registry-server-user $acr_username --docker-registry-server-password $acr_password
+          az webapp config container set --name $name --resource-group $resource_group --container-registry-user $acr_username --container-registry-password $acr_password
 
-          # Config environment variable
-          echo "Config  app...$name"
-
+          # Config environment variables
+          echo "# Config  app...$name"
           # Port default to 8080 corresponding to the DockerFile
-          command="az webapp config appsettings set -g $resource_group --name $name --settings USER_AGENT=promptflow-appservice WEBSITES_PORT=8080 @settings.json "
+          command="az webapp config appsettings set -g $resource_group --name $name --settings USER_AGENT=promptflow-appservice WEBSITES_PORT=8080"
           command=$(append_to_command "$command")
           echo "$command"
           eval "$command"
+
+          # Restarting app
+          echo "# Restarting app ...$name"          
           az webapp restart --name $name --resource-group $resource_group
 
           echo "Please go to https://portal.azure.com/ to config environment variables of $name app at (Settings>Configuration) or (Settings>Environment variables)"
