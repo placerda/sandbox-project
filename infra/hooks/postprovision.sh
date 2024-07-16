@@ -7,12 +7,13 @@ openAiService=$AZURE_OPENAI_NAME
 subscriptionId=$AZURE_SUBSCRIPTION_ID
 mlProjectName=$AZUREAI_PROJECT_NAME
 
+echo "AZURE_SEARCH_INDEX_SAMPLE_DATA is$AZURE_SEARCH_INDEX_SAMPLE_DATA"
 echo "Resource Group Name: $resourceGroupName"
 echo "Search Service: $searchService"
 echo "OpenAI Service: $openAiService"
 echo "Subscription ID: $subscriptionId"
 echo "ML Project Name: $mlProjectName"
-echo "AZURE_SEARCH_INDEX_SAMPLE_DATA: $AZURE_SEARCH_INDEX_SAMPLE_DATA"
+
 
 indexSampleData=$([ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ] || [ "$AZURE_SEARCH_INDEX_SAMPLE_DATA" == "true" ] && echo true || echo false)
 echo indexSampleData=$indexSampleData

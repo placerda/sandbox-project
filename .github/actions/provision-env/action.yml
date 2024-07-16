@@ -61,11 +61,11 @@ runs:
         # initialize azd
         job_provisioned_environment=false
 
-        AZURE_SUBSCRIPTION_ID=${{ inputs.AZURE_SUBSCRIPTION_ID }}
+        AZURE_SUBSCRIPTION_ID="${{ inputs.AZURE_SUBSCRIPTION_ID }}"
         echo "AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID"
         echo "AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID" >> "$GITHUB_OUTPUT"
 
-        AZURE_LOCATION=${{ inputs.AZURE_LOCATION }}
+        AZURE_LOCATION="${{ inputs.AZURE_LOCATION }}"
         echo "AZURE_LOCATION=$AZURE_LOCATION"
         echo "AZURE_LOCATION=$AZURE_LOCATION" >> "$GITHUB_OUTPUT"
 
@@ -73,7 +73,7 @@ runs:
         azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $AZURE_LOCATION -s $AZURE_SUBSCRIPTION_ID
 
         # Run azd env refresh and capture last deployment outputs
-        echo "Run azd env refresh and capture outputs"
+        echo "# Run azd env refresh and capture outputs"
         set +e
         output=$(azd env refresh -e "${{ inputs.AZURE_ENV_NAME }}" 2>&1)
         exit_code=$?
@@ -271,11 +271,11 @@ runs:
         echo "# 01"
         azd env get-values -e ${{ inputs.AZURE_ENV_NAME }}
         echo "# 02"
-        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA
+        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA2
         echo "# 03"
-        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA | cut -d'=' -f2
+        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA2 | cut -d'=' -f2
         echo "# 04"
-        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA | cut -d'=' -f2 | tr -d '"'
+        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA2 | cut -d'=' -f2 | tr -d '"'
 
         if [ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ]; then
           AZURE_SEARCH_INDEX_SAMPLE_DATA=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA | cut -d'=' -f2 | tr -d '"')
@@ -301,6 +301,7 @@ runs:
         azd env get-values
 
         # Run post-provisioning script to populate sample data
+        echo "ANTES > AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID"
         ./infra/hooks/postprovision.sh
 
 
