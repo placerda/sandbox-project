@@ -294,8 +294,8 @@ runs:
         echo "# Azd env variables after provisioning..."
         azd env get-values
 
-        # Run post-provisioing script to populate sample data
-        infra/hooks/postprovision.sh
+        # Run post-provisioning script to populate sample data
+        ./infra/hooks/postprovision.sh
 
 
 outputs:
