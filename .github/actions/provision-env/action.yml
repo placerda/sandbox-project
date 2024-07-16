@@ -62,12 +62,12 @@ runs:
         job_provisioned_environment=false
 
         AZURE_SUBSCRIPTION_ID="${{ inputs.AZURE_SUBSCRIPTION_ID }}"
-        echo "AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID"
         echo "AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID" >> "$GITHUB_OUTPUT"
+        echo "AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID"
 
         AZURE_LOCATION="${{ inputs.AZURE_LOCATION }}"
-        echo "AZURE_LOCATION=$AZURE_LOCATION"
         echo "AZURE_LOCATION=$AZURE_LOCATION" >> "$GITHUB_OUTPUT"
+        echo "AZURE_LOCATION=$AZURE_LOCATION"
 
         echo "azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $AZURE_LOCATION -s $AZURE_SUBSCRIPTION_ID"
         azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $AZURE_LOCATION -s $AZURE_SUBSCRIPTION_ID
@@ -110,7 +110,7 @@ runs:
         # Check if the resource group exists
 
         echo "# Checking if the resource group exists"
-        AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"')
+        AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)
         if [ -z "$AZURE_RESOURCE_GROUP" ]; then
           resource_group_exist=false
         else
@@ -140,7 +140,7 @@ runs:
         # Set environment variables getting them from the last deployment if the GitHub environment variable is not set 
 
         if [ -z "$AZURE_CONTAINER_REGISTRY_NAME" ]; then
-          AZURE_CONTAINER_REGISTRY_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_NAME | cut -d'=' -f2 | tr -d '"')
+          AZURE_CONTAINER_REGISTRY_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_NAME | cut -d'=' -f2 | tr -d '"' || true)
         else
           AZURE_CONTAINER_REGISTRY_NAME="$AZURE_CONTAINER_REGISTRY_NAME"
         fi
@@ -148,7 +148,7 @@ runs:
         echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"
 
         if [ -z "$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME" ]; then
-          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"')
+          AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"' || true)
         else
           AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME="$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME"
         fi
@@ -156,7 +156,7 @@ runs:
         echo "AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME"
 
         if [ -z "$AZURE_SEARCH_ENDPOINT" ]; then
-          AZURE_SEARCH_ENDPOINT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_ENDPOINT | cut -d'=' -f2 | tr -d '"')
+          AZURE_SEARCH_ENDPOINT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_ENDPOINT | cut -d'=' -f2 | tr -d '"' || true)
         else
           AZURE_SEARCH_ENDPOINT="$AZURE_SEARCH_ENDPOINT"
         fi
@@ -164,7 +164,7 @@ runs:
         echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT"
         
         if [ -z "$AZURE_OPENAI_CHAT_DEPLOYMENT" ]; then
-          AZURE_OPENAI_CHAT_DEPLOYMENT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_CHAT_DEPLOYMENT | cut -d'=' -f2 | tr -d '"')
+          AZURE_OPENAI_CHAT_DEPLOYMENT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_CHAT_DEPLOYMENT | cut -d'=' -f2 | tr -d '"' || true)
         else
           AZURE_OPENAI_CHAT_DEPLOYMENT="$AZURE_OPENAI_CHAT_DEPLOYMENT"
         fi
@@ -172,7 +172,7 @@ runs:
         echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT"
         
         if [ -z "$AZURE_OPENAI_EMBEDDING_DEPLOYMENT" ]; then
-          AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_DEPLOYMENT | cut -d'=' -f2 | tr -d '"')
+          AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_DEPLOYMENT | cut -d'=' -f2 | tr -d '"' || true)
         else
           AZURE_OPENAI_EMBEDDING_DEPLOYMENT="$AZURE_OPENAI_EMBEDDING_DEPLOYMENT"
         fi
@@ -180,7 +180,7 @@ runs:
         echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT"
         
         if [ -z "$AZURE_OPENAI_EMBEDDING_MODEL" ]; then
-          AZURE_OPENAI_EMBEDDING_MODEL=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_MODEL | cut -d'=' -f2 | tr -d '"')
+          AZURE_OPENAI_EMBEDDING_MODEL=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_MODEL | cut -d'=' -f2 | tr -d '"' || true)
         else
           AZURE_OPENAI_EMBEDDING_MODEL="$AZURE_OPENAI_EMBEDDING_MODEL"
         fi
@@ -188,7 +188,7 @@ runs:
         echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL"
         
         if [ -z "$AZURE_OPENAI_API_VERSION" ]; then
-          AZURE_OPENAI_API_VERSION=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_API_VERSION | cut -d'=' -f2 | tr -d '"')
+          AZURE_OPENAI_API_VERSION=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_API_VERSION | cut -d'=' -f2 | tr -d '"' || true)
         else
           AZURE_OPENAI_API_VERSION="$AZURE_OPENAI_API_VERSION"
         fi
@@ -196,7 +196,7 @@ runs:
         echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION"
         
         if [ -z "$AZURE_OPENAI_ENDPOINT" ]; then
-          AZURE_OPENAI_ENDPOINT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_ENDPOINT | cut -d'=' -f2 | tr -d '"')
+          AZURE_OPENAI_ENDPOINT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_ENDPOINT | cut -d'=' -f2 | tr -d '"' || true)
         else
           AZURE_OPENAI_ENDPOINT="$AZURE_OPENAI_ENDPOINT"
         fi
@@ -204,7 +204,7 @@ runs:
         echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT"
         
         if [ -z "$PROMPTFLOW_WORKER_NUM" ]; then
-          PROMPTFLOW_WORKER_NUM=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep PROMPTFLOW_WORKER_NUM | cut -d'=' -f2 | tr -d '"')
+          PROMPTFLOW_WORKER_NUM=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep PROMPTFLOW_WORKER_NUM | cut -d'=' -f2 | tr -d '"' || true)
         else
           PROMPTFLOW_WORKER_NUM="$PROMPTFLOW_WORKER_NUM"
         fi
@@ -212,7 +212,7 @@ runs:
         echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM"
         
         if [ -z "$PROMPTFLOW_SERVING_ENGINE" ]; then
-          PROMPTFLOW_SERVING_ENGINE=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep PROMPTFLOW_SERVING_ENGINE | cut -d'=' -f2 | tr -d '"')
+          PROMPTFLOW_SERVING_ENGINE=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep PROMPTFLOW_SERVING_ENGINE | cut -d'=' -f2 | tr -d '"' || true)
         else
           PROMPTFLOW_SERVING_ENGINE="$PROMPTFLOW_SERVING_ENGINE"
         fi
@@ -220,7 +220,7 @@ runs:
         echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE"            
 
         if [ -z "$AZURE_APP_SERVICE_NAME" ]; then
-          AZURE_APP_SERVICE_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_NAME | cut -d'=' -f2 | tr -d '"')
+          AZURE_APP_SERVICE_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_NAME | cut -d'=' -f2 | tr -d '"' || true)
         else
           AZURE_APP_SERVICE_NAME="$AZURE_APP_SERVICE_NAME"
         fi
@@ -228,7 +228,7 @@ runs:
         echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME"
 
         if [ -z "$AZURE_APP_SERVICE_PLAN_NAME" ]; then
-          AZURE_APP_SERVICE_PLAN_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_PLAN_NAME | cut -d'=' -f2 | tr -d '"')
+          AZURE_APP_SERVICE_PLAN_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_PLAN_NAME | cut -d'=' -f2 | tr -d '"' || true)
         else
           AZURE_APP_SERVICE_PLAN_NAME="$AZURE_APP_SERVICE_PLAN_NAME"
         fi
@@ -236,7 +236,7 @@ runs:
         echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME"
 
         if [ -z "$AZURE_RESOURCE_GROUP" ]; then
-          AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"')
+          AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)
         else
           AZURE_RESOURCE_GROUP="$AZURE_RESOURCE_GROUP"
         fi
@@ -244,7 +244,7 @@ runs:
         echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
 
         if [ -z "$AZURE_SEARCH_NAME" ]; then
-          AZURE_SEARCH_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_NAME | cut -d'=' -f2 | tr -d '"')
+          AZURE_SEARCH_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_NAME | cut -d'=' -f2 | tr -d '"' || true)
         else
           AZURE_SEARCH_NAME="$AZURE_SEARCH_NAME"
         fi
@@ -252,7 +252,7 @@ runs:
         echo "AZURE_SEARCH_NAME=$AZURE_SEARCH_NAME"
 
         if [ -z "$AZURE_OPENAI_NAME" ]; then
-          AZURE_OPENAI_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_NAME | cut -d'=' -f2 | tr -d '"')
+          AZURE_OPENAI_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_NAME | cut -d'=' -f2 | tr -d '"' || true)
         else
           AZURE_OPENAI_NAME="$AZURE_OPENAI_NAME"
         fi
@@ -260,25 +260,15 @@ runs:
         echo "AZURE_OPENAI_NAME=$AZURE_OPENAI_NAME"
 
         if [ -z "$AZUREAI_PROJECT_NAME" ]; then
-          AZUREAI_PROJECT_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZUREAI_PROJECT_NAME | cut -d'=' -f2 | tr -d '"')
+          AZUREAI_PROJECT_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZUREAI_PROJECT_NAME | cut -d'=' -f2 | tr -d '"' || true)
         else
           AZUREAI_PROJECT_NAME="$AZUREAI_PROJECT_NAME"
         fi
         echo "AZUREAI_PROJECT_NAME=$AZUREAI_PROJECT_NAME" >> "$GITHUB_OUTPUT"
         echo "AZUREAI_PROJECT_NAME=$AZUREAI_PROJECT_NAME"
 
-        # DEBUG
-        echo "# 01"
-        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }}
-        echo "# 02"
-        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA2 || true
-        echo "# 03"
-        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA2 | cut -d'=' -f2 || true
-        echo "# 04"
-        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA2 | cut -d'=' -f2 | tr -d '"' || true
-
         if [ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ]; then
-          AZURE_SEARCH_INDEX_SAMPLE_DATA=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA | cut -d'=' -f2 | tr -d '"')
+          AZURE_SEARCH_INDEX_SAMPLE_DATA=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA | cut -d'=' -f2 | tr -d '"' || true)
         else
           AZURE_SEARCH_INDEX_SAMPLE_DATA="$AZURE_SEARCH_INDEX_SAMPLE_DATA"
         fi
@@ -301,7 +291,6 @@ runs:
         azd env get-values
 
         # Run post-provisioning script to populate sample data
-        echo "ANTES > AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID"
         ./infra/hooks/postprovision.sh
 
 
