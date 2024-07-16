@@ -134,12 +134,12 @@ jobs:
 
       - name: Build Image
         run: |
-            echo "Building Image..."
+            # echo "Building Image..."
             # echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"
             # echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
             # bash ./infra/hooks/build.sh --path dist -i $IMAGE_TAG --plan $AZURE_APP_SERVICE_PLAN_NAME --name $AZURE_APP_SERVICE_NAME -r $AZURE_CONTAINER_REGISTRY_NAME -g $AZURE_RESOURCE_GROUP --subscription $SUBSCRIPTION_ID --verbose
 
-            echo "Building docker image..."
+            echo "✅ Building docker image..."
             path=dist
             image_tag=${{ steps.set-image-tag.outputs.IMAGE_TAG }}
             echo "Change working directory to $path"
@@ -160,7 +160,7 @@ jobs:
           PROMPTFLOW_WORKER_NUM: ${{needs.setup-env-job.outputs.PROMPTFLOW_WORKER_NUM}}
           PROMPTFLOW_SERVING_ENGINE: ${{needs.setup-env-job.outputs.PROMPTFLOW_SERVING_ENGINE}}
         run: |
-          echo "Run image..."
+          echo "✅ Run image..."
           docker run -d -p 8080:8080 -e PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE -e PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM ${{ steps.set-image-tag.outputs.IMAGE_TAG }}
 
       - name: Register Image
@@ -169,15 +169,15 @@ jobs:
         run: |
           image_tag=${{ steps.set-image-tag.outputs.IMAGE_TAG }}  
           full_registry_name="$AZURE_CONTAINER_REGISTRY_NAME.azurecr.io"
-          echo "Trying to login to $full_registry_name..."
+          echo "✅ Trying to login to $full_registry_name..."
           az acr login -n "$full_registry_name"
 
           acr_image_tag=$full_registry_name/$image_tag
-          echo "ACR image tag: $acr_image_tag"
+          echo "✅ ACR image tag: $acr_image_tag"
           docker tag "$image_tag" "$acr_image_tag"
           image_tag=$acr_image_tag
 
-          echo "Start pushing image...$image_tag"
+          echo "✅ Start pushing image...$image_tag"
           docker push "$image_tag"            
 
   trigger-cd-pipeline:

@@ -175,11 +175,16 @@ jobs:
           fi
           
           # Set ACR credentials
-          echo "✅ Setting ACR credentials..."
+          echo "✅ Setting ACR credentials in $registry_name registry..."
           az acr update -n $registry_name --admin-enabled true
           acr_username=$(az acr credential show --name $registry_name --query username --output tsv)
           acr_password=$(az acr credential show --name $registry_name --query passwords[0].value --output tsv)
           az webapp config container set --name $name --resource-group $resource_group --container-registry-user $acr_username --container-registry-password $acr_password
+
+          full_registry_name="$AZURE_CONTAINER_REGISTRY_NAME.azurecr.io"
+          echo "✅ Trying to login to $full_registry_name..."
+          az acr login -n "$full_registry_name"
+          # echo $acr_password | docker login $registry_name.azurecr.io --username $acr_username --password-stdin
 
           # Config environment variables
           echo "✅ Config  app...$name"
@@ -193,10 +198,10 @@ jobs:
           echo "✅ Restarting app ...$name"          
           az webapp restart --name $name --resource-group $resource_group
 
-          echo "Please go to https://portal.azure.com/ to config environment variables of $name app at (Settings>Configuration) or (Settings>Environment variables)"
+          echo "🔗 Please go to https://portal.azure.com/ to config environment variables of $name app at (Settings>Configuration) or (Settings>Environment variables)"
           echo "Reach deployment logs at (Deployment>Deployment Central) and app logs at (Monitoring>Log stream)"
-          echo "Reach advanced deployment tools at https://$name.scm.azurewebsites.net/"
-          echo "Reach more details about app service at https://learn.microsoft.com/en-us/azure/app-service/"
+          echo "🔗 Reach advanced deployment tools at https://$name.scm.azurewebsites.net/"
+          echo "🔗 Reach more details about app service at https://learn.microsoft.com/en-us/azure/app-service/"
 
       - name: GitHub Summary Step
         if: ${{ success() }}
