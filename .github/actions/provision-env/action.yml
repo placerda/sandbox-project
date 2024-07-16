@@ -236,12 +236,44 @@ runs:
         echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME"
 
         if [ -z "$AZURE_RESOURCE_GROUP" ]; then
-          AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"')
-        else
-          AZURE_RESOURCE_GROUP="$AZURE_RESOURCE_GROUP"
-        fi
-        echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> "$GITHUB_OUTPUT"
-        echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
+                  AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"')
+                else
+                  AZURE_RESOURCE_GROUP="$AZURE_RESOURCE_GROUP"
+                fi
+                echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> "$GITHUB_OUTPUT"
+                echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
+
+        if [ -z "$AZURE_SEARCH_NAME" ]; then
+                  AZURE_SEARCH_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_NAME | cut -d'=' -f2 | tr -d '"')
+                else
+                  AZURE_SEARCH_NAME="$AZURE_SEARCH_NAME"
+                fi
+                echo "AZURE_SEARCH_NAME=$AZURE_SEARCH_NAME" >> "$GITHUB_OUTPUT"
+                echo "AZURE_SEARCH_NAME=$AZURE_SEARCH_NAME"
+
+        if [ -z "$AZURE_OPENAI_NAME" ]; then
+                  AZURE_OPENAI_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_NAME | cut -d'=' -f2 | tr -d '"')
+                else
+                  AZURE_OPENAI_NAME="$AZURE_OPENAI_NAME"
+                fi
+                echo "AZURE_OPENAI_NAME=$AZURE_OPENAI_NAME" >> "$GITHUB_OUTPUT"
+                echo "AZURE_OPENAI_NAME=$AZURE_OPENAI_NAME"
+
+        if [ -z "$AZUREAI_PROJECT_NAME" ]; then
+                  AZUREAI_PROJECT_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZUREAI_PROJECT_NAME | cut -d'=' -f2 | tr -d '"')
+                else
+                  AZUREAI_PROJECT_NAME="$AZUREAI_PROJECT_NAME"
+                fi
+                echo "AZUREAI_PROJECT_NAME=$AZUREAI_PROJECT_NAME" >> "$GITHUB_OUTPUT"
+                echo "AZUREAI_PROJECT_NAME=$AZUREAI_PROJECT_NAME"
+
+        if [ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ]; then
+                  AZURE_SEARCH_INDEX_SAMPLE_DATA=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA | cut -d'=' -f2 | tr -d '"')
+                else
+                  AZURE_SEARCH_INDEX_SAMPLE_DATA="$AZURE_SEARCH_INDEX_SAMPLE_DATA"
+                fi
+                echo "AZURE_SEARCH_INDEX_SAMPLE_DATA=$AZURE_SEARCH_INDEX_SAMPLE_DATA" >> "$GITHUB_OUTPUT"
+                echo "AZURE_SEARCH_INDEX_SAMPLE_DATA=$AZURE_SEARCH_INDEX_SAMPLE_DATA"
 
         # 4. Update provisioned resources in case you made some changes in the Bicep template.   
 
@@ -257,6 +289,10 @@ runs:
         
         echo "Azd env variables after provisioning..."
         azd env get-values
+
+        # Run post-provisioing script to populate sample data
+        infra/hooks/postprovision.sh
+
 
 outputs:
   AZURE_LOCATION:

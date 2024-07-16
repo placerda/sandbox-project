@@ -5,24 +5,6 @@ workflows:
   up:
     steps:
       - azd: provision
-      
-hooks:
-  postprovision:
-    posix:
-      shell: sh
-      continueOnError: false
-      interactive: false
-      run: |
-        if [ "$GITHUB_ACTIONS" = "true" ]; then
-          if infra/hooks/postprovision.sh 2>&1; then
-            echo "Post-provision script executed successfully."
-          else
-            echo "Post-provision script failed."
-            exit 1
-          fi
-        else
-          echo "This script is intended to be run in a GitHub Actions environment."
-        fi
 
 services:
   rag-flow:

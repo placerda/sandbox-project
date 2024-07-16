@@ -9,7 +9,9 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
-param aiHubName string = ''
+// Names parameters
+
+param aiHubName string = '' 
 param aiProjectName string = ''
 param aiResourceGroupName string = ''
 param appInsightsName string = ''
@@ -24,10 +26,15 @@ param resourceGroupName string = ''
 param searchServiceName string = ''
 param storageAccountName string = ''
 
+// Azure OpenAI parameters
+
 param oaiApiVersion string = '2023-05-15'
 param oaiChatDeployment string = 'gpt-35-turbo'
 param oaiEmbeddingDeployment string = 'text-embedding-ada-002'
 param oaiEmbeddingModel string = 'text-embedding-ada-002'
+
+// Use sample data for Azure Search Index?
+param azureSearchIndexSampleData string = 'true'
 
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
@@ -264,3 +271,4 @@ output AZURE_STORAGE_ACCOUNT_NAME string = ai.outputs.storageAccountName
 
 output PROMPTFLOW_WORKER_NUM string = promptFlowWorkerNum
 output PROMPTFLOW_SERVING_ENGINE string = promptFlowServingEngine
+output AZURE_SEARCH_INDEX_SAMPLE_DATA string = azureSearchIndexSampleData

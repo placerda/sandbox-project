@@ -38,7 +38,7 @@ jobs:
         with:
           AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
-          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}          
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
         env:
           AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
@@ -54,6 +54,10 @@ jobs:
           PROMPTFLOW_SERVING_ENGINE: ${{ vars.PROMPTFLOW_SERVING_ENGINE }}
           AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
           AZURE_APP_SERVICE_PLAN_NAME: ${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}
+          AZURE_SEARCH_NAME: ${{vars.AZURE_SEARCH_NAME}}
+          AZURE_OPENAI_NAME: ${{vars.AZURE_OPENAI_NAME}}
+          AZUREAI_PROJECT_NAME: ${{vars.AZUREAI_PROJECT_NAME}}
+          AZURE_SEARCH_INDEX_SAMPLE_DATA: ${{vars.AZURE_SEARCH_INDEX_SAMPLE_DATA}}
 
   unit-testing:
     runs-on: ubuntu-latest

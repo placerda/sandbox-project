@@ -1,6 +1,3 @@
-Here's the transformed Python file without any notebook-related elements:
-
-```python
 import os
 import pandas as pd
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
@@ -161,6 +158,3 @@ if __name__ == "__main__":
     )
     print(f"uploading {len(docs)} documents to index {index_name}")
     ds = search_client.upload_documents(docs)
-```
-
-This script removes the Jupyter notebook specific elements and retains the functionality in a standalone Python script.
