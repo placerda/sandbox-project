@@ -73,7 +73,7 @@ runs:
         azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $AZURE_LOCATION -s $AZURE_SUBSCRIPTION_ID
 
         # Run azd env refresh and capture last deployment outputs
-        echo "ℹ️ | Run azd env refresh and capture outputs"
+        echo "✳️ | Run azd env refresh and capture outputs"
         set +e
         output=$(azd env refresh -e "${{ inputs.AZURE_ENV_NAME }}" 2>&1)
         exit_code=$?
@@ -85,23 +85,23 @@ runs:
         # Check the exit code to determine if there was a previous deployment
         echo "Check if there was a previous deployment"
         if [ $exit_code -ne 0 ]; then
-          echo "ℹ️ | No previous deployment exists."
+          echo "✳️ | No previous deployment exists."
           deploy_exists=false
         else
-          echo "ℹ️ | Previous deployment exists."
+          echo "✳️ | Previous deployment exists."
           deploy_exists=true
         fi
         echo "deploy_exists=$deploy_exists" >> "$GITHUB_OUTPUT"
 
         # List azd env variables before provisioning
 
-        echo "ℹ️ | Showing azd env variables before provisioning..."
+        echo "✳️ | Showing azd env variables before provisioning..."
         azd env get-values
 
         # 1. Provision the environment if it doesn't exist.
 
         if [ "$deploy_exists" = false ]; then
-            echo "ℹ️ | Provision the environment since deployment doesn't exist."
+            echo "✳️ | Provision the environment since deployment doesn't exist."
             echo "Running azd provision --no-prompt..." 
             azd provision --no-prompt
             job_provisioned_environment=true
@@ -109,7 +109,7 @@ runs:
 
         # Check if the resource group exists
 
-        echo "ℹ️ | Checking if the resource group exists"
+        echo "✳️ | Checking if the resource group exists"
         AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)
         if [ -z "$AZURE_RESOURCE_GROUP" ]; then
           resource_group_exist=false
@@ -121,8 +121,8 @@ runs:
         #    This situation occurs if you made a deployment and then deleted the resource group to force reprovisioning.
      
         if [ "$deploy_exists" = true ] && [ "$resource_group_exist" = false ]; then
-          echo "ℹ️ | Deployment exists but resource group $AZURE_RESOURCE_GROUP doesn't."
-          echo "ℹ️ | Clean up any residue and do a new."
+          echo "✳️ | Deployment exists but resource group $AZURE_RESOURCE_GROUP doesn't."
+          echo "✳️ | Clean up any residue and do a new."
           echo "azd down --force --purge"
           azd down --force --purge
           echo "Running azd provision --no-prompt ... "
@@ -278,8 +278,8 @@ runs:
         # 4. Update provisioned resources in case you made some changes in the Bicep template.   
 
         if [ "$job_provisioned_environment" = false ]; then
-          echo "ℹ️ | Resource group $AZURE_RESOURCE_GROUP exists."
-          echo "ℹ️ | Update provisioned resources in case the IaaC template has changed."
+          echo "✳️ | Resource group $AZURE_RESOURCE_GROUP exists."
+          echo "✳️ | Update provisioned resources in case the IaaC template has changed."
           echo "Running azd provision --no-prompt ..."
           azd provision --no-prompt
           job_provisioned_environment=true
@@ -287,7 +287,7 @@ runs:
 
         # "List azd env variables after provisioning..."
         
-        echo "ℹ️ | Showing azd env variables after provisioning..."
+        echo "✳️ | Showing azd env variables after provisioning..."
         azd env get-values
 
         # Run post-provisioning script to populate sample data
