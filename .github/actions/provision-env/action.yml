@@ -267,16 +267,20 @@ runs:
         echo "AZUREAI_PROJECT_NAME=$AZUREAI_PROJECT_NAME" >> "$GITHUB_OUTPUT"
         echo "AZUREAI_PROJECT_NAME=$AZUREAI_PROJECT_NAME"
 
+        # DEBUG
+        echo "# 01"
+        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }}
+        echo "# 02"
+        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA
+        echo "# 03"
+        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA | cut -d'=' -f2
+        echo "# 04"
+        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA | cut -d'=' -f2 | tr -d '"'
+
         if [ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ]; then
-          echo "AZURE_SEARCH_INDEX_SAMPLE_DATA is not set. Attempting to retrieve it from azd env get-values."
-          set +e
           AZURE_SEARCH_INDEX_SAMPLE_DATA=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA | cut -d'=' -f2 | tr -d '"')
-          if [ $? -ne 0 ]; then
-            echo "Failed to retrieve AZURE_SEARCH_INDEX_SAMPLE_DATA from azd env get-values."
-          fi
-          set -e
         else
-          echo "AZURE_SEARCH_INDEX_SAMPLE_DATA is already set: $AZURE_SEARCH_INDEX_SAMPLE_DATA"
+          AZURE_SEARCH_INDEX_SAMPLE_DATA="$AZURE_SEARCH_INDEX_SAMPLE_DATA"
         fi
         echo "AZURE_SEARCH_INDEX_SAMPLE_DATA=$AZURE_SEARCH_INDEX_SAMPLE_DATA" >> "$GITHUB_OUTPUT"
         echo "AZURE_SEARCH_INDEX_SAMPLE_DATA=$AZURE_SEARCH_INDEX_SAMPLE_DATA"
