@@ -271,11 +271,11 @@ runs:
         echo "# 01"
         azd env get-values -e ${{ inputs.AZURE_ENV_NAME }}
         echo "# 02"
-        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA2
+        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA2 || true
         echo "# 03"
-        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA2 | cut -d'=' -f2
+        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA2 | cut -d'=' -f2 || true
         echo "# 04"
-        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA2 | cut -d'=' -f2 | tr -d '"'
+        azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA2 | cut -d'=' -f2 | tr -d '"' || true
 
         if [ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ]; then
           AZURE_SEARCH_INDEX_SAMPLE_DATA=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA | cut -d'=' -f2 | tr -d '"')
