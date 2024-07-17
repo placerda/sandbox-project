@@ -135,13 +135,27 @@ jobs:
           PROMPTFLOW_WORKER_NUM: ${{needs.setup-env-job.outputs.PROMPTFLOW_WORKER_NUM}}
         shell: bash             
         run: | 
-          echo "✅ Deploying to Azure"
+          # Deploy Flow
+          echo "🔶 | Deploying to Azure"
           image_tag="${AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME}:${{ github.sha }}"
           name="${AZURE_APP_SERVICE_NAME}"
           service_plan_name="${AZURE_APP_SERVICE_PLAN_NAME}"
           subscription="${AZURE_SUBSCRIPTION_ID}"
           resource_group="${AZURE_RESOURCE_GROUP}"
           registry_name="${AZURE_CONTAINER_REGISTRY_NAME}"
+          full_registry_name="${registry_name}.azurecr.io"
+          acr_image_tag=$full_registry_name/$image_tag
+    
+          echo "Image Tag: $image_tag"
+          echo "ACR Image Tag: $acr_image_tag"          
+          echo "App Service Name: $name"
+          echo "Service Plan Name: $service_plan_name"
+          echo "Subscription ID: $subscription"
+          echo "Resource Group: $resource_group"
+          echo "Registry Name: $registry_name"
+          echo "Full Registry Name: $full_registry_name"
+
+
 
           function append_to_command {
             command=$1
@@ -154,40 +168,40 @@ jobs:
             echo "$command"
           }
 
+          echo "🔶 | Trying to login to $registry_name..."
+          az acr login -n "$registry_name"
+
           # Check if the app exists
-          echo "✅ Checking if the app exists..."
+          echo "🔶 | Checking if the app exists..."
           app_exists=$(az webapp show --name $name --resource-group $resource_group --query "name" -o tsv)
+
+
 
           if [ -z "$app_exists" ]; then
             # Create app
-            echo "✅ Creating app...$name"
-            command="az webapp create --name $name -p $service_plan_name --deployment-container-image-name $image_tag --startup-file 'bash start.sh' -g $resource_group"
+            echo "🔶 | Creating $name app..."
+            command="az webapp create --name $name -p $service_plan_name --deployment-container-image-name $acr_image_tag --startup-file 'bash start.sh' -g $resource_group"
             command=$(append_to_command "$command")
             echo "$command"
             eval "$command"
           else
             # Update app
-            echo "✅ Updating app...$name"
-            command="az webapp config container set --name $name --resource-group $resource_group --container-image-name $image_tag"
+            echo "🔶 | Updating $name app..."
+            command="az webapp config container set --name $name --resource-group $resource_group --container-image-name $acr_image_tag"
             command=$(append_to_command "$command")
             echo "$command"
             eval "$command"
           fi
           
-          # Set ACR credentials
-          echo "✅ Setting ACR credentials in $registry_name registry..."
+          # Set Registry and ACR credentials
+          echo "🔶 | Setting ACR credentials in $registry_name registry..."
           az acr update -n $registry_name --admin-enabled true
           acr_username=$(az acr credential show --name $registry_name --query username --output tsv)
           acr_password=$(az acr credential show --name $registry_name --query passwords[0].value --output tsv)
-          az webapp config container set --name $name --resource-group $resource_group --container-registry-user $acr_username --container-registry-password $acr_password
-
-          full_registry_name="$AZURE_CONTAINER_REGISTRY_NAME.azurecr.io"
-          echo "✅ Trying to login to $full_registry_name..."
-          az acr login -n "$full_registry_name"
-          # echo $acr_password | docker login $registry_name.azurecr.io --username $acr_username --password-stdin
+          az webapp config container set --name $name --resource-group $resource_group --container-registry-user $acr_username --container-registry-password $acr_password 
 
           # Config environment variables
-          echo "✅ Config  app...$name"
+          echo "🔶 | Config  app...$name"
           # Port default to 8080 corresponding to the DockerFile
           command="az webapp config appsettings set -g $resource_group --name $name --settings USER_AGENT=promptflow-appservice WEBSITES_PORT=8080"
           command=$(append_to_command "$command")
@@ -195,7 +209,7 @@ jobs:
           eval "$command"
 
           # Restarting app
-          echo "✅ Restarting app ...$name"          
+          echo "🔶 | Restarting app ...$name"          
           az webapp restart --name $name --resource-group $resource_group
 
           echo "🔗 Please go to https://portal.azure.com/ to config environment variables of $name app at (Settings>Configuration) or (Settings>Environment variables)"

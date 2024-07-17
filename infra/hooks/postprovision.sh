@@ -1,5 +1,7 @@
 #!/bin/bash
 
+🔶 | Post-provisioning - starting script
+
 # Retrieve service names, resource group name, and other values from environment variables
 resourceGroupName=$AZURE_RESOURCE_GROUP
 searchService=$AZURE_SEARCH_NAME
@@ -48,8 +50,8 @@ if [ $indexSampleData = "true" ]; then
     echo "Populating sample data ...."
     python data/sample-documents-indexing.py > /dev/null
 
-    echo "✅ | Post-provisioning - populated data"
+    echo "🔶 | Post-provisioning - populated data"
 
 else
-    echo "✅ | Post-provisioning - sample data not generated"
+    echo "🔶 | Post-provisioning - sample data not generated"
 fi
