@@ -1,6 +1,6 @@
 #!/bin/bash
 
-🔶 | Post-provisioning - starting script
+echo "🔶 | Post-provisioning - starting script"
 
 # Retrieve service names, resource group name, and other values from environment variables
 resourceGroupName=$AZURE_RESOURCE_GROUP

@@ -8,69 +8,76 @@ on:
 jobs:
 
   setup-env-job:
-    if: ${{ github.repository != 'Azure/llmops-project-template' }}        
     runs-on: ubuntu-latest
     environment: qa
-    outputs:
-      AZUREAI_PROJECT_NAME: ${{ steps.provision-env.outputs.AZUREAI_PROJECT_NAME }}
-      AZURE_APP_SERVICE_NAME: ${{ steps.provision-env.outputs.AZURE_APP_SERVICE_NAME }}
-      AZURE_APP_SERVICE_PLAN_NAME: ${{ steps.provision-env.outputs.AZURE_APP_SERVICE_PLAN_NAME }}
-      AZURE_CONTAINER_REGISTRY_NAME: ${{ steps.provision-env.outputs.AZURE_CONTAINER_REGISTRY_NAME }}
-      AZURE_CONTAINER_REPOSITORY_NAME: ${{ steps.provision-env.outputs.AZURE_CONTAINER_REPOSITORY_NAME }}
-      AZURE_LOCATION: ${{ steps.provision-env.outputs.AZURE_LOCATION }}
-      AZURE_OPENAI_API_VERSION: ${{ steps.provision-env.outputs.AZURE_OPENAI_API_VERSION }}
-      AZURE_OPENAI_CHAT_DEPLOYMENT: ${{ steps.provision-env.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT }}
-      AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{ steps.provision-env.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT }}
-      AZURE_OPENAI_EMBEDDING_MODEL: ${{ steps.provision-env.outputs.AZURE_OPENAI_EMBEDDING_MODEL }}
-      AZURE_OPENAI_ENDPOINT: ${{ steps.provision-env.outputs.AZURE_OPENAI_ENDPOINT }}
-      AZURE_OPENAI_NAME: ${{ steps.provision-env.outputs.AZURE_OPENAI_NAME }}
-      AZURE_RESOURCE_GROUP: ${{ steps.provision-env.outputs.AZURE_RESOURCE_GROUP }}
-      AZURE_SEARCH_ENDPOINT: ${{ steps.provision-env.outputs.AZURE_SEARCH_ENDPOINT }}
-      AZURE_SEARCH_INDEX_SAMPLE_DATA: ${{ steps.provision-env.outputs.AZURE_SEARCH_INDEX_SAMPLE_DATA }}
-      AZURE_SEARCH_NAME: ${{ steps.provision-env.outputs.AZURE_SEARCH_NAME }}
-      AZURE_SUBSCRIPTION_ID: ${{ steps.provision-env.outputs.AZURE_SUBSCRIPTION_ID }}
-      PROMPTFLOW_SERVING_ENGINE: ${{ steps.provision-env.outputs.PROMPTFLOW_SERVING_ENGINE }}
-      PROMPTFLOW_WORKER_NUM: ${{ steps.provision-env.outputs.PROMPTFLOW_WORKER_NUM }}
-      AZURE_PRINCIPAL_ID: ${{ steps.provision-env.outputs.AZURE_PRINCIPAL_ID }}
-      AZUREAI_HUB_NAME: ${{ steps.provision-env.outputs.AZUREAI_HUB_NAME }}
-      AZURE_APP_INSIGHTS_NAME: ${{ steps.provision-env.outputs.AZURE_APP_INSIGHTS_NAME }}
-      AZURE_KEY_VAULT_NAME: ${{ steps.provision-env.outputs.AZURE_KEY_VAULT_NAME }}
-      AZURE_LOG_ANALYTICS_NAME: ${{ steps.provision-env.outputs.AZURE_LOG_ANALYTICS_NAME }}
-      AZURE_STORAGE_ACCOUNT_NAME: ${{ steps.provision-env.outputs.AZURE_STORAGE_ACCOUNT_NAME }}
-    steps: 
-      - uses: actions/checkout@v4   
-      - name: Provision qa environment
-        uses: ./.github/actions/provision-env
-        id: provision-env
-        with:
-          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-          AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
-          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}          
-          AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
-        env:
-          AZUREAI_PROJECT_NAME: ${{ vars.AZUREAI_PROJECT_NAME }}
-          AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
-          AZURE_APP_SERVICE_PLAN_NAME: ${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}
-          AZURE_CONTAINER_REGISTRY_NAME: ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}
-          AZURE_CONTAINER_REPOSITORY_NAME: ${{ vars.AZURE_CONTAINER_REPOSITORY_NAME }}
-          AZURE_OPENAI_API_VERSION: ${{ vars.AZURE_OPENAI_API_VERSION }}
-          AZURE_OPENAI_CHAT_DEPLOYMENT: ${{ vars.AZURE_OPENAI_CHAT_DEPLOYMENT }}
-          AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{ vars.AZURE_OPENAI_EMBEDDING_DEPLOYMENT }}
-          AZURE_OPENAI_EMBEDDING_MODEL: ${{ vars.AZURE_OPENAI_EMBEDDING_MODEL }}
-          AZURE_OPENAI_ENDPOINT: ${{ vars.AZURE_OPENAI_ENDPOINT }}
-          AZURE_OPENAI_NAME: ${{ vars.AZURE_OPENAI_NAME }}
-          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
-          AZURE_SEARCH_ENDPOINT: ${{ vars.AZURE_SEARCH_ENDPOINT }}
-          AZURE_SEARCH_INDEX_SAMPLE_DATA: ${{ vars.AZURE_SEARCH_INDEX_SAMPLE_DATA }}
-          AZURE_SEARCH_NAME: ${{ vars.AZURE_SEARCH_NAME }}
-          PROMPTFLOW_SERVING_ENGINE: ${{ vars.PROMPTFLOW_SERVING_ENGINE }}
-          PROMPTFLOW_WORKER_NUM: ${{ vars.PROMPTFLOW_WORKER_NUM }}
-          AZURE_PRINCIPAL_ID: ${{ vars.AZURE_PRINCIPAL_ID }}
-          AZUREAI_HUB_NAME: ${{ vars.AZUREAI_HUB_NAME }}
-          AZURE_APP_INSIGHTS_NAME: ${{ vars.AZURE_APP_INSIGHTS_NAME }}
-          AZURE_KEY_VAULT_NAME: ${{ vars.AZURE_KEY_VAULT_NAME }}
-          AZURE_LOG_ANALYTICS_NAME: ${{ vars.AZURE_LOG_ANALYTICS_NAME }}
-          AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
+    steps:   
+      - name: Checkout
+        uses: actions/checkout@v4 
+
+  # setup-env-job:
+  #   if: ${{ github.repository != 'Azure/llmops-project-template' }}        
+  #   runs-on: ubuntu-latest
+  #   environment: qa
+  #   outputs:
+  #     AZUREAI_PROJECT_NAME: ${{ steps.provision-env.outputs.AZUREAI_PROJECT_NAME }}
+  #     AZURE_APP_SERVICE_NAME: ${{ steps.provision-env.outputs.AZURE_APP_SERVICE_NAME }}
+  #     AZURE_APP_SERVICE_PLAN_NAME: ${{ steps.provision-env.outputs.AZURE_APP_SERVICE_PLAN_NAME }}
+  #     AZURE_CONTAINER_REGISTRY_NAME: ${{ steps.provision-env.outputs.AZURE_CONTAINER_REGISTRY_NAME }}
+  #     AZURE_CONTAINER_REPOSITORY_NAME: ${{ steps.provision-env.outputs.AZURE_CONTAINER_REPOSITORY_NAME }}
+  #     AZURE_LOCATION: ${{ steps.provision-env.outputs.AZURE_LOCATION }}
+  #     AZURE_OPENAI_API_VERSION: ${{ steps.provision-env.outputs.AZURE_OPENAI_API_VERSION }}
+  #     AZURE_OPENAI_CHAT_DEPLOYMENT: ${{ steps.provision-env.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT }}
+  #     AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{ steps.provision-env.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT }}
+  #     AZURE_OPENAI_EMBEDDING_MODEL: ${{ steps.provision-env.outputs.AZURE_OPENAI_EMBEDDING_MODEL }}
+  #     AZURE_OPENAI_ENDPOINT: ${{ steps.provision-env.outputs.AZURE_OPENAI_ENDPOINT }}
+  #     AZURE_OPENAI_NAME: ${{ steps.provision-env.outputs.AZURE_OPENAI_NAME }}
+  #     AZURE_RESOURCE_GROUP: ${{ steps.provision-env.outputs.AZURE_RESOURCE_GROUP }}
+  #     AZURE_SEARCH_ENDPOINT: ${{ steps.provision-env.outputs.AZURE_SEARCH_ENDPOINT }}
+  #     AZURE_SEARCH_INDEX_SAMPLE_DATA: ${{ steps.provision-env.outputs.AZURE_SEARCH_INDEX_SAMPLE_DATA }}
+  #     AZURE_SEARCH_NAME: ${{ steps.provision-env.outputs.AZURE_SEARCH_NAME }}
+  #     AZURE_SUBSCRIPTION_ID: ${{ steps.provision-env.outputs.AZURE_SUBSCRIPTION_ID }}
+  #     PROMPTFLOW_SERVING_ENGINE: ${{ steps.provision-env.outputs.PROMPTFLOW_SERVING_ENGINE }}
+  #     PROMPTFLOW_WORKER_NUM: ${{ steps.provision-env.outputs.PROMPTFLOW_WORKER_NUM }}
+  #     AZURE_PRINCIPAL_ID: ${{ steps.provision-env.outputs.AZURE_PRINCIPAL_ID }}
+  #     AZUREAI_HUB_NAME: ${{ steps.provision-env.outputs.AZUREAI_HUB_NAME }}
+  #     AZURE_APP_INSIGHTS_NAME: ${{ steps.provision-env.outputs.AZURE_APP_INSIGHTS_NAME }}
+  #     AZURE_KEY_VAULT_NAME: ${{ steps.provision-env.outputs.AZURE_KEY_VAULT_NAME }}
+  #     AZURE_LOG_ANALYTICS_NAME: ${{ steps.provision-env.outputs.AZURE_LOG_ANALYTICS_NAME }}
+  #     AZURE_STORAGE_ACCOUNT_NAME: ${{ steps.provision-env.outputs.AZURE_STORAGE_ACCOUNT_NAME }}
+  #   steps: 
+  #     - uses: actions/checkout@v4   
+  #     - name: Provision qa environment
+  #       uses: ./.github/actions/provision-env
+  #       id: provision-env
+  #       with:
+  #         AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+  #         AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+  #         AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}          
+  #         AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+  #       env:
+  #         AZUREAI_PROJECT_NAME: ${{ vars.AZUREAI_PROJECT_NAME }}
+  #         AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
+  #         AZURE_APP_SERVICE_PLAN_NAME: ${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}
+  #         AZURE_CONTAINER_REGISTRY_NAME: ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}
+  #         AZURE_CONTAINER_REPOSITORY_NAME: ${{ vars.AZURE_CONTAINER_REPOSITORY_NAME }}
+  #         AZURE_OPENAI_API_VERSION: ${{ vars.AZURE_OPENAI_API_VERSION }}
+  #         AZURE_OPENAI_CHAT_DEPLOYMENT: ${{ vars.AZURE_OPENAI_CHAT_DEPLOYMENT }}
+  #         AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{ vars.AZURE_OPENAI_EMBEDDING_DEPLOYMENT }}
+  #         AZURE_OPENAI_EMBEDDING_MODEL: ${{ vars.AZURE_OPENAI_EMBEDDING_MODEL }}
+  #         AZURE_OPENAI_ENDPOINT: ${{ vars.AZURE_OPENAI_ENDPOINT }}
+  #         AZURE_OPENAI_NAME: ${{ vars.AZURE_OPENAI_NAME }}
+  #         AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+  #         AZURE_SEARCH_ENDPOINT: ${{ vars.AZURE_SEARCH_ENDPOINT }}
+  #         AZURE_SEARCH_INDEX_SAMPLE_DATA: ${{ vars.AZURE_SEARCH_INDEX_SAMPLE_DATA }}
+  #         AZURE_SEARCH_NAME: ${{ vars.AZURE_SEARCH_NAME }}
+  #         PROMPTFLOW_SERVING_ENGINE: ${{ vars.PROMPTFLOW_SERVING_ENGINE }}
+  #         PROMPTFLOW_WORKER_NUM: ${{ vars.PROMPTFLOW_WORKER_NUM }}
+  #         AZURE_PRINCIPAL_ID: ${{ vars.AZURE_PRINCIPAL_ID }}
+  #         AZUREAI_HUB_NAME: ${{ vars.AZUREAI_HUB_NAME }}
+  #         AZURE_APP_INSIGHTS_NAME: ${{ vars.AZURE_APP_INSIGHTS_NAME }}
+  #         AZURE_KEY_VAULT_NAME: ${{ vars.AZURE_KEY_VAULT_NAME }}
+  #         AZURE_LOG_ANALYTICS_NAME: ${{ vars.AZURE_LOG_ANALYTICS_NAME }}
+  #         AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
 
   qa-flow-evaluation:
     needs: setup-env-job    
@@ -166,7 +173,15 @@ jobs:
             export AZURE_CONTAINER_REGISTRY_NAME="$AZURE_CONTAINER_REGISTRY_NAME"
           fi
           echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME" >> "$GITHUB_ENV" 
-          echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"          
+          echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"      
+          
+          if [ -z "$AZURE_CONTAINER_REPOSITORY_NAME" ]; then
+            export AZURE_CONTAINER_REPOSITORY_NAME=$(azd env get-values -e $AZURE_ENV_NAME | grep AZURE_CONTAINER_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"' || true)
+          else
+            export AZURE_CONTAINER_REPOSITORY_NAME="$AZURE_CONTAINER_REPOSITORY_NAME"
+          fi
+          echo "AZURE_CONTAINER_REPOSITORY_NAME=$AZURE_CONTAINER_REPOSITORY_NAME" >> "$GITHUB_ENV" 
+          echo "AZURE_CONTAINER_REPOSITORY_NAME=$AZURE_CONTAINER_REPOSITORY_NAME"                
 
       - name: Log in to dev ACR
         shell: bash
