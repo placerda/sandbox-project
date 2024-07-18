@@ -61,6 +61,7 @@ jobs:
           PROMPTFLOW_WORKER_NUM: ${{ vars.PROMPTFLOW_WORKER_NUM }}
 
   qa-flow-evaluation:
+    needs: setup-env-job    
     runs-on: ubuntu-latest
     environment: qa
     steps:        
@@ -88,7 +89,7 @@ jobs:
 
   deploy-flow:
     runs-on: ubuntu-latest
-    needs: [setup-env-job] 
+    needs: [setup-env-job, import-image] 
     environment: qa
     env:
       AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
