@@ -70,7 +70,7 @@ jobs:
           echo "Run QA AI-Based Flow evaluation"
 
   integration-testing:
-    needs: qa-flow-evaluation
+    needs: [setup-env-job, qa-flow-evaluation]
     runs-on: ubuntu-latest
     environment: qa
     steps:
@@ -79,7 +79,7 @@ jobs:
           echo "Run QA Integration Tests"
 
   import-image:
-    needs: integration-testing
+    needs: [setup-env-job, integration-testing]
     runs-on: ubuntu-latest
     environment: qa
     steps:
