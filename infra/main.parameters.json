@@ -32,8 +32,8 @@
       "containerRegistryName": {
         "value": "${AZURE_CONTAINER_REGISTRY_NAME}"
       },
-      "containerRepositoryName": {
-        "value": "${AZURE_CONTAINER_REPOSITORY_NAME}"
+      "containerRepository": {
+        "value": "${AZURE_CONTAINER_REPOSITORY}"
       },
       "keyVaultName": {
         "value": "${AZURE_KEY_VAULT_NAME}"
