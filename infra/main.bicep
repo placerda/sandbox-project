@@ -19,6 +19,7 @@ param appServiceName string = ''
 param appServicePlanName string = ''
 param containerRegistryName string = ''
 param containerRegistryRepositoryName string = 'rag-project'
+param containerRepositoryName string = 'rag-project'
 param keyVaultName string = ''
 param logAnalyticsName string = ''
 param openAiName string = ''
@@ -263,6 +264,10 @@ output AZURE_APP_SERVICE_NAME string = appService.outputs.name
 output AZURE_APP_SERVICE_PLAN_NAME string = appServicePlan.outputs.name
 output AZURE_CONTAINER_REGISTRY_NAME string = ai.outputs.containerRegistryName
 output AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME string = containerRegistryRepositoryName
+
+output AZURE_CONTAINER_REPOSITORY_NAME string = containerRepositoryName
+output debug_containerRegistryRepositoryName string = containerRegistryRepositoryName
+
 output AZURE_KEY_VAULT_NAME string = ai.outputs.keyVaultName
 output AZURE_LOG_ANALYTICS_NAME string = ai.outputs.logAnalyticsWorkspaceName
 output AZURE_OPENAI_NAME string = ai.outputs.openAiName

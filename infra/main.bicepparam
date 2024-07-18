@@ -8,7 +8,7 @@ param principalId = readEnvironmentVariable('AZURE_PRINCIPAL_ID', '')
 param principalType = readEnvironmentVariable('AZURE_PRINCIPAL_TYPE', 'ServicePrincipal')
 
 param aiHubName = readEnvironmentVariable('AZUREAI_HUB_NAME', '')
-param aiProjectName = readEnvironmentVariable('AZUREAI_PROJECT_NAME', '')
+param aiProjectName = readEnvironmentVariable('AZUREAI_PROJECT_NAME', '') 
 param appInsightsName = readEnvironmentVariable('AZURE_APP_INSIGHTS_NAME', '')
 param appServiceName = readEnvironmentVariable('AZURE_APP_SERVICE_NAME', '')
 param appServicePlanName = readEnvironmentVariable('AZURE_APP_SERVICE_PLAN_NAME', '')
