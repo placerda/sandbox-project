@@ -142,13 +142,13 @@ runs:
         echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME" >> "$GITHUB_OUTPUT" 
         echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"
 
-        if [ -z "$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME" ]; then
-          export AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"' || true)
+        if [ -z "$AZURE_CONTAINER_REPOSITORY_NAME" ]; then
+          export AZURE_CONTAINER_REPOSITORY_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"' || true)
         else
-          export AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME="$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME"
+          export AZURE_CONTAINER_REPOSITORY_NAME="$AZURE_CONTAINER_REPOSITORY_NAME"
         fi
-        echo "AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME" >> "$GITHUB_OUTPUT"
-        echo "AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME=$AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME"
+        echo "AZURE_CONTAINER_REPOSITORY_NAME=$AZURE_CONTAINER_REPOSITORY_NAME" >> "$GITHUB_OUTPUT"
+        echo "AZURE_CONTAINER_REPOSITORY_NAME=$AZURE_CONTAINER_REPOSITORY_NAME"
 
         if [ -z "$AZURE_SEARCH_ENDPOINT" ]; then
           export AZURE_SEARCH_ENDPOINT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_ENDPOINT | cut -d'=' -f2 | tr -d '"' || true)
@@ -294,9 +294,9 @@ outputs:
   AZURE_CONTAINER_REGISTRY_NAME:
     description: 'Azure Container Registry Name'
     value: ${{ steps.setup-env-step.outputs.AZURE_CONTAINER_REGISTRY_NAME }}
-  AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME:
+  AZURE_CONTAINER_REPOSITORY_NAME:
     description: 'Azure Container Registry Repository Name'
-    value: ${{ steps.setup-env-step.outputs.AZURE_CONTAINER_REGISTRY_REPOSITORY_NAME }}
+    value: ${{ steps.setup-env-step.outputs.AZURE_CONTAINER_REPOSITORY_NAME }}
   AZURE_SUBSCRIPTION_ID:
     description: 'Azure subscription ID'
     value: ${{ steps.setup-env-step.outputs.AZURE_SUBSCRIPTION_ID }}
