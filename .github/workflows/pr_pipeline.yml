@@ -289,6 +289,110 @@ jobs:
           echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> $GITHUB_OUTPUT
           echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
 
+          if [ -z "$AZURE_APP_SERVICE_NAME" ]; then
+            export AZURE_APP_SERVICE_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_NAME | cut -d'=' -f2 | tr -d '"' || true)
+          else
+            export AZURE_APP_SERVICE_NAME="$AZURE_APP_SERVICE_NAME"
+          fi
+          echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME" >> "$GITHUB_OUTPUT"
+          echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME"
+
+          if [ -z "$AZURE_APP_SERVICE_PLAN_NAME" ]; then
+            export AZURE_APP_SERVICE_PLAN_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_PLAN_NAME | cut -d'=' -f2 | tr -d '"' || true)
+          else
+            export AZURE_APP_SERVICE_PLAN_NAME="$AZURE_APP_SERVICE_PLAN_NAME"
+          fi
+          echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME" >> "$GITHUB_OUTPUT"
+          echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME"
+
+          if [ -z "$AZURE_RESOURCE_GROUP" ]; then
+            export AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)
+          else
+            export AZURE_RESOURCE_GROUP="$AZURE_RESOURCE_GROUP"
+          fi
+          echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> "$GITHUB_OUTPUT"
+          echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
+
+          if [ -z "$AZURE_SEARCH_NAME" ]; then
+            export AZURE_SEARCH_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_NAME | cut -d'=' -f2 | tr -d '"' || true)
+          else
+            export AZURE_SEARCH_NAME="$AZURE_SEARCH_NAME"
+          fi
+          echo "AZURE_SEARCH_NAME=$AZURE_SEARCH_NAME" >> "$GITHUB_OUTPUT"
+          echo "AZURE_SEARCH_NAME=$AZURE_SEARCH_NAME"
+
+          if [ -z "$AZURE_OPENAI_NAME" ]; then
+            export AZURE_OPENAI_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_NAME | cut -d'=' -f2 | tr -d '"' || true)
+          else
+            export AZURE_OPENAI_NAME="$AZURE_OPENAI_NAME"
+          fi
+          echo "AZURE_OPENAI_NAME=$AZURE_OPENAI_NAME" >> "$GITHUB_OUTPUT"
+          echo "AZURE_OPENAI_NAME=$AZURE_OPENAI_NAME"
+
+          if [ -z "$AZUREAI_PROJECT_NAME" ]; then
+            export AZUREAI_PROJECT_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZUREAI_PROJECT_NAME | cut -d'=' -f2 | tr -d '"' || true)
+          else
+            export AZUREAI_PROJECT_NAME="$AZUREAI_PROJECT_NAME"
+          fi
+          echo "AZUREAI_PROJECT_NAME=$AZUREAI_PROJECT_NAME" >> "$GITHUB_OUTPUT"
+          echo "AZUREAI_PROJECT_NAME=$AZUREAI_PROJECT_NAME"
+
+          if [ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ]; then
+            export AZURE_SEARCH_INDEX_SAMPLE_DATA=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA | cut -d'=' -f2 | tr -d '"' || true)
+          else
+            export AZURE_SEARCH_INDEX_SAMPLE_DATA="$AZURE_SEARCH_INDEX_SAMPLE_DATA"
+          fi
+          echo "AZURE_SEARCH_INDEX_SAMPLE_DATA=$AZURE_SEARCH_INDEX_SAMPLE_DATA" >> "$GITHUB_OUTPUT"
+          echo "AZURE_SEARCH_INDEX_SAMPLE_DATA=$AZURE_SEARCH_INDEX_SAMPLE_DATA"
+
+          if [ -z "$AZURE_PRINCIPAL_ID" ]; then
+            export AZURE_PRINCIPAL_ID=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_PRINCIPAL_ID | cut -d'=' -f2 | tr -d '"' || true)
+          else
+            export AZURE_PRINCIPAL_ID="$AZURE_PRINCIPAL_ID"
+          fi
+          echo "AZURE_PRINCIPAL_ID=$AZURE_PRINCIPAL_ID" >> "$GITHUB_OUTPUT"
+          echo "AZURE_PRINCIPAL_ID=$AZURE_PRINCIPAL_ID"
+
+          if [ -z "$AZUREAI_HUB_NAME" ]; then
+            export AZUREAI_HUB_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZUREAI_HUB_NAME | cut -d'=' -f2 | tr -d '"' || true)
+          else
+            export AZUREAI_HUB_NAME="$AZUREAI_HUB_NAME"
+          fi
+          echo "AZUREAI_HUB_NAME=$AZUREAI_HUB_NAME" >> "$GITHUB_OUTPUT"
+          echo "AZUREAI_HUB_NAME=$AZUREAI_HUB_NAME"
+
+          if [ -z "$AZURE_APP_INSIGHTS_NAME" ]; then
+            export AZURE_APP_INSIGHTS_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_INSIGHTS_NAME | cut -d'=' -f2 | tr -d '"' || true)
+          else
+            export AZURE_APP_INSIGHTS_NAME="$AZURE_APP_INSIGHTS_NAME"
+          fi
+          echo "AZURE_APP_INSIGHTS_NAME=$AZURE_APP_INSIGHTS_NAME" >> "$GITHUB_OUTPUT"
+          echo "AZURE_APP_INSIGHTS_NAME=$AZURE_APP_INSIGHTS_NAME"
+
+          if [ -z "$AZURE_KEY_VAULT_NAME" ]; then
+            export AZURE_KEY_VAULT_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_KEY_VAULT_NAME | cut -d'=' -f2 | tr -d '"' || true)
+          else
+            export AZURE_KEY_VAULT_NAME="$AZURE_KEY_VAULT_NAME"
+          fi
+          echo "AZURE_KEY_VAULT_NAME=$AZURE_KEY_VAULT_NAME" >> "$GITHUB_OUTPUT"
+          echo "AZURE_KEY_VAULT_NAME=$AZURE_KEY_VAULT_NAME"
+
+          if [ -z "$AZURE_LOG_ANALYTICS_NAME" ]; then
+            export AZURE_LOG_ANALYTICS_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_LOG_ANALYTICS_NAME | cut -d'=' -f2 | tr -d '"' || true)
+          else
+            export AZURE_LOG_ANALYTICS_NAME="$AZURE_LOG_ANALYTICS_NAME"
+          fi
+          echo "AZURE_LOG_ANALYTICS_NAME=$AZURE_LOG_ANALYTICS_NAME" >> "$GITHUB_OUTPUT"
+          echo "AZURE_LOG_ANALYTICS_NAME=$AZURE_LOG_ANALYTICS_NAME"
+
+          if [ -z "$AZURE_STORAGE_ACCOUNT_NAME" ]; then
+            export AZURE_STORAGE_ACCOUNT_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_STORAGE_ACCOUNT_NAME | cut -d'=' -f2 | tr -d '"' || true)
+          else
+            export AZURE_STORAGE_ACCOUNT_NAME="$AZURE_STORAGE_ACCOUNT_NAME"
+          fi
+          echo "AZURE_STORAGE_ACCOUNT_NAME=$AZURE_STORAGE_ACCOUNT_NAME" >> "$GITHUB_OUTPUT"
+          echo "AZURE_STORAGE_ACCOUNT_NAME=$AZURE_STORAGE_ACCOUNT_NAME"
+
           # 3. Perform normal provisioning to update resources as needed.      
 
           if [ "$job_provisioned_environment" = false ]; then

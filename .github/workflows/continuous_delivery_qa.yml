@@ -30,7 +30,13 @@ jobs:
       AZURE_SEARCH_NAME: ${{ steps.provision-env.outputs.AZURE_SEARCH_NAME }}
       AZURE_SUBSCRIPTION_ID: ${{ steps.provision-env.outputs.AZURE_SUBSCRIPTION_ID }}
       PROMPTFLOW_SERVING_ENGINE: ${{ steps.provision-env.outputs.PROMPTFLOW_SERVING_ENGINE }}
-      PROMPTFLOW_WORKER_NUM: ${{ steps.provision-env.outputs.PROMPTFLOW_WORKER_NUM }}     
+      PROMPTFLOW_WORKER_NUM: ${{ steps.provision-env.outputs.PROMPTFLOW_WORKER_NUM }}
+      AZURE_PRINCIPAL_ID: ${{ steps.provision-env.outputs.AZURE_PRINCIPAL_ID }}
+      AZUREAI_HUB_NAME: ${{ steps.provision-env.outputs.AZUREAI_HUB_NAME }}
+      AZURE_APP_INSIGHTS_NAME: ${{ steps.provision-env.outputs.AZURE_APP_INSIGHTS_NAME }}
+      AZURE_KEY_VAULT_NAME: ${{ steps.provision-env.outputs.AZURE_KEY_VAULT_NAME }}
+      AZURE_LOG_ANALYTICS_NAME: ${{ steps.provision-env.outputs.AZURE_LOG_ANALYTICS_NAME }}
+      AZURE_STORAGE_ACCOUNT_NAME: ${{ steps.provision-env.outputs.AZURE_STORAGE_ACCOUNT_NAME }}
     steps: 
       - uses: actions/checkout@v4   
       - name: Provision qa environment
@@ -59,7 +65,12 @@ jobs:
           AZURE_SEARCH_NAME: ${{ vars.AZURE_SEARCH_NAME }}
           PROMPTFLOW_SERVING_ENGINE: ${{ vars.PROMPTFLOW_SERVING_ENGINE }}
           PROMPTFLOW_WORKER_NUM: ${{ vars.PROMPTFLOW_WORKER_NUM }}
-
+          AZURE_PRINCIPAL_ID: ${{ vars.AZURE_PRINCIPAL_ID }}
+          AZUREAI_HUB_NAME: ${{ vars.AZUREAI_HUB_NAME }}
+          AZURE_APP_INSIGHTS_NAME: ${{ vars.AZURE_APP_INSIGHTS_NAME }}
+          AZURE_KEY_VAULT_NAME: ${{ vars.AZURE_KEY_VAULT_NAME }}
+          AZURE_LOG_ANALYTICS_NAME: ${{ vars.AZURE_LOG_ANALYTICS_NAME }}
+          AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
 
   qa-flow-evaluation:
     needs: setup-env-job    

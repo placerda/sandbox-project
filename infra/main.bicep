@@ -107,7 +107,7 @@ module appService  'core/host/appservice.bicep'  = {
     name: !empty(appServiceName) ? appServiceName : '${_abbrs.webSitesAppService}${_resourceToken}'
     applicationInsightsName: ai.outputs.appInsightsName
     runtimeName: 'DOCKER'
-    runtimeVersion: '${containerRepositoryName}:dummy'
+    runtimeVersion: 'rag-project:dummy'
     keyVaultName: _keyVaultName
     location: location
     tags: union(_tags, { 'azd-service-name': 'rag-flow' })
