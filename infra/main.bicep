@@ -114,7 +114,7 @@ module appService  'core/host/appservice.bicep'  = {
     tags: union(_tags, { 'azd-service-name': 'rag-flow' })
     appServicePlanId: appServicePlan.outputs.id
     scmDoBuildDuringDeployment: false
-    appSettings: {
+    appSettings: { 
       WEBSITES_ENABLE_APP_SERVICE_STORAGE: false
       DOCKER_REGISTRY_SERVER_URL: 'https://${ai.outputs.containerRegistryName}.azurecr.io'
       WEBSITES_PORT: '80'  
