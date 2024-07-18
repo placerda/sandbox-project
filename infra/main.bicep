@@ -18,8 +18,8 @@ param appInsightsName string = ''
 param appServiceName string = ''
 param appServicePlanName string = ''
 param containerRegistryName string = ''
-param containerRepository string = 'rag-project'
-param containerRepo string = 'rag-project'
+param containerRepositoryName string
+var _containerRepositoryName = !empty(containerRepositoryName) ? containerRepositoryName : 'rag-project'
 param keyVaultName string = ''
 param logAnalyticsName string = ''
 param openAiName string = ''
@@ -108,7 +108,7 @@ module appService  'core/host/appservice.bicep'  = {
     name: !empty(appServiceName) ? appServiceName : '${_abbrs.webSitesAppService}${_resourceToken}'
     applicationInsightsName: ai.outputs.appInsightsName
     runtimeName: 'DOCKER'
-    runtimeVersion: 'rag-project:dummy'
+    runtimeVersion: '${_containerRepositoryName}:dummy'
     keyVaultName: _keyVaultName
     location: location
     tags: union(_tags, { 'azd-service-name': 'rag-flow' })
@@ -263,8 +263,7 @@ output AZURE_APP_INSIGHTS_NAME string = ai.outputs.appInsightsName
 output AZURE_APP_SERVICE_NAME string = appService.outputs.name
 output AZURE_APP_SERVICE_PLAN_NAME string = appServicePlan.outputs.name
 output AZURE_CONTAINER_REGISTRY_NAME string = ai.outputs.containerRegistryName
-output AZURE_CONTAINER_REPOSITORY string = containerRepository
-output AZURE_CONTAINER_REPO string = containerRepo
+output AZURE_CONTAINER_REPOSITORY_NAME string = _containerRepositoryName
 
 output AZURE_KEY_VAULT_NAME string = ai.outputs.keyVaultName
 output AZURE_LOG_ANALYTICS_NAME string = ai.outputs.logAnalyticsWorkspaceName
