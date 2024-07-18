@@ -35,7 +35,9 @@ param oaiEmbeddingDeployment string = 'text-embedding-ada-002'
 param oaiEmbeddingModel string = 'text-embedding-ada-002'
 
 // Use sample data for Azure Search Index?
-param azureSearchIndexSampleData string = 'true'
+param azureSearchIndexSampleData string
+var _azureSearchIndexSampleData = !empty(azureSearchIndexSampleData) ? azureSearchIndexSampleData : 'true'
+
 
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
@@ -44,7 +46,10 @@ param principalType string = 'ServicePrincipal'
 // Flow parameters
 
 param promptFlowWorkerNum string = '1'
+var _promptFlowWorkerNum = !empty(promptFlowWorkerNum) ? promptFlowWorkerNum : '1'
+
 param promptFlowServingEngine string = 'fastapi'
+var _promptFlowServingEngine = !empty(promptFlowServingEngine) ? promptFlowServingEngine : 'fastapi'
  
 var _abbrs = loadJsonContent('./abbreviations.json')
 param deploymentTimestamp string = utcNow()
@@ -118,8 +123,8 @@ module appService  'core/host/appservice.bicep'  = {
       WEBSITES_ENABLE_APP_SERVICE_STORAGE: false
       DOCKER_REGISTRY_SERVER_URL: 'https://${ai.outputs.containerRegistryName}.azurecr.io'
       WEBSITES_PORT: '80'  
-      PROMPTFLOW_WORKER_NUM: promptFlowWorkerNum
-      PROMPTFLOW_SERVING_ENGINE: promptFlowServingEngine
+      PROMPTFLOW_WORKER_NUM: _promptFlowWorkerNum
+      PROMPTFLOW_SERVING_ENGINE: _promptFlowServingEngine
       AZURE_OPENAI_ENDPOINT: ai.outputs.openAiEndpoint
       AZURE_OPENAI_CHAT_DEPLOYMENT: oaiChatDeployment
       AZURE_OPENAI_EMBEDDING_DEPLOYMENT: oaiEmbeddingDeployment
@@ -271,6 +276,6 @@ output AZURE_OPENAI_NAME string = ai.outputs.openAiName
 output AZURE_SEARCH_NAME string = ai.outputs.searchName
 output AZURE_STORAGE_ACCOUNT_NAME string = ai.outputs.storageAccountName
 
-output PROMPTFLOW_WORKER_NUM string = promptFlowWorkerNum
-output PROMPTFLOW_SERVING_ENGINE string = promptFlowServingEngine
-output AZURE_SEARCH_INDEX_SAMPLE_DATA string = azureSearchIndexSampleData
+output PROMPTFLOW_WORKER_NUM string = _promptFlowWorkerNum
+output PROMPTFLOW_SERVING_ENGINE string = _promptFlowServingEngine
+output AZURE_SEARCH_INDEX_SAMPLE_DATA string = _azureSearchIndexSampleData
