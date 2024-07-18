@@ -201,14 +201,14 @@ else
   eval "$command"
 fi
  
-# Set ACR credentials
+# Set Registry and ACR credentials
 echo "Setting ACR credentials..."
 az acr update -n $registry_name --admin-enabled true
 acr_username=$(az acr credential show --name $registry_name --query username --output tsv)
 acr_password=$(az acr credential show --name $registry_name --query passwords[0].value --output tsv)
-az webapp config container set --name $name --resource-group $resource_group --docker-registry-server-user $acr_username --docker-registry-server-password $acr_password
+az webapp config container set --name $name --resource-group $resource_group --docker-registry-server-user $acr_username --docker-registry-server-password $acr_password --https://myregistry.azurecr.io
 
-# Config environment variables
+# Config app environment variables
 echo "Config app environment variables $name ..."
 
 # Port default to 8080 corresponding to the DockerFile

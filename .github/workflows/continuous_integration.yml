@@ -12,6 +12,7 @@ on:
 jobs:
 
   setup-env-job:
+    if: ${{ github.repository != 'Azure/llmops-project-template' }}        
     runs-on: ubuntu-latest
     environment: dev
     outputs:
