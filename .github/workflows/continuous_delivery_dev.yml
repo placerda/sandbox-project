@@ -34,7 +34,8 @@ jobs:
       PROMPTFLOW_SERVING_ENGINE: ${{ steps.provision-env.outputs.PROMPTFLOW_SERVING_ENGINE }}
       PROMPTFLOW_WORKER_NUM: ${{ steps.provision-env.outputs.PROMPTFLOW_WORKER_NUM }}     
     steps: 
-      - uses: actions/checkout@v4   
+      - uses: actions/checkout@v4
+      
       - name: Provision dev environment
         uses: ./.github/actions/provision-env
         id: provision-env

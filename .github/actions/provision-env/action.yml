@@ -332,7 +332,6 @@ runs:
         # Run post-provisioning script to populate sample data
         ./infra/hooks/postprovision.sh
 
-
 outputs:
   AZURE_LOCATION:
     description: 'Azure location'
