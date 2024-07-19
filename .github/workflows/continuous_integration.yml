@@ -41,7 +41,7 @@ jobs:
     steps: 
     - uses: actions/checkout@v4
 
-    - name: Provision dev environment
+    - name: Config dev environment
       uses: ./.github/actions/config-env
       id: config-env
       with:

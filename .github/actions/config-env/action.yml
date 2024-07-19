@@ -61,7 +61,6 @@ runs:
       id: setup-env-step
       run: |
 
-        echo DUMMY1=${{ vars.DUMMY }}
         echo DUMMY2=${DUMMY}
 
         manual_environment=${{ inputs.MANUAL_PROVISIONING || 'false' }}
