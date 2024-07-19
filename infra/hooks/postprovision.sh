@@ -17,10 +17,6 @@ echo "OpenAI Service: $openAiService"
 echo "Subscription ID: $subscriptionId"
 echo "ML Project Name: $mlProjectName"
 
-
-indexSampleData=$([ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ] || [ "$AZURE_SEARCH_INDEX_SAMPLE_DATA" == "true" ] && echo true || echo false)
-echo indexSampleData=$indexSampleData
-
 # Ensure all required environment variables are set
 if [ -z "$resourceGroupName" ] || [ -z "$searchService" ] || [ -z "$openAiService" ] || [ -z "$subscriptionId" ] || [ -z "$mlProjectName" ]; then
     echo "One or more required environment variables are not set."
@@ -39,19 +35,13 @@ azd env get-values >.env
 # Create config.json with required Azure AI project config information
 echo "{\"subscription_id\": \"$subscriptionId\", \"resource_group\": \"$resourceGroupName\", \"workspace_name\": \"$mlProjectName\"}" > config.json
 
-if [ $indexSampleData = "true" ]; then
+# Run sample documents ingestion
+echo 'Installing dependencies from "requirements.txt"'
+pip cache purge > /dev/null
+pip install --upgrade pip setuptools > /dev/null
+python -m pip install -r requirements.txt > /dev/null
 
-    # Setup to run notebooks
-    echo 'Installing dependencies from "requirements.txt"'
-    pip cache purge > /dev/null
-    pip install --upgrade pip setuptools > /dev/null
-    python -m pip install -r requirements.txt > /dev/null
+echo "Populating sample data ...."
+python data/sample-documents-indexing.py > /dev/null
 
-    echo "Populating sample data ...."
-    python data/sample-documents-indexing.py > /dev/null
-
-    echo "🔶 | Post-provisioning - populated data"
-
-else
-    echo "🔶 | Post-provisioning - sample data not generated"
-fi
+echo "🔶 | Post-provisioning - populated data"

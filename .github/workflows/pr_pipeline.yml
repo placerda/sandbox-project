@@ -46,33 +46,33 @@ jobs:
         run: |
           echo "Run Bandit"
 
-  setup-env-job:
+  config-env-job:
     if: ${{ github.repository != 'Azure/llmops-project-template' }}        
     runs-on: ubuntu-latest
     environment: dev
     outputs:
-      AZURE_APP_SERVICE_NAME: ${{ steps.provision-env.outputs.AZURE_APP_SERVICE_NAME }}
-      AZURE_APP_SERVICE_PLAN_NAME: ${{ steps.provision-env.outputs.AZURE_APP_SERVICE_PLAN_NAME }}
-      AZURE_CONTAINER_REGISTRY_NAME: ${{ steps.provision-env.outputs.AZURE_CONTAINER_REGISTRY_NAME }}
-      AZURE_CONTAINER_REPOSITORY_NAME: ${{ steps.provision-env.outputs.AZURE_CONTAINER_REPOSITORY_NAME }}
-      AZURE_LOCATION: ${{ steps.provision-env.outputs.AZURE_LOCATION }}
-      AZURE_OPENAI_API_VERSION: ${{ steps.provision-env.outputs.AZURE_OPENAI_API_VERSION }}
-      AZURE_OPENAI_CHAT_DEPLOYMENT: ${{ steps.provision-env.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT }}
-      AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{ steps.provision-env.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT }}
-      AZURE_OPENAI_EMBEDDING_MODEL: ${{ steps.provision-env.outputs.AZURE_OPENAI_EMBEDDING_MODEL }}
-      AZURE_OPENAI_ENDPOINT: ${{ steps.provision-env.outputs.AZURE_OPENAI_ENDPOINT }}
-      AZURE_RESOURCE_GROUP: ${{ steps.provision-env.outputs.AZURE_RESOURCE_GROUP }}
-      AZURE_SEARCH_ENDPOINT: ${{ steps.provision-env.outputs.AZURE_SEARCH_ENDPOINT }}
-      AZURE_SUBSCRIPTION_ID: ${{ steps.provision-env.outputs.AZURE_SUBSCRIPTION_ID }}
-      PROMPTFLOW_SERVING_ENGINE: ${{ steps.provision-env.outputs.PROMPTFLOW_SERVING_ENGINE }}
-      PROMPTFLOW_WORKER_NUM: ${{ steps.provision-env.outputs.PROMPTFLOW_WORKER_NUM }}
+      AZURE_APP_SERVICE_NAME: ${{ steps.config-env.outputs.AZURE_APP_SERVICE_NAME }}
+      AZURE_APP_SERVICE_PLAN_NAME: ${{ steps.config-env.outputs.AZURE_APP_SERVICE_PLAN_NAME }}
+      AZURE_CONTAINER_REGISTRY_NAME: ${{ steps.config-env.outputs.AZURE_CONTAINER_REGISTRY_NAME }}
+      AZURE_CONTAINER_REPOSITORY_NAME: ${{ steps.config-env.outputs.AZURE_CONTAINER_REPOSITORY_NAME }}
+      AZURE_LOCATION: ${{ steps.config-env.outputs.AZURE_LOCATION }}
+      AZURE_OPENAI_API_VERSION: ${{ steps.config-env.outputs.AZURE_OPENAI_API_VERSION }}
+      AZURE_OPENAI_CHAT_DEPLOYMENT: ${{ steps.config-env.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT }}
+      AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{ steps.config-env.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT }}
+      AZURE_OPENAI_EMBEDDING_MODEL: ${{ steps.config-env.outputs.AZURE_OPENAI_EMBEDDING_MODEL }}
+      AZURE_OPENAI_ENDPOINT: ${{ steps.config-env.outputs.AZURE_OPENAI_ENDPOINT }}
+      AZURE_RESOURCE_GROUP: ${{ steps.config-env.outputs.AZURE_RESOURCE_GROUP }}
+      AZURE_SEARCH_ENDPOINT: ${{ steps.config-env.outputs.AZURE_SEARCH_ENDPOINT }}
+      AZURE_SUBSCRIPTION_ID: ${{ steps.config-env.outputs.AZURE_SUBSCRIPTION_ID }}
+      PROMPTFLOW_SERVING_ENGINE: ${{ steps.config-env.outputs.PROMPTFLOW_SERVING_ENGINE }}
+      PROMPTFLOW_WORKER_NUM: ${{ steps.config-env.outputs.PROMPTFLOW_WORKER_NUM }}
 
     steps: 
       - uses: actions/checkout@v4
 
-      - name: Provision dev environment
-        uses: ./.github/actions/provision-env
-        id: provision-env
+      - name: Get environment variables
+        uses: ./.github/actions/config-env
+        id: config-env
         with:
           AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
@@ -104,7 +104,7 @@ jobs:
           AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
 
   evaluate-flow:
-    needs: [setup-env-job, setup-env-job]
+    needs: [config-env-job]
     runs-on: ubuntu-latest
     environment: dev
     steps:
@@ -112,21 +112,21 @@ jobs:
         uses: actions/checkout@v4
       - name: AI-Based Flow evaluation
         env:
-          SUBSCRIPTION_ID: ${{needs.setup-env-job.outputs.AZURE_SUBSCRIPTION_ID}}
-          LOCATION: ${{needs.setup-env-job.outputs.AZURE_LOCATION}}
-          AZURE_RESOURCE_GROUP: ${{needs.setup-env-job.outputs.AZURE_RESOURCE_GROUP}}
-          AZURE_CONTAINER_REGISTRY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REGISTRY_NAME}}
-          AZURE_CONTAINER_REPOSITORY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REPOSITORY_NAME}}
-          AZURE_SEARCH_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_SEARCH_ENDPOINT}}
-          AZURE_OPENAI_CHAT_DEPLOYMENT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT}}
-          AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT}}
-          AZURE_OPENAI_EMBEDDING_MODEL: ${{needs.setup-env-job.outputs.AZURE_OPENAI_EMBEDDING_MODEL}}
-          AZURE_OPENAI_API_VERSION: ${{needs.setup-env-job.outputs.AZURE_OPENAI_API_VERSION}}
-          AZURE_OPENAI_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_ENDPOINT}}
-          PROMPTFLOW_WORKER_NUM: ${{needs.setup-env-job.outputs.PROMPTFLOW_WORKER_NUM}}
-          PROMPTFLOW_SERVING_ENGINE: ${{needs.setup-env-job.outputs.PROMPTFLOW_SERVING_ENGINE}}
-          AZURE_APP_SERVICE_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_NAME}}
-          AZURE_APP_SERVICE_PLAN_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_PLAN_NAME}}      
+          SUBSCRIPTION_ID: ${{needs.config-env-job.outputs.AZURE_SUBSCRIPTION_ID}}
+          LOCATION: ${{needs.config-env-job.outputs.AZURE_LOCATION}}
+          AZURE_RESOURCE_GROUP: ${{needs.config-env-job.outputs.AZURE_RESOURCE_GROUP}}
+          AZURE_CONTAINER_REGISTRY_NAME: ${{needs.config-env-job.outputs.AZURE_CONTAINER_REGISTRY_NAME}}
+          AZURE_CONTAINER_REPOSITORY_NAME: ${{needs.config-env-job.outputs.AZURE_CONTAINER_REPOSITORY_NAME}}
+          AZURE_SEARCH_ENDPOINT: ${{needs.config-env-job.outputs.AZURE_SEARCH_ENDPOINT}}
+          AZURE_OPENAI_CHAT_DEPLOYMENT: ${{needs.config-env-job.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT}}
+          AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{needs.config-env-job.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT}}
+          AZURE_OPENAI_EMBEDDING_MODEL: ${{needs.config-env-job.outputs.AZURE_OPENAI_EMBEDDING_MODEL}}
+          AZURE_OPENAI_API_VERSION: ${{needs.config-env-job.outputs.AZURE_OPENAI_API_VERSION}}
+          AZURE_OPENAI_ENDPOINT: ${{needs.config-env-job.outputs.AZURE_OPENAI_ENDPOINT}}
+          PROMPTFLOW_WORKER_NUM: ${{needs.config-env-job.outputs.PROMPTFLOW_WORKER_NUM}}
+          PROMPTFLOW_SERVING_ENGINE: ${{needs.config-env-job.outputs.PROMPTFLOW_SERVING_ENGINE}}
+          AZURE_APP_SERVICE_NAME: ${{needs.config-env-job.outputs.AZURE_APP_SERVICE_NAME}}
+          AZURE_APP_SERVICE_PLAN_NAME: ${{needs.config-env-job.outputs.AZURE_APP_SERVICE_PLAN_NAME}}      
         run: |
           echo "Run AI-Based Flow evaluation"
         shell: bash
