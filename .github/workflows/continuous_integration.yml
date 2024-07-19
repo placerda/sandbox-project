@@ -32,7 +32,7 @@ jobs:
       AZURE_SEARCH_ENDPOINT: ${{ steps.provision-env.outputs.AZURE_SEARCH_ENDPOINT }}
       AZURE_SEARCH_INDEX_SAMPLE_DATA: ${{ steps.provision-env.outputs.AZURE_SEARCH_INDEX_SAMPLE_DATA }}
       AZURE_SEARCH_NAME: ${{ steps.provision-env.outputs.AZURE_SEARCH_NAME }}
-      AZURE_SUBSCRIPTION_ID: ${{ steps.provision-env.outputs.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ steps.provision-env.outputs.AZURE_SUBSCRIPTION_ID }} 
       PROMPTFLOW_SERVING_ENGINE: ${{ steps.provision-env.outputs.PROMPTFLOW_SERVING_ENGINE }}
       PROMPTFLOW_WORKER_NUM: ${{ steps.provision-env.outputs.PROMPTFLOW_WORKER_NUM }}
       AZURE_PRINCIPAL_ID: ${{ steps.provision-env.outputs.AZURE_PRINCIPAL_ID }}
