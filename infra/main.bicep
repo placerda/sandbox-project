@@ -18,7 +18,7 @@ param appInsightsName string = ''
 param appServiceName string = ''
 param appServicePlanName string = ''
 param containerRegistryName string = ''
-param containerRepositoryName string
+param containerRepositoryName string = ''
 var _containerRepositoryName = !empty(containerRepositoryName) ? containerRepositoryName : 'rag-project'
 param keyVaultName string = ''
 param logAnalyticsName string = ''
@@ -35,7 +35,7 @@ param oaiEmbeddingDeployment string = 'text-embedding-ada-002'
 param oaiEmbeddingModel string = 'text-embedding-ada-002'
 
 // Use sample data for Azure Search Index?
-param azureSearchIndexSampleData string
+param azureSearchIndexSampleData string = ''
 var _azureSearchIndexSampleData = !empty(azureSearchIndexSampleData) ? azureSearchIndexSampleData : 'true'
 
 

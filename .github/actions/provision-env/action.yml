@@ -134,190 +134,97 @@ runs:
 
         # Set environment variables getting them from the last deployment if the GitHub environment variable is not set 
 
-        if [ -z "$AZURE_CONTAINER_REGISTRY_NAME" ]; then
-          export AZURE_CONTAINER_REGISTRY_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_NAME | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_CONTAINER_REGISTRY_NAME="$AZURE_CONTAINER_REGISTRY_NAME"
-        fi
-        echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME" >> "$GITHUB_OUTPUT" 
-        echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"
+        export AZURE_CONTAINER_REGISTRY_NAME=${AZURE_CONTAINER_REGISTRY_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_NAME | cut -d'=' -f2 | tr -d '"' || true)}
+        echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME" >> "$GITHUB_OUTPUT"
+        echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"        
 
-        if [ -z "$AZURE_CONTAINER_REPOSITORY_NAME" ]; then
-          export AZURE_CONTAINER_REPOSITORY_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_CONTAINER_REPOSITORY_NAME="$AZURE_CONTAINER_REPOSITORY_NAME"
-        fi
+        export AZURE_CONTAINER_REPOSITORY_NAME=${AZURE_CONTAINER_REPOSITORY_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_CONTAINER_REPOSITORY_NAME=$AZURE_CONTAINER_REPOSITORY_NAME" >> "$GITHUB_OUTPUT"
         echo "AZURE_CONTAINER_REPOSITORY_NAME=$AZURE_CONTAINER_REPOSITORY_NAME"
 
-        if [ -z "$AZURE_SEARCH_ENDPOINT" ]; then
-          export AZURE_SEARCH_ENDPOINT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_ENDPOINT | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_SEARCH_ENDPOINT="$AZURE_SEARCH_ENDPOINT"
-        fi
+        export AZURE_SEARCH_ENDPOINT=${AZURE_SEARCH_ENDPOINT:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_ENDPOINT | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT" >> "$GITHUB_OUTPUT"
         echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT"
-        
-        if [ -z "$AZURE_OPENAI_CHAT_DEPLOYMENT" ]; then
-          export AZURE_OPENAI_CHAT_DEPLOYMENT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_CHAT_DEPLOYMENT | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_OPENAI_CHAT_DEPLOYMENT="$AZURE_OPENAI_CHAT_DEPLOYMENT"
-        fi
+
+        export AZURE_OPENAI_CHAT_DEPLOYMENT=${AZURE_OPENAI_CHAT_DEPLOYMENT:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_CHAT_DEPLOYMENT | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT" >> "$GITHUB_OUTPUT"
         echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT"
         
-        if [ -z "$AZURE_OPENAI_EMBEDDING_DEPLOYMENT" ]; then
-          export AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_DEPLOYMENT | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_OPENAI_EMBEDDING_DEPLOYMENT="$AZURE_OPENAI_EMBEDDING_DEPLOYMENT"
-        fi
+        export AZURE_OPENAI_EMBEDDING_DEPLOYMENT=${AZURE_OPENAI_EMBEDDING_DEPLOYMENT:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_DEPLOYMENT | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT" >> "$GITHUB_OUTPUT"
         echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT"
-        
-        if [ -z "$AZURE_OPENAI_EMBEDDING_MODEL" ]; then
-          export AZURE_OPENAI_EMBEDDING_MODEL=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_MODEL | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_OPENAI_EMBEDDING_MODEL="$AZURE_OPENAI_EMBEDDING_MODEL"
-        fi
+
+        export AZURE_OPENAI_EMBEDDING_MODEL=${AZURE_OPENAI_EMBEDDING_MODEL:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_MODEL | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL" >> "$GITHUB_OUTPUT"
         echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL"
         
-        if [ -z "$AZURE_OPENAI_API_VERSION" ]; then
-          export AZURE_OPENAI_API_VERSION=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_API_VERSION | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_OPENAI_API_VERSION="$AZURE_OPENAI_API_VERSION"
-        fi
+        export AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_API_VERSION | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION" >> "$GITHUB_OUTPUT"
         echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION"
-        
-        if [ -z "$AZURE_OPENAI_ENDPOINT" ]; then
-          export AZURE_OPENAI_ENDPOINT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_ENDPOINT | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_OPENAI_ENDPOINT="$AZURE_OPENAI_ENDPOINT"
-        fi
+
+        export AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_ENDPOINT | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT" >> "$GITHUB_OUTPUT"
         echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT"
         
-        if [ -z "$PROMPTFLOW_WORKER_NUM" ]; then
-          export PROMPTFLOW_WORKER_NUM=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep PROMPTFLOW_WORKER_NUM | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export PROMPTFLOW_WORKER_NUM="$PROMPTFLOW_WORKER_NUM"
-        fi
+        export PROMPTFLOW_WORKER_NUM=${PROMPTFLOW_WORKER_NUM:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep PROMPTFLOW_WORKER_NUM | cut -d'=' -f2 | tr -d '"' || true)}
         echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM" >> "$GITHUB_OUTPUT"
         echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM"
-        
-        if [ -z "$PROMPTFLOW_SERVING_ENGINE" ]; then
-          export PROMPTFLOW_SERVING_ENGINE=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep PROMPTFLOW_SERVING_ENGINE | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export PROMPTFLOW_SERVING_ENGINE="$PROMPTFLOW_SERVING_ENGINE"
-        fi
-        echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE" >> "$GITHUB_OUTPUT"
-        echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE"            
 
-        if [ -z "$AZURE_APP_SERVICE_NAME" ]; then
-          export AZURE_APP_SERVICE_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_NAME | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_APP_SERVICE_NAME="$AZURE_APP_SERVICE_NAME"
-        fi
+        export PROMPTFLOW_SERVING_ENGINE=${PROMPTFLOW_SERVING_ENGINE:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep PROMPTFLOW_SERVING_ENGINE | cut -d'=' -f2 | tr -d '"' || true)}
+        echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE" >> "$GITHUB_OUTPUT"
+        echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE"
+
+        export AZURE_APP_SERVICE_NAME=${AZURE_APP_SERVICE_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_NAME | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME" >> "$GITHUB_OUTPUT"
         echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME"
 
-        if [ -z "$AZURE_APP_SERVICE_PLAN_NAME" ]; then
-          export AZURE_APP_SERVICE_PLAN_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_PLAN_NAME | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_APP_SERVICE_PLAN_NAME="$AZURE_APP_SERVICE_PLAN_NAME"
-        fi
+        export AZURE_APP_SERVICE_PLAN_NAME=${AZURE_APP_SERVICE_PLAN_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_PLAN_NAME | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME" >> "$GITHUB_OUTPUT"
         echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME"
 
-        if [ -z "$AZURE_RESOURCE_GROUP" ]; then
-          export AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_RESOURCE_GROUP="$AZURE_RESOURCE_GROUP"
-        fi
+        export AZURE_RESOURCE_GROUP=${AZURE_RESOURCE_GROUP:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> "$GITHUB_OUTPUT"
         echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
 
-        if [ -z "$AZURE_SEARCH_NAME" ]; then
-          export AZURE_SEARCH_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_NAME | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_SEARCH_NAME="$AZURE_SEARCH_NAME"
-        fi
+        export AZURE_SEARCH_NAME=${AZURE_SEARCH_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_NAME | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_SEARCH_NAME=$AZURE_SEARCH_NAME" >> "$GITHUB_OUTPUT"
         echo "AZURE_SEARCH_NAME=$AZURE_SEARCH_NAME"
 
-        if [ -z "$AZURE_OPENAI_NAME" ]; then
-          export AZURE_OPENAI_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_NAME | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_OPENAI_NAME="$AZURE_OPENAI_NAME"
-        fi
+        export AZURE_OPENAI_NAME=${AZURE_OPENAI_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_NAME | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_OPENAI_NAME=$AZURE_OPENAI_NAME" >> "$GITHUB_OUTPUT"
         echo "AZURE_OPENAI_NAME=$AZURE_OPENAI_NAME"
 
-        if [ -z "$AZUREAI_PROJECT_NAME" ]; then
-          export AZUREAI_PROJECT_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZUREAI_PROJECT_NAME | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZUREAI_PROJECT_NAME="$AZUREAI_PROJECT_NAME"
-        fi
+        export AZUREAI_PROJECT_NAME=${AZUREAI_PROJECT_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZUREAI_PROJECT_NAME | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZUREAI_PROJECT_NAME=$AZUREAI_PROJECT_NAME" >> "$GITHUB_OUTPUT"
         echo "AZUREAI_PROJECT_NAME=$AZUREAI_PROJECT_NAME"
 
-        if [ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ]; then
-          export AZURE_SEARCH_INDEX_SAMPLE_DATA=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_SEARCH_INDEX_SAMPLE_DATA="$AZURE_SEARCH_INDEX_SAMPLE_DATA"
-        fi
+        export AZURE_SEARCH_INDEX_SAMPLE_DATA=${AZURE_SEARCH_INDEX_SAMPLE_DATA:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_SEARCH_INDEX_SAMPLE_DATA=$AZURE_SEARCH_INDEX_SAMPLE_DATA" >> "$GITHUB_OUTPUT"
         echo "AZURE_SEARCH_INDEX_SAMPLE_DATA=$AZURE_SEARCH_INDEX_SAMPLE_DATA"
 
-        if [ -z "$AZURE_PRINCIPAL_ID" ]; then
-          export AZURE_PRINCIPAL_ID=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_PRINCIPAL_ID | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_PRINCIPAL_ID="$AZURE_PRINCIPAL_ID"
-        fi
+        export AZURE_PRINCIPAL_ID=${AZURE_PRINCIPAL_ID:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_PRINCIPAL_ID | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_PRINCIPAL_ID=$AZURE_PRINCIPAL_ID" >> "$GITHUB_OUTPUT"
         echo "AZURE_PRINCIPAL_ID=$AZURE_PRINCIPAL_ID"
 
-        if [ -z "$AZUREAI_HUB_NAME" ]; then
-          export AZUREAI_HUB_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZUREAI_HUB_NAME | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZUREAI_HUB_NAME="$AZUREAI_HUB_NAME"
-        fi
+        export AZUREAI_HUB_NAME=${AZUREAI_HUB_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZUREAI_HUB_NAME | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZUREAI_HUB_NAME=$AZUREAI_HUB_NAME" >> "$GITHUB_OUTPUT"
         echo "AZUREAI_HUB_NAME=$AZUREAI_HUB_NAME"
 
-        if [ -z "$AZURE_APP_INSIGHTS_NAME" ]; then
-          export AZURE_APP_INSIGHTS_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_INSIGHTS_NAME | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_APP_INSIGHTS_NAME="$AZURE_APP_INSIGHTS_NAME"
-        fi
+        export AZURE_APP_INSIGHTS_NAME=${AZURE_APP_INSIGHTS_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_INSIGHTS_NAME | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_APP_INSIGHTS_NAME=$AZURE_APP_INSIGHTS_NAME" >> "$GITHUB_OUTPUT"
         echo "AZURE_APP_INSIGHTS_NAME=$AZURE_APP_INSIGHTS_NAME"
 
-        if [ -z "$AZURE_KEY_VAULT_NAME" ]; then
-          export AZURE_KEY_VAULT_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_KEY_VAULT_NAME | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_KEY_VAULT_NAME="$AZURE_KEY_VAULT_NAME"
-        fi
+        export AZURE_KEY_VAULT_NAME=${AZURE_KEY_VAULT_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_KEY_VAULT_NAME | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_KEY_VAULT_NAME=$AZURE_KEY_VAULT_NAME" >> "$GITHUB_OUTPUT"
         echo "AZURE_KEY_VAULT_NAME=$AZURE_KEY_VAULT_NAME"
 
-        if [ -z "$AZURE_LOG_ANALYTICS_NAME" ]; then
-          export AZURE_LOG_ANALYTICS_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_LOG_ANALYTICS_NAME | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_LOG_ANALYTICS_NAME="$AZURE_LOG_ANALYTICS_NAME"
-        fi
+        export AZURE_LOG_ANALYTICS_NAME=${AZURE_LOG_ANALYTICS_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_LOG_ANALYTICS_NAME | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_LOG_ANALYTICS_NAME=$AZURE_LOG_ANALYTICS_NAME" >> "$GITHUB_OUTPUT"
         echo "AZURE_LOG_ANALYTICS_NAME=$AZURE_LOG_ANALYTICS_NAME"
 
-        if [ -z "$AZURE_STORAGE_ACCOUNT_NAME" ]; then
-          export AZURE_STORAGE_ACCOUNT_NAME=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_STORAGE_ACCOUNT_NAME | cut -d'=' -f2 | tr -d '"' || true)
-        else
-          export AZURE_STORAGE_ACCOUNT_NAME="$AZURE_STORAGE_ACCOUNT_NAME"
-        fi
+        export AZURE_STORAGE_ACCOUNT_NAME=${AZURE_STORAGE_ACCOUNT_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_STORAGE_ACCOUNT_NAME | cut -d'=' -f2 | tr -d '"' || true)}
         echo "AZURE_STORAGE_ACCOUNT_NAME=$AZURE_STORAGE_ACCOUNT_NAME" >> "$GITHUB_OUTPUT"
         echo "AZURE_STORAGE_ACCOUNT_NAME=$AZURE_STORAGE_ACCOUNT_NAME"
-
 
         # 4. Update provisioned resources in case you made some changes in the Bicep template.   
 
@@ -331,6 +238,7 @@ runs:
 
         # Run post-provisioning script to populate sample data
         ./infra/hooks/postprovision.sh
+
 
 outputs:
   AZURE_LOCATION:
@@ -378,3 +286,21 @@ outputs:
   AZURE_APP_SERVICE_PLAN_NAME:
     description: 'Azure App Service Plan Name'
     value: ${{ steps.setup-env-step.outputs.AZURE_APP_SERVICE_PLAN_NAME }}
+  AZUREAI_PROJECT_NAME:
+    description: 'Azure AI Project Name'
+    value: ${{ steps.setup-env-step.outputs.AZUREAI_PROJECT_NAME }}
+  AZURE_OPENAI_NAME:
+    description: 'Azure OpenAI Name'
+    value: ${{ steps.setup-env-step.outputs.AZURE_OPENAI_NAME }}
+  AZURE_SEARCH_INDEX_SAMPLE_DATA:
+    description: 'Azure Search Index Sample Data'
+    value: ${{ steps.setup-env-step.outputs.AZURE_SEARCH_INDEX_SAMPLE_DATA }}
+  AZURE_SEARCH_NAME:
+    description: 'Azure Search Name'
+    value: ${{ steps.setup-env-step.outputs.AZURE_SEARCH_NAME }}
+  AZURE_PRINCIPAL_ID:
+    description: 'Azure Principal ID'
+    value: ${{ steps.setup-env-step.outputs.AZURE_PRINCIPAL_ID }}
+  AZURE_STORAGE_ACCOUNT_NAME:
+    description: 'Azure Storage Account Name'
+    value: ${{ steps.setup-env-step.outputs.AZURE_STORAGE_ACCOUNT_NAME }}

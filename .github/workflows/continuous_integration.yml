@@ -36,45 +36,43 @@ jobs:
       PROMPTFLOW_SERVING_ENGINE: ${{ steps.provision-env.outputs.PROMPTFLOW_SERVING_ENGINE }}
       PROMPTFLOW_WORKER_NUM: ${{ steps.provision-env.outputs.PROMPTFLOW_WORKER_NUM }}
       AZURE_PRINCIPAL_ID: ${{ steps.provision-env.outputs.AZURE_PRINCIPAL_ID }}
-      AZUREAI_HUB_NAME: ${{ steps.provision-env.outputs.AZUREAI_HUB_NAME }}
-      AZURE_APP_INSIGHTS_NAME: ${{ steps.provision-env.outputs.AZURE_APP_INSIGHTS_NAME }}
-      AZURE_KEY_VAULT_NAME: ${{ steps.provision-env.outputs.AZURE_KEY_VAULT_NAME }}
-      AZURE_LOG_ANALYTICS_NAME: ${{ steps.provision-env.outputs.AZURE_LOG_ANALYTICS_NAME }}
-      AZURE_STORAGE_ACCOUNT_NAME: ${{ steps.provision-env.outputs.AZURE_STORAGE_ACCOUNT_NAME }}      
+      AZURE_STORAGE_ACCOUNT_NAME: ${{ steps.provision-env.outputs.AZURE_STORAGE_ACCOUNT_NAME }}
+
     steps: 
-      - uses: actions/checkout@v4   
-      - name: Provision dev environment
-        uses: ./.github/actions/provision-env
-        id: provision-env
-        with:
-          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-          AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
-          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
-        env:
-          AZUREAI_PROJECT_NAME: ${{ vars.AZUREAI_PROJECT_NAME }}
-          AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
-          AZURE_APP_SERVICE_PLAN_NAME: ${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}
-          AZURE_CONTAINER_REGISTRY_NAME: ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}
-          AZURE_CONTAINER_REPOSITORY_NAME: ${{ vars.AZURE_CONTAINER_REPOSITORY_NAME }}
-          AZURE_OPENAI_API_VERSION: ${{ vars.AZURE_OPENAI_API_VERSION }}
-          AZURE_OPENAI_CHAT_DEPLOYMENT: ${{ vars.AZURE_OPENAI_CHAT_DEPLOYMENT }}
-          AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{ vars.AZURE_OPENAI_EMBEDDING_DEPLOYMENT }}
-          AZURE_OPENAI_EMBEDDING_MODEL: ${{ vars.AZURE_OPENAI_EMBEDDING_MODEL }}
-          AZURE_OPENAI_ENDPOINT: ${{ vars.AZURE_OPENAI_ENDPOINT }}
-          AZURE_OPENAI_NAME: ${{ vars.AZURE_OPENAI_NAME }}
-          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
-          AZURE_SEARCH_ENDPOINT: ${{ vars.AZURE_SEARCH_ENDPOINT }}
-          AZURE_SEARCH_INDEX_SAMPLE_DATA: ${{ vars.AZURE_SEARCH_INDEX_SAMPLE_DATA }}
-          AZURE_SEARCH_NAME: ${{ vars.AZURE_SEARCH_NAME }}
-          PROMPTFLOW_SERVING_ENGINE: ${{ vars.PROMPTFLOW_SERVING_ENGINE }}
-          PROMPTFLOW_WORKER_NUM: ${{ vars.PROMPTFLOW_WORKER_NUM }}
-          AZURE_PRINCIPAL_ID: ${{ vars.AZURE_PRINCIPAL_ID }}
-          AZUREAI_HUB_NAME: ${{ vars.AZUREAI_HUB_NAME }}
-          AZURE_APP_INSIGHTS_NAME: ${{ vars.AZURE_APP_INSIGHTS_NAME }}
-          AZURE_KEY_VAULT_NAME: ${{ vars.AZURE_KEY_VAULT_NAME }}
-          AZURE_LOG_ANALYTICS_NAME: ${{ vars.AZURE_LOG_ANALYTICS_NAME }}
-          AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
+    - uses: actions/checkout@v4
+
+    - name: Provision dev environment
+      uses: ./.github/actions/provision-env
+      id: provision-env
+      with:
+        AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+        AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+        AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+      env:
+        AZUREAI_PROJECT_NAME: ${{ vars.AZUREAI_PROJECT_NAME }}
+        AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
+        AZURE_APP_SERVICE_PLAN_NAME: ${{ vars.AZURE_APP_SERVICE_PLAN_NAME }}
+        AZURE_CONTAINER_REGISTRY_NAME: ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}
+        AZURE_CONTAINER_REPOSITORY_NAME: ${{ vars.AZURE_CONTAINER_REPOSITORY_NAME }}
+        AZURE_OPENAI_API_VERSION: ${{ vars.AZURE_OPENAI_API_VERSION }}
+        AZURE_OPENAI_CHAT_DEPLOYMENT: ${{ vars.AZURE_OPENAI_CHAT_DEPLOYMENT }}
+        AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{ vars.AZURE_OPENAI_EMBEDDING_DEPLOYMENT }}
+        AZURE_OPENAI_EMBEDDING_MODEL: ${{ vars.AZURE_OPENAI_EMBEDDING_MODEL }}
+        AZURE_OPENAI_ENDPOINT: ${{ vars.AZURE_OPENAI_ENDPOINT }}
+        AZURE_OPENAI_NAME: ${{ vars.AZURE_OPENAI_NAME }}
+        AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+        AZURE_SEARCH_ENDPOINT: ${{ vars.AZURE_SEARCH_ENDPOINT }}
+        AZURE_SEARCH_INDEX_SAMPLE_DATA: ${{ vars.AZURE_SEARCH_INDEX_SAMPLE_DATA }}
+        AZURE_SEARCH_NAME: ${{ vars.AZURE_SEARCH_NAME }}
+        PROMPTFLOW_SERVING_ENGINE: ${{ vars.PROMPTFLOW_SERVING_ENGINE }}
+        PROMPTFLOW_WORKER_NUM: ${{ vars.PROMPTFLOW_WORKER_NUM }}
+        AZURE_PRINCIPAL_ID: ${{ vars.AZURE_PRINCIPAL_ID }}
+        AZUREAI_HUB_NAME: ${{ vars.AZUREAI_HUB_NAME }}
+        AZURE_APP_INSIGHTS_NAME: ${{ vars.AZURE_APP_INSIGHTS_NAME }}
+        AZURE_KEY_VAULT_NAME: ${{ vars.AZURE_KEY_VAULT_NAME }}
+        AZURE_LOG_ANALYTICS_NAME: ${{ vars.AZURE_LOG_ANALYTICS_NAME }}
+        AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
 
   unit-testing:
     runs-on: ubuntu-latest
@@ -97,9 +95,7 @@ jobs:
   build-image:
     runs-on: ubuntu-latest
     needs: [setup-env-job, unit-testing, code-standard-check]    
-    environment: dev
-    outputs:
-      IMAGE_TAG: ${{ steps.set-image-tag.outputs.IMAGE_TAG }}    
+    environment: dev 
     steps:
       - uses: actions/checkout@v4      
       - name: Setup Python 
@@ -132,13 +128,13 @@ jobs:
             name: build-artifacts
             path: dist/
 
-      - name: Set image tag
-        id: set-image-tag
-        env:
-          AZURE_CONTAINER_REPOSITORY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REPOSITORY_NAME}}      
-        run: |
-            echo "IMAGE_TAG=$AZURE_CONTAINER_REPOSITORY_NAME:${{ github.sha }}" >> "$GITHUB_OUTPUT"
-            echo "IMAGE_TAG=$AZURE_CONTAINER_REPOSITORY_NAME:${{ github.sha }}"
+      # - name: Set image tag
+      #   id: set-image-tag
+      #   env:
+      #     AZURE_CONTAINER_REPOSITORY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REPOSITORY_NAME}}      
+      #   run: |
+      #       echo "IMAGE_TAG=$AZURE_CONTAINER_REPOSITORY_NAME:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+      #       echo "IMAGE_TAG=$AZURE_CONTAINER_REPOSITORY_NAME:${{ github.sha }}"
 
       - name: Login to Azure CLI
         uses: azure/login@v2
@@ -146,15 +142,12 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Build Image
+        env:
+          AZURE_CONTAINER_REPOSITORY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REPOSITORY_NAME}}          
         run: |
-            # echo "Building Image..."
-            # echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"
-            # echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
-            # bash ./infra/hooks/build.sh --path dist -i $IMAGE_TAG --plan $AZURE_APP_SERVICE_PLAN_NAME --name $AZURE_APP_SERVICE_NAME -r $AZURE_CONTAINER_REGISTRY_NAME -g $AZURE_RESOURCE_GROUP --subscription $SUBSCRIPTION_ID --verbose
-
             echo "✅ Building docker image..."
             path=dist
-            image_tag=${{ steps.set-image-tag.outputs.IMAGE_TAG }}
+            image_tag=$AZURE_CONTAINER_REPOSITORY_NAME:${{ github.sha }}
             echo "Change working directory to $path"
             cd "$path"
             docker build -t "$image_tag" .
@@ -172,15 +165,18 @@ jobs:
           AZURE_OPENAI_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_ENDPOINT}}
           PROMPTFLOW_WORKER_NUM: ${{needs.setup-env-job.outputs.PROMPTFLOW_WORKER_NUM}}
           PROMPTFLOW_SERVING_ENGINE: ${{needs.setup-env-job.outputs.PROMPTFLOW_SERVING_ENGINE}}
+          AZURE_CONTAINER_REPOSITORY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REPOSITORY_NAME}}             
         run: |
           echo "✅ Run image..."
-          docker run -d -p 8080:8080 -e PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE -e PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM ${{ steps.set-image-tag.outputs.IMAGE_TAG }}
+          image_tag=$AZURE_CONTAINER_REPOSITORY_NAME:${{ github.sha }}
+          docker run -d -p 8080:8080 -e PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE -e PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM $image_tag
 
       - name: Register Image
         env:
           AZURE_CONTAINER_REGISTRY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REGISTRY_NAME}}
+          AZURE_CONTAINER_REPOSITORY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REPOSITORY_NAME}}  
         run: |
-          image_tag=${{ steps.set-image-tag.outputs.IMAGE_TAG }}  
+          image_tag=$AZURE_CONTAINER_REPOSITORY_NAME:${{ github.sha }}
           full_registry_name="$AZURE_CONTAINER_REGISTRY_NAME.azurecr.io"
           echo "✅ Trying to login to $full_registry_name..."
           az acr login -n "$full_registry_name"
@@ -188,10 +184,9 @@ jobs:
           acr_image_tag=$full_registry_name/$image_tag
           echo "✅ ACR image tag: $acr_image_tag"
           docker tag "$image_tag" "$acr_image_tag"
-          image_tag=$acr_image_tag
 
-          echo "✅ Start pushing image...$image_tag"
-          docker push "$image_tag"            
+          echo "✅ Start pushing image...$acr_image_tag"
+          docker push "$acr_image_tag"            
 
   trigger-cd-pipeline:
     runs-on: ubuntu-latest
@@ -199,12 +194,10 @@ jobs:
     environment: dev    
     steps:
       - name: Trigger CD pipeline
-        env:
-          IMAGE_TAG: ${{needs.build-image.outputs.IMAGE_TAG}}
         run: |
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/${{ github.repository }}/actions/workflows/continuous_delivery_dev.yml/dispatches \
-            -d '{"ref":"develop","inputs":{"image_tag":"'"$IMAGE_TAG"'"}}'
+            -d '{"ref":"develop"}'
