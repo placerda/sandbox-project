@@ -36,7 +36,7 @@ jobs:
       PROMPTFLOW_SERVING_ENGINE: ${{ steps.provision-env.outputs.PROMPTFLOW_SERVING_ENGINE }}
       PROMPTFLOW_WORKER_NUM: ${{ steps.provision-env.outputs.PROMPTFLOW_WORKER_NUM }}
       AZURE_PRINCIPAL_ID: ${{ steps.provision-env.outputs.AZURE_PRINCIPAL_ID }}
-      AZURE_STORAGE_ACCOUNT_NAME: ${{ steps.provision-env.outputs.AZURE_STORAGE_ACCOUNT_NAME }}
+      AZURE_STORAGE_ACCOUNT_NAME: ${{ steps.provision-env.outputs.AZURE_STORAGE_ACCOUNT_NAME }} 
 
     steps: 
     - uses: actions/checkout@v4

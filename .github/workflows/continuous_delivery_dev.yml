@@ -2,10 +2,6 @@ name: CD Dev Pipeline
 
 on:
   workflow_dispatch:
-    inputs:
-      image_tag:
-        description: 'Docker image tag'
-        required: true
   
 jobs:
   
@@ -84,11 +80,6 @@ jobs:
     steps:   
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
 
       - name: Set up Azure CLI
         uses: azure/login@v1
