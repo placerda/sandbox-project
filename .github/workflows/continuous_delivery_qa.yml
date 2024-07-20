@@ -12,18 +12,18 @@ jobs:
     runs-on: ubuntu-latest
     environment: qa
     outputs:
-      AZURE_APP_SERVICE_NAME: ${{ steps.provision-env.outputs.AZURE_APP_SERVICE_NAME }}
-      AZURE_APP_SERVICE_PLAN_NAME: ${{ steps.provision-env.outputs.AZURE_APP_SERVICE_PLAN_NAME }}
-      AZURE_CONTAINER_REGISTRY_NAME: ${{ steps.provision-env.outputs.AZURE_CONTAINER_REGISTRY_NAME }}
-      AZURE_CONTAINER_REPOSITORY_NAME: ${{ steps.provision-env.outputs.AZURE_CONTAINER_REPOSITORY_NAME }}
-      AZURE_LOCATION: ${{ steps.provision-env.outputs.AZURE_LOCATION }}
-      AZURE_RESOURCE_GROUP: ${{ steps.provision-env.outputs.AZURE_RESOURCE_GROUP }}
-      AZURE_SUBSCRIPTION_ID: ${{ steps.provision-env.outputs.AZURE_SUBSCRIPTION_ID }}
+      AZURE_APP_SERVICE_NAME: ${{ steps.config-env.outputs.AZURE_APP_SERVICE_NAME }}
+      AZURE_APP_SERVICE_PLAN_NAME: ${{ steps.config-env.outputs.AZURE_APP_SERVICE_PLAN_NAME }}
+      AZURE_CONTAINER_REGISTRY_NAME: ${{ steps.config-env.outputs.AZURE_CONTAINER_REGISTRY_NAME }}
+      AZURE_CONTAINER_REPOSITORY_NAME: ${{ steps.config-env.outputs.AZURE_CONTAINER_REPOSITORY_NAME }}
+      AZURE_LOCATION: ${{ steps.config-env.outputs.AZURE_LOCATION }}
+      AZURE_RESOURCE_GROUP: ${{ steps.config-env.outputs.AZURE_RESOURCE_GROUP }}
+      AZURE_SUBSCRIPTION_ID: ${{ steps.config-env.outputs.AZURE_SUBSCRIPTION_ID }}
     steps: 
       - uses: actions/checkout@v4   
       - name: Provision qa environment
-        uses: ./.github/actions/provision-env
-        id: provision-env
+        uses: ./.github/actions/config-env
+        id: config-env
         with:
           AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
