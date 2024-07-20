@@ -140,6 +140,7 @@ runs:
 
 
         else
+        
           echo "🔶 | Manual provisioning disabled. Will provision environment if needed."
 
           job_provisioned_environment=false
