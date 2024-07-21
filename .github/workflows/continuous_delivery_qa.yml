@@ -229,7 +229,7 @@ jobs:
             exit 1
           else
             echo "✅ | $acr_image_tag exists"
-          fi          
+          fi
 
           # Check if the app exists
           echo "🔶 | Checking if the app exists..."
