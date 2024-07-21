@@ -120,7 +120,7 @@ runs:
           fi        
           echo "🔶 | Resource group $AZURE_RESOURCE_GROUP exist status: $resource_group_exist"
 
-          # Previous deployment exists but the resource group doesn't, need to clean resources.
+          # Previous deployment exists but the resource group doesn't, need to clean resources. 
           # This situation occurs if you made a deployment and then deleted the resource group.
           if [ "$deployment_exists" = true ] && [ "$resource_group_exist" = false ]; then
             echo "🔶 | Deployment exists but resource group $AZURE_RESOURCE_GROUP doesn't, cleaning resources."
