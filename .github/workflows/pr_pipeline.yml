@@ -131,4 +131,5 @@ jobs:
           AZURE_APP_SERVICE_PLAN_NAME: ${{needs.config-env-job.outputs.AZURE_APP_SERVICE_PLAN_NAME}}      
         run: |
           echo "Run AI-Based Flow evaluation"
+          exit 1
         shell: bash
