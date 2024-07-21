@@ -133,7 +133,7 @@ runs:
             VALUE_GHAENV=$(eval echo \${$VAR})
             [ -n "$VALUE_GHAENV" ] && VALUE=$VALUE_GHAENV || VALUE=$VALUE_OUTPUT
             [ -n "$VALUE" ] && [ "$VALUE" != "$VALUE_OUTPUT" ] && azd env set $VAR $VALUE
-            echo "$VAR=$VALUE" >> "$GITHUB_OUTPUT"
+            echo "export $VAR=$VALUE" >> "$GITHUB_OUTPUT"
             echo "$VAR=$VALUE"            
           done
 
