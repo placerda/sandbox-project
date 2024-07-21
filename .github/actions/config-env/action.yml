@@ -140,7 +140,7 @@ runs:
         # Load sample data if needed
         indexSampleData=$([ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ] || [ "$AZURE_SEARCH_INDEX_SAMPLE_DATA" == "true" ] && echo true || echo false)
         if [ $indexSampleData = "true" ]; then
-          echo "Running post-provisioning script to populate sample data."
+          echo "Running post-provisioning script to populate sample data." 
           ./infra/hooks/postprovision.sh
         fi
 
