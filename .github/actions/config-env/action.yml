@@ -66,7 +66,7 @@ runs:
                     "AZURE_OPENAI_CHAT_DEPLOYMENT" "AZURE_OPENAI_EMBEDDING_DEPLOYMENT" "AZURE_OPENAI_EMBEDDING_MODEL"
                     "AZURE_OPENAI_ENDPOINT" "AZURE_OPENAI_NAME" "AZURE_PRINCIPAL_ID" "AZURE_RESOURCE_GROUP" 
                     "AZUREAI_RESOURCE_GROUP" "AZURE_SEARCH_ENDPOINT" "AZURE_SEARCH_INDEX_SAMPLE_DATA"
-                    "AZURE_SEARCH_NAME" "AZURE_STORAGE_ACCOUNT_NAME" "PROMPTFLOW_SERVING_ENGINE" "PROMPTFLOW_WORKER_NUM")
+                  "AZURE_SEARCH_NAME" "AZURE_STORAGE_ACCOUNT_NAME" "PROMPTFLOW_SERVING_ENGINE" "PROMPTFLOW_WORKER_NUM")
 
         manual_environment=${{ inputs.MANUAL_PROVISIONING || 'false' }}
         if [ "$manual_environment" = "true" ]; then
@@ -131,7 +131,7 @@ runs:
           done
 
           # Previous deployment exists. Update provisioned resources in case template has changed.
-          if [  "$deploy_exists" = true ]); then
+          if [  "$deploy_exists" = true ]; then
             echo "Previous deployment exists. Updating provisioned resources..."
             azd provision --no-prompt
           fi
