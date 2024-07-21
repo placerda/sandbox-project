@@ -39,7 +39,7 @@ param azureSearchIndexSampleData string = ''
 var _azureSearchIndexSampleData = !empty(azureSearchIndexSampleData) ? azureSearchIndexSampleData : 'true'
 
 
-@description('Id of the user or app to assign application roles')
+@description('User or service principal identity to assign application roles')
 param principalId string = ''
 param principalType string = 'ServicePrincipal'
 
@@ -252,6 +252,7 @@ output AZURE_TENANT_ID string = tenant().tenantId
 output AZURE_SUBSCRIPTION_ID string = subscription().subscriptionId
 output AZURE_RESOURCE_GROUP string = rg.name
 output AZUREAI_RESOURCE_GROUP string = ai.outputs.resourceGroupName
+output AZURE_PRINCIPAL_ID string = principalId
 
 output AZURE_OPENAI_ENDPOINT string = ai.outputs.openAiEndpoint
 output AZURE_OPENAI_API_VERSION string = oaiApiVersion

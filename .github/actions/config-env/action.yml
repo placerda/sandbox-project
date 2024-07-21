@@ -1,6 +1,7 @@
 name: Config Environment
-description: This action will provision an Azure environment and read its variables (deployment outputs)
-             If you don't want to do the provisioning just get env variables, set MANUAL_PROVISIONING input to true
+description: >
+  This action will provision an Azure environment and read its variables (deployment outputs).
+  If you don't want to do the provisioning, just get env variables by setting MANUAL_PROVISIONING input to true.
 inputs:
   AZURE_CREDENTIALS:
     description: 'Azure credentials'
@@ -43,12 +44,10 @@ runs:
       shell: bash
       run: |
         echo "Logging to Azure Developer CLI..."
-
         AZURE_CREDENTIALS=$(echo '${{ inputs.AZURE_CREDENTIALS }}' | jq -r .)
         CLIENT_ID=$(echo $AZURE_CREDENTIALS | jq -r .clientId)
         CLIENT_SECRET=$(echo $AZURE_CREDENTIALS | jq -r .clientSecret)
         TENANT_ID=$(echo $AZURE_CREDENTIALS | jq -r .tenantId)
-
         azd auth login --client-id $CLIENT_ID --client-secret $CLIENT_SECRET --tenant-id $TENANT_ID
 
     - name: Setup Python 
@@ -61,367 +60,48 @@ runs:
       id: setup-env-step
       run: |
         manual_environment=${{ inputs.MANUAL_PROVISIONING || 'false' }}
-
         if [ "$manual_environment" = "true" ]; then
-          echo "Manual Provisioning"
-          echo "🔶 | Manual provisioning enabled. Action will just output variable values."
-
-          echo "AZURE_SUBSCRIPTION_ID=${{ inputs.AZURE_SUBSCRIPTION_ID }}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID"
-
-          echo "AZURE_LOCATION=${{ inputs.AZURE_LOCATION }}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_LOCATION=$AZURE_LOCATION"
-
-          echo "AZUREAI_HUB_NAME=${AZUREAI_HUB_NAME}" >> "$GITHUB_OUTPUT"
-          echo "AZUREAI_HUB_NAME=$AZUREAI_HUB_NAME"
-
-          echo "AZUREAI_PROJECT_NAME=${AZUREAI_PROJECT_NAME}" >> "$GITHUB_OUTPUT"
-          echo "AZUREAI_PROJECT_NAME=$AZUREAI_PROJECT_NAME"
-
-          echo "AZURE_APP_SERVICE_NAME=${AZURE_APP_SERVICE_NAME}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME"
-
-          echo "AZURE_APP_SERVICE_PLAN_NAME=${AZURE_APP_SERVICE_PLAN_NAME}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME"
-
-          echo "AZURE_CONTAINER_REGISTRY_NAME=${AZURE_CONTAINER_REGISTRY_NAME}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"
-
-          echo "AZURE_CONTAINER_REPOSITORY_NAME=${AZURE_CONTAINER_REPOSITORY_NAME}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_CONTAINER_REPOSITORY_NAME=$AZURE_CONTAINER_REPOSITORY_NAME"
-
-          echo "AZURE_KEY_VAULT_NAME=${AZURE_KEY_VAULT_NAME}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_KEY_VAULT_NAME=$AZURE_KEY_VAULT_NAME"
-
-          echo "AZURE_LOG_ANALYTICS_NAME=${AZURE_LOG_ANALYTICS_NAME}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_LOG_ANALYTICS_NAME=$AZURE_LOG_ANALYTICS_NAME"
-
-          echo "AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION"
-
-          echo "AZURE_OPENAI_CHAT_DEPLOYMENT=${AZURE_OPENAI_CHAT_DEPLOYMENT}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT"
-
-          echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=${AZURE_OPENAI_EMBEDDING_DEPLOYMENT}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT"
-
-          echo "AZURE_OPENAI_EMBEDDING_MODEL=${AZURE_OPENAI_EMBEDDING_MODEL}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL"
-
-          echo "AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}" >> "$GITHUB_OUTPUT" 
-          echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT"
-
-          echo "AZURE_OPENAI_NAME=${AZURE_OPENAI_NAME}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_OPENAI_NAME=$AZURE_OPENAI_NAME"
-
-          echo "AZURE_PRINCIPAL_ID=${AZURE_PRINCIPAL_ID}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_PRINCIPAL_ID=$AZURE_PRINCIPAL_ID"
-
-          echo "AZURE_RESOURCE_GROUP=${AZURE_RESOURCE_GROUP}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
-
-          echo "AZUREAI_RESOURCE_GROUP=${AZUREAI_RESOURCE_GROUP}" >> "$GITHUB_OUTPUT"
-          echo "AZUREAI_RESOURCE_GROUP=$AZUREAI_RESOURCE_GROUP"
-
-          echo "AZURE_SEARCH_ENDPOINT=${AZURE_SEARCH_ENDPOINT}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT"
-
-          echo "AZURE_SEARCH_INDEX_SAMPLE_DATA=${AZURE_SEARCH_INDEX_SAMPLE_DATA}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_SEARCH_INDEX_SAMPLE_DATA=$AZURE_SEARCH_INDEX_SAMPLE_DATA"
-
-          echo "AZURE_SEARCH_NAME=${AZURE_SEARCH_NAME}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_SEARCH_NAME=$AZURE_SEARCH_NAME"
-
-          echo "AZURE_STORAGE_ACCOUNT_NAME=${AZURE_STORAGE_ACCOUNT_NAME}" >> "$GITHUB_OUTPUT"
-          echo "AZURE_STORAGE_ACCOUNT_NAME=$AZURE_STORAGE_ACCOUNT_NAME"
-
-          echo "PROMPTFLOW_SERVING_ENGINE=${PROMPTFLOW_SERVING_ENGINE}" >> "$GITHUB_OUTPUT"
-          echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE"
-
-          echo "PROMPTFLOW_WORKER_NUM=${PROMPTFLOW_WORKER_NUM}" >> "$GITHUB_OUTPUT"
-          echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM"
-
+          echo "Manual Provisioning enabled. Action will just output variable values."
         else
-        
-          echo "🔶 | Manual provisioning disabled. Will provision environment if needed."
-
-          job_provisioned_environment=false
-
-          # initialize azd
-
+          echo "Provisioning environment..."
+          # Initialize azd
           export AZURE_SUBSCRIPTION_ID="${{ inputs.AZURE_SUBSCRIPTION_ID }}"
-          echo "AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID" >> "$GITHUB_OUTPUT"
-          echo "AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID"
-
           export AZURE_LOCATION="${{ inputs.AZURE_LOCATION }}"
-          echo "AZURE_LOCATION=$AZURE_LOCATION" >> "$GITHUB_OUTPUT"
-          echo "AZURE_LOCATION=$AZURE_LOCATION"
-
-          echo "azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $AZURE_LOCATION -s $AZURE_SUBSCRIPTION_ID"
           azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $AZURE_LOCATION -s $AZURE_SUBSCRIPTION_ID
 
-          # Run azd env refresh and capture last deployment outputs
-          echo "🔶 | Run azd env refresh and capture outputs"
+          # Run azd env refresh and capture outputs
           set +e
           output=$(azd env refresh -e "${{ inputs.AZURE_ENV_NAME }}" 2>&1)
           exit_code=$?
           set -e
-          echo "azd env refresh exit code: $exit_code"
-          echo "azd env refresh output:"
-          echo "$output"
-
-          # Check the exit code to determine if there was a previous deployment
-          echo "Check if there was a previous deployment"
           if [ $exit_code -ne 0 ]; then
-            echo "🔶 | No previous deployment exists."
-            deploy_exists=false
-          else
-            echo "🔶 | Previous deployment exists."
-            deploy_exists=true
-          fi
-          echo "deploy_exists=$deploy_exists" >> "$GITHUB_OUTPUT"
-
-          # 1. Provision the environment if it doesn't exist.
-
-          if [ "$deploy_exists" = false ]; then
-              echo "🔶 | Provision the environment since deployment doesn't exist."
-              echo "Running azd provision --no-prompt..." 
-              azd provision --no-prompt
-              job_provisioned_environment=true
-          fi
-
-          # Check if the resource group exists
-
-          echo "🔶 | Checking if the resource group exists"
-          AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)
-          if [ -z "$AZURE_RESOURCE_GROUP" ]; then
-            resource_group_exist=false
-          else
-            resource_group_exist=$(az group exists --name "$AZURE_RESOURCE_GROUP")  
-          fi
-
-          # 2. Force provision if the previous deployment exists but the resource group doesn't.
-          #    This situation occurs if you made a deployment and then deleted the resource group to force reprovisioning.
-
-          if [ "$deploy_exists" = true ] && [ "$resource_group_exist" = false ]; then
-            echo "🔶 | Deployment exists but resource group $AZURE_RESOURCE_GROUP doesn't."
-            echo "🔶 | Clean up any residue and do a new."
-            echo "azd down --force --purge"
-            azd down --force --purge
-            echo "Running azd provision --no-prompt ... "
-            rm -rf .azure
-            azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $AZURE_LOCATION -s $AZURE_SUBSCRIPTION_ID
+            echo "No previous deployment exists."
             azd provision --no-prompt
-            job_provisioned_environment=true
-          fi          
-
-          # 3. Reuse output values from the last deployment to reuse resource names and avoid duplicating resources.
-          #    If the variable with the resource name is set in the GitHub Environment, don't reuse the last deployment parameter value.
-
-          echo "🔶 | ${{ inputs.AZURE_ENV_NAME }} environment variables"
-
-          # Set environment variables by getting them from the GitHub environment or the last deployment. GitHub environment variables take precedence over those from the last deployment.
-
-          # The following section sets environment variables for a specific environment. 
-          # It retrieves each variable's value from either the GitHub Environment or the latest AZD deployment.
-          # Here's how it works:
-          # - The variable takes the value from the GitHub Environment if available; otherwise, it uses the latest deployment value.
-          # - If the new value differs from the latest deployment, the AZD variable is updated.
-          # - Finally, it adds the variable to the GitHub output for use by the calling job.
-
-          AZUREAI_HUB_NAME_OUTPUT=${AZUREAI_HUB_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZUREAI_HUB_NAME | cut -d'=' -f2 | tr -d '"' || true)}
-          AZUREAI_HUB_NAME_GHAENV=$AZUREAI_HUB_NAME
-          [ -n "$AZUREAI_HUB_NAME_GHAENV" ] && AZUREAI_HUB_NAME=$AZUREAI_HUB_NAME_GHAENV || AZUREAI_HUB_NAME=$AZUREAI_HUB_NAME_OUTPUT
-          [ -n "$AZUREAI_HUB_NAME" ] && [ "$AZUREAI_HUB_NAME" != "$AZUREAI_HUB_NAME_OUTPUT" ] && azd env set AZUREAI_HUB_NAME $AZUREAI_HUB_NAME
-          echo "AZUREAI_HUB_NAME=$AZUREAI_HUB_NAME" >> "$GITHUB_OUTPUT"
-          echo "AZUREAI_HUB_NAME=$AZUREAI_HUB_NAME"
-
-          AZUREAI_PROJECT_NAME_OUTPUT=${AZUREAI_PROJECT_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZUREAI_PROJECT_NAME | cut -d'=' -f2 | tr -d '"' || true)}
-          AZUREAI_PROJECT_NAME_GHAENV=$AZUREAI_PROJECT_NAME
-          [ -n "$AZUREAI_PROJECT_NAME_GHAENV" ] && AZUREAI_PROJECT_NAME=$AZUREAI_PROJECT_NAME_GHAENV || AZUREAI_PROJECT_NAME=$AZUREAI_PROJECT_NAME_OUTPUT
-          [ -n "$AZUREAI_PROJECT_NAME" ] && [ "$AZUREAI_PROJECT_NAME" != "$AZUREAI_PROJECT_NAME_OUTPUT" ] && azd env set AZUREAI_PROJECT_NAME $AZUREAI_PROJECT_NAME
-          echo "AZUREAI_PROJECT_NAME=$AZUREAI_PROJECT_NAME" >> "$GITHUB_OUTPUT"
-          echo "AZUREAI_PROJECT_NAME=$AZUREAI_PROJECT_NAME"
-
-          AZURE_APP_INSIGHTS_NAME_OUTPUT=${AZURE_APP_INSIGHTS_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_INSIGHTS_NAME | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_APP_INSIGHTS_NAME_GHAENV=$AZURE_APP_INSIGHTS_NAME
-          [ -n "$AZURE_APP_INSIGHTS_NAME_GHAENV" ] && AZURE_APP_INSIGHTS_NAME=$AZURE_APP_INSIGHTS_NAME_GHAENV || AZURE_APP_INSIGHTS_NAME=$AZURE_APP_INSIGHTS_NAME_OUTPUT
-          [ -n "$AZURE_APP_INSIGHTS_NAME" ] && [ "$AZURE_APP_INSIGHTS_NAME" != "$AZURE_APP_INSIGHTS_NAME_OUTPUT" ] && azd env set AZURE_APP_INSIGHTS_NAME $AZURE_APP_INSIGHTS_NAME
-          echo "AZURE_APP_INSIGHTS_NAME=$AZURE_APP_INSIGHTS_NAME" >> "$GITHUB_OUTPUT"
-          echo "AZURE_APP_INSIGHTS_NAME=$AZURE_APP_INSIGHTS_NAME"
-
-          AZURE_APP_SERVICE_NAME_OUTPUT=${AZURE_APP_SERVICE_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_NAME | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_APP_SERVICE_NAME_GHAENV=$AZURE_APP_SERVICE_NAME
-          [ -n "$AZURE_APP_SERVICE_NAME_GHAENV" ] && AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME_GHAENV || AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME_OUTPUT
-          [ -n "$AZURE_APP_SERVICE_NAME" ] && [ "$AZURE_APP_SERVICE_NAME" != "$AZURE_APP_SERVICE_NAME_OUTPUT" ] && azd env set AZURE_APP_SERVICE_NAME $AZURE_APP_SERVICE_NAME
-          echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME" >> "$GITHUB_OUTPUT"
-          echo "AZURE_APP_SERVICE_NAME=$AZURE_APP_SERVICE_NAME"
-
-          AZURE_APP_SERVICE_PLAN_NAME_OUTPUT=${AZURE_APP_SERVICE_PLAN_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_APP_SERVICE_PLAN_NAME | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_APP_SERVICE_PLAN_NAME_GHAENV=$AZURE_APP_SERVICE_PLAN_NAME
-          [ -n "$AZURE_APP_SERVICE_PLAN_NAME_GHAENV" ] && AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME_GHAENV || AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME_OUTPUT
-          [ -n "$AZURE_APP_SERVICE_PLAN_NAME" ] && [ "$AZURE_APP_SERVICE_PLAN_NAME" != "$AZURE_APP_SERVICE_PLAN_NAME_OUTPUT" ] && azd env set AZURE_APP_SERVICE_PLAN_NAME $AZURE_APP_SERVICE_PLAN_NAME
-          echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME" >> "$GITHUB_OUTPUT"
-          echo "AZURE_APP_SERVICE_PLAN_NAME=$AZURE_APP_SERVICE_PLAN_NAME"
-
-          AZURE_CONTAINER_REGISTRY_NAME_OUTPUT=${AZURE_CONTAINER_REGISTRY_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REGISTRY_NAME | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_CONTAINER_REGISTRY_NAME_GHAENV=$AZURE_CONTAINER_REGISTRY_NAME
-          [ -n "$AZURE_CONTAINER_REGISTRY_NAME_GHAENV" ] && AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME_GHAENV || AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME_OUTPUT
-          [ -n "$AZURE_CONTAINER_REGISTRY_NAME" ] && [ "$AZURE_CONTAINER_REGISTRY_NAME" != "$AZURE_CONTAINER_REGISTRY_NAME_OUTPUT" ] && azd env set AZURE_CONTAINER_REGISTRY_NAME $AZURE_CONTAINER_REGISTRY_NAME
-          echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME" >> "$GITHUB_OUTPUT"
-          echo "AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME"
-
-          AZURE_CONTAINER_REPOSITORY_NAME_OUTPUT=${AZURE_CONTAINER_REPOSITORY_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_CONTAINER_REPOSITORY_NAME | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_CONTAINER_REPOSITORY_NAME_GHAENV=$AZURE_CONTAINER_REPOSITORY_NAME
-          [ -n "$AZURE_CONTAINER_REPOSITORY_NAME_GHAENV" ] && AZURE_CONTAINER_REPOSITORY_NAME=$AZURE_CONTAINER_REPOSITORY_NAME_GHAENV || AZURE_CONTAINER_REPOSITORY_NAME=$AZURE_CONTAINER_REPOSITORY_NAME_OUTPUT
-          [ -n "$AZURE_CONTAINER_REPOSITORY_NAME" ] && [ "$AZURE_CONTAINER_REPOSITORY_NAME" != "$AZURE_CONTAINER_REPOSITORY_NAME_OUTPUT" ] && azd env set AZURE_CONTAINER_REPOSITORY_NAME $AZURE_CONTAINER_REPOSITORY_NAME
-          echo "AZURE_CONTAINER_REPOSITORY_NAME=$AZURE_CONTAINER_REPOSITORY_NAME" >> "$GITHUB_OUTPUT"
-          echo "AZURE_CONTAINER_REPOSITORY_NAME=$AZURE_CONTAINER_REPOSITORY_NAME"
-
-          AZURE_KEY_VAULT_NAME_OUTPUT=${AZURE_KEY_VAULT_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_KEY_VAULT_NAME | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_KEY_VAULT_NAME_GHAENV=$AZURE_KEY_VAULT_NAME
-          [ -n "$AZURE_KEY_VAULT_NAME_GHAENV" ] && AZURE_KEY_VAULT_NAME=$AZURE_KEY_VAULT_NAME_GHAENV || AZURE_KEY_VAULT_NAME=$AZURE_KEY_VAULT_NAME_OUTPUT
-          [ -n "$AZURE_KEY_VAULT_NAME" ] && [ "$AZURE_KEY_VAULT_NAME" != "$AZURE_KEY_VAULT_NAME_OUTPUT" ] && azd env set AZURE_KEY_VAULT_NAME $AZURE_KEY_VAULT_NAME
-          echo "AZURE_KEY_VAULT_NAME=$AZURE_KEY_VAULT_NAME" >> "$GITHUB_OUTPUT"
-          echo "AZURE_KEY_VAULT_NAME=$AZURE_KEY_VAULT_NAME"
-
-          AZURE_LOG_ANALYTICS_NAME_OUTPUT=${AZURE_LOG_ANALYTICS_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_LOG_ANALYTICS_NAME | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_LOG_ANALYTICS_NAME_GHAENV=$AZURE_LOG_ANALYTICS_NAME
-          [ -n "$AZURE_LOG_ANALYTICS_NAME_GHAENV" ] && AZURE_LOG_ANALYTICS_NAME=$AZURE_LOG_ANALYTICS_NAME_GHAENV || AZURE_LOG_ANALYTICS_NAME=$AZURE_LOG_ANALYTICS_NAME_OUTPUT
-          [ -n "$AZURE_LOG_ANALYTICS_NAME" ] && [ "$AZURE_LOG_ANALYTICS_NAME" != "$AZURE_LOG_ANALYTICS_NAME_OUTPUT" ] && azd env set AZURE_LOG_ANALYTICS_NAME $AZURE_LOG_ANALYTICS_NAME
-          echo "AZURE_LOG_ANALYTICS_NAME=$AZURE_LOG_ANALYTICS_NAME" >> "$GITHUB_OUTPUT"
-          echo "AZURE_LOG_ANALYTICS_NAME=$AZURE_LOG_ANALYTICS_NAME"
-
-          AZURE_OPENAI_API_VERSION_OUTPUT=${AZURE_OPENAI_API_VERSION:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_API_VERSION | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_OPENAI_API_VERSION_GHAENV=$AZURE_OPENAI_API_VERSION
-          [ -n "$AZURE_OPENAI_API_VERSION_GHAENV" ] && AZURE_OPENAI_API
-
-          _VERSION=$AZURE_OPENAI_API_VERSION_GHAENV || AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION_OUTPUT
-          [ -n "$AZURE_OPENAI_API_VERSION" ] && [ "$AZURE_OPENAI_API_VERSION" != "$AZURE_OPENAI_API_VERSION_OUTPUT" ] && azd env set AZURE_OPENAI_API_VERSION $AZURE_OPENAI_API_VERSION
-          echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION" >> "$GITHUB_OUTPUT"
-          echo "AZURE_OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION"
-
-          AZURE_OPENAI_CHAT_DEPLOYMENT_OUTPUT=${AZURE_OPENAI_CHAT_DEPLOYMENT:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_CHAT_DEPLOYMENT | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_OPENAI_CHAT_DEPLOYMENT_GHAENV=$AZURE_OPENAI_CHAT_DEPLOYMENT
-          [ -n "$AZURE_OPENAI_CHAT_DEPLOYMENT_GHAENV" ] && AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT_GHAENV || AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT_OUTPUT
-          [ -n "$AZURE_OPENAI_CHAT_DEPLOYMENT" ] && [ "$AZURE_OPENAI_CHAT_DEPLOYMENT" != "$AZURE_OPENAI_CHAT_DEPLOYMENT_OUTPUT" ] && azd env set AZURE_OPENAI_CHAT_DEPLOYMENT $AZURE_OPENAI_CHAT_DEPLOYMENT
-          echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT" >> "$GITHUB_OUTPUT"
-          echo "AZURE_OPENAI_CHAT_DEPLOYMENT=$AZURE_OPENAI_CHAT_DEPLOYMENT"
-
-          AZURE_OPENAI_EMBEDDING_DEPLOYMENT_OUTPUT=${AZURE_OPENAI_EMBEDDING_DEPLOYMENT:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_DEPLOYMENT | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_OPENAI_EMBEDDING_DEPLOYMENT_GHAENV=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT
-          [ -n "$AZURE_OPENAI_EMBEDDING_DEPLOYMENT_GHAENV" ] && AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT_GHAENV || AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT_OUTPUT
-          [ -n "$AZURE_OPENAI_EMBEDDING_DEPLOYMENT" ] && [ "$AZURE_OPENAI_EMBEDDING_DEPLOYMENT" != "$AZURE_OPENAI_EMBEDDING_DEPLOYMENT_OUTPUT" ] && azd env set AZURE_OPENAI_EMBEDDING_DEPLOYMENT $AZURE_OPENAI_EMBEDDING_DEPLOYMENT
-          echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT" >> "$GITHUB_OUTPUT"
-          echo "AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$AZURE_OPENAI_EMBEDDING_DEPLOYMENT"
-
-          AZURE_OPENAI_EMBEDDING_MODEL_OUTPUT=${AZURE_OPENAI_EMBEDDING_MODEL:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_EMBEDDING_MODEL | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_OPENAI_EMBEDDING_MODEL_GHAENV=$AZURE_OPENAI_EMBEDDING_MODEL
-          [ -n "$AZURE_OPENAI_EMBEDDING_MODEL_GHAENV" ] && AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL_GHAENV || AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL_OUTPUT
-          [ -n "$AZURE_OPENAI_EMBEDDING_MODEL" ] && [ "$AZURE_OPENAI_EMBEDDING_MODEL" != "$AZURE_OPENAI_EMBEDDING_MODEL_OUTPUT" ] && azd env set AZURE_OPENAI_EMBEDDING_MODEL $AZURE_OPENAI_EMBEDDING_MODEL
-          echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL" >> "$GITHUB_OUTPUT"
-          echo "AZURE_OPENAI_EMBEDDING_MODEL=$AZURE_OPENAI_EMBEDDING_MODEL"
-
-          AZURE_OPENAI_ENDPOINT_OUTPUT=${AZURE_OPENAI_ENDPOINT:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_ENDPOINT | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_OPENAI_ENDPOINT_GHAENV=$AZURE_OPENAI_ENDPOINT
-          [ -n "$AZURE_OPENAI_ENDPOINT_GHAENV" ] && AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT_GHAENV || AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT_OUTPUT
-          [ -n "$AZURE_OPENAI_ENDPOINT" ] && [ "$AZURE_OPENAI_ENDPOINT" != "$AZURE_OPENAI_ENDPOINT_OUTPUT" ] && azd env set AZURE_OPENAI_ENDPOINT $AZURE_OPENAI_ENDPOINT
-          echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT" >> "$GITHUB_OUTPUT"
-          echo "AZURE_OPENAI_ENDPOINT=$AZURE_OPENAI_ENDPOINT"
-
-          AZURE_OPENAI_NAME_OUTPUT=${AZURE_OPENAI_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_OPENAI_NAME | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_OPENAI_NAME_GHAENV=$AZURE_OPENAI_NAME
-          [ -n "$AZURE_OPENAI_NAME_GHAENV" ] && AZURE_OPENAI_NAME=$AZURE_OPENAI_NAME_GHAENV || AZURE_OPENAI_NAME=$AZURE_OPENAI_NAME_OUTPUT
-          [ -n "$AZURE_OPENAI_NAME" ] && [ "$AZURE_OPENAI_NAME" != "$AZURE_OPENAI_NAME_OUTPUT" ] && azd env set AZURE_OPENAI_NAME $AZURE_OPENAI_NAME
-          echo "AZURE_OPENAI_NAME=$AZURE_OPENAI_NAME" >> "$GITHUB_OUTPUT"
-          echo "AZURE_OPENAI_NAME=$AZURE_OPENAI_NAME"
-
-          AZURE_PRINCIPAL_ID_OUTPUT=${AZURE_PRINCIPAL_ID:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_PRINCIPAL_ID | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_PRINCIPAL_ID_GHAENV=$AZURE_PRINCIPAL_ID
-          [ -n "$AZURE_PRINCIPAL_ID_GHAENV" ] && AZURE_PRINCIPAL_ID=$AZURE_PRINCIPAL_ID_GHAENV || AZURE_PRINCIPAL_ID=$AZURE_PRINCIPAL_ID_OUTPUT
-          [ -n "$AZURE_PRINCIPAL_ID" ] && [ "$AZURE_PRINCIPAL_ID" != "$AZURE_PRINCIPAL_ID_OUTPUT" ] && azd env set AZURE_PRINCIPAL_ID $AZURE_PRINCIPAL_ID
-          echo "AZURE_PRINCIPAL_ID=$AZURE_PRINCIPAL_ID" >> "$GITHUB_OUTPUT"
-          echo "AZURE_PRINCIPAL_ID=$AZURE_PRINCIPAL_ID"
-
-          AZURE_RESOURCE_GROUP_OUTPUT=${AZURE_RESOURCE_GROUP:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_RESOURCE_GROUP_GHAENV=$AZURE_RESOURCE_GROUP
-          [ -n "$AZURE_RESOURCE_GROUP_GHAENV" ] && AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP_GHAENV || AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP_OUTPUT
-          [ -n "$AZURE_RESOURCE_GROUP" ] && [ "$AZURE_RESOURCE_GROUP" != "$AZURE_RESOURCE_GROUP_OUTPUT" ] && azd env set AZURE_RESOURCE_GROUP $AZURE_RESOURCE_GROUP
-          echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP" >> "$GITHUB_OUTPUT"
-          echo "AZURE_RESOURCE_GROUP=$AZURE_RESOURCE_GROUP"
-
-          AZUREAI_RESOURCE_GROUP_OUTPUT=${AZUREAI_RESOURCE_GROUP:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZUREAI_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)}
-          AZUREAI_RESOURCE_GROUP_GHAENV=$AZUREAI_RESOURCE_GROUP
-          [ -n "$AZUREAI_RESOURCE_GROUP_GHAENV" ] && AZUREAI_RESOURCE_GROUP=$AZUREAI_RESOURCE_GROUP_GHAENV || AZUREAI_RESOURCE_GROUP=$AZUREAI_RESOURCE_GROUP_OUTPUT
-          [ -n "$AZUREAI_RESOURCE_GROUP" ] && [ "$AZUREAI_RESOURCE_GROUP" != "$AZUREAI_RESOURCE_GROUP_OUTPUT" ] && azd env set AZUREAI_RESOURCE_GROUP $AZUREAI_RESOURCE_GROUP
-          echo "AZUREAI_RESOURCE_GROUP=$AZUREAI_RESOURCE_GROUP" >> "$GITHUB_OUTPUT"
-          echo "AZUREAI_RESOURCE_GROUP=$AZUREAI_RESOURCE_GROUP"
-
-          AZURE_SEARCH_ENDPOINT_OUTPUT=${AZURE_SEARCH_ENDPOINT:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_ENDPOINT | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_SEARCH_ENDPOINT_GHAENV=$AZURE_SEARCH_ENDPOINT
-          [ -n "$AZURE_SEARCH_ENDPOINT_GHAENV" ] && AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT_GHAENV || AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT_OUTPUT
-          [ -n "$AZURE_SEARCH_ENDPOINT" ] && [ "$AZURE_SEARCH_ENDPOINT" != "$AZURE_SEARCH_ENDPOINT_OUTPUT" ] && azd env set AZURE_SEARCH_ENDPOINT $AZ
-
-          URE_SEARCH_ENDPOINT
-          echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT" >> "$GITHUB_OUTPUT"
-          echo "AZURE_SEARCH_ENDPOINT=$AZURE_SEARCH_ENDPOINT"
-
-          AZURE_SEARCH_INDEX_SAMPLE_DATA_OUTPUT=${AZURE_SEARCH_INDEX_SAMPLE_DATA:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_INDEX_SAMPLE_DATA | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_SEARCH_INDEX_SAMPLE_DATA_GHAENV=$AZURE_SEARCH_INDEX_SAMPLE_DATA
-          [ -n "$AZURE_SEARCH_INDEX_SAMPLE_DATA_GHAENV" ] && AZURE_SEARCH_INDEX_SAMPLE_DATA=$AZURE_SEARCH_INDEX_SAMPLE_DATA_GHAENV || AZURE_SEARCH_INDEX_SAMPLE_DATA=$AZURE_SEARCH_INDEX_SAMPLE_DATA_OUTPUT
-          [ -n "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ] && [ "$AZURE_SEARCH_INDEX_SAMPLE_DATA" != "$AZURE_SEARCH_INDEX_SAMPLE_DATA_OUTPUT" ] && azd env set AZURE_SEARCH_INDEX_SAMPLE_DATA $AZURE_SEARCH_INDEX_SAMPLE_DATA
-          echo "AZURE_SEARCH_INDEX_SAMPLE_DATA=$AZURE_SEARCH_INDEX_SAMPLE_DATA" >> "$GITHUB_OUTPUT"
-          echo "AZURE_SEARCH_INDEX_SAMPLE_DATA=$AZURE_SEARCH_INDEX_SAMPLE_DATA"
-
-          AZURE_SEARCH_NAME_OUTPUT=${AZURE_SEARCH_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_SEARCH_NAME | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_SEARCH_NAME_GHAENV=$AZURE_SEARCH_NAME
-          [ -n "$AZURE_SEARCH_NAME_GHAENV" ] && AZURE_SEARCH_NAME=$AZURE_SEARCH_NAME_GHAENV || AZURE_SEARCH_NAME=$AZURE_SEARCH_NAME_OUTPUT
-          [ -n "$AZURE_SEARCH_NAME" ] && [ "$AZURE_SEARCH_NAME" != "$AZURE_SEARCH_NAME_OUTPUT" ] && azd env set AZURE_SEARCH_NAME $AZURE_SEARCH_NAME
-          echo "AZURE_SEARCH_NAME=$AZURE_SEARCH_NAME" >> "$GITHUB_OUTPUT"
-          echo "AZURE_SEARCH_NAME=$AZURE_SEARCH_NAME"
-
-          AZURE_STORAGE_ACCOUNT_NAME_OUTPUT=${AZURE_STORAGE_ACCOUNT_NAME:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_STORAGE_ACCOUNT_NAME | cut -d'=' -f2 | tr -d '"' || true)}
-          AZURE_STORAGE_ACCOUNT_NAME_GHAENV=$AZURE_STORAGE_ACCOUNT_NAME
-          [ -n "$AZURE_STORAGE_ACCOUNT_NAME_GHAENV" ] && AZURE_STORAGE_ACCOUNT_NAME=$AZURE_STORAGE_ACCOUNT_NAME_GHAENV || AZURE_STORAGE_ACCOUNT_NAME=$AZURE_STORAGE_ACCOUNT_NAME_OUTPUT
-          [ -n "$AZURE_STORAGE_ACCOUNT_NAME" ] && [ "$AZURE_STORAGE_ACCOUNT_NAME" != "$AZURE_STORAGE_ACCOUNT_NAME_OUTPUT" ] && azd env set AZURE_STORAGE_ACCOUNT_NAME $AZURE_STORAGE_ACCOUNT_NAME
-          echo "AZURE_STORAGE_ACCOUNT_NAME=$AZURE_STORAGE_ACCOUNT_NAME" >> "$GITHUB_OUTPUT"
-          echo "AZURE_STORAGE_ACCOUNT_NAME=$AZURE_STORAGE_ACCOUNT_NAME"
-
-          PROMPTFLOW_SERVING_ENGINE_OUTPUT=${PROMPTFLOW_SERVING_ENGINE:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep PROMPTFLOW_SERVING_ENGINE | cut -d'=' -f2 | tr -d '"' || true)}
-          PROMPTFLOW_SERVING_ENGINE_GHAENV=$PROMPTFLOW_SERVING_ENGINE
-          [ -n "$PROMPTFLOW_SERVING_ENGINE_GHAENV" ] && PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE_GHAENV || PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE_OUTPUT
-          [ -n "$PROMPTFLOW_SERVING_ENGINE" ] && [ "$PROMPTFLOW_SERVING_ENGINE" != "$PROMPTFLOW_SERVING_ENGINE_OUTPUT" ] && azd env set PROMPTFLOW_SERVING_ENGINE $PROMPTFLOW_SERVING_ENGINE
-          echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE" >> "$GITHUB_OUTPUT"
-          echo "PROMPTFLOW_SERVING_ENGINE=$PROMPTFLOW_SERVING_ENGINE"
-
-          PROMPTFLOW_WORKER_NUM_OUTPUT=${PROMPTFLOW_WORKER_NUM:-$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep PROMPTFLOW_WORKER_NUM | cut -d'=' -f2 | tr -d '"' || true)}
-          PROMPTFLOW_WORKER_NUM_GHAENV=$PROMPTFLOW_WORKER_NUM
-          [ -n "$PROMPTFLOW_WORKER_NUM_GHAENV" ] && PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM_GHAENV || PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM_OUTPUT
-          [ -n "$PROMPTFLOW_WORKER_NUM" ] && [ "$PROMPTFLOW_WORKER_NUM" != "$PROMPTFLOW_WORKER_NUM_OUTPUT" ] && azd env set PROMPTFLOW_WORKER_NUM $PROMPTFLOW_WORKER_NUM
-          echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM" >> "$GITHUB_OUTPUT"
-          echo "PROMPTFLOW_WORKER_NUM=$PROMPTFLOW_WORKER_NUM"
-
-
-          # 4. Update provisioned resources in case you made some changes in the Bicep template.   
-
-          if [ "$job_provisioned_environment" = false ]; then
-            echo "🔶 | Resource group $AZURE_RESOURCE_GROUP exists."
-            echo "🔶 | Update provisioned resources in case the IaaC template has changed."
-            echo "Running azd provision --no-prompt ..."
+          else
+            echo "Previous deployment exists."
             azd provision --no-prompt
-            job_provisioned_environment=true
-          fi  
+          fi
 
+          # Set environment variables
+          VARIABLES=("AZUREAI_HUB_NAME" "AZUREAI_PROJECT_NAME" "AZURE_APP_INSIGHTS_NAME" "AZURE_APP_SERVICE_NAME"
+                      "AZURE_APP_SERVICE_PLAN_NAME" "AZURE_CONTAINER_REGISTRY_NAME" "AZURE_CONTAINER_REPOSITORY_NAME"
+                      "AZURE_KEY_VAULT_NAME" "AZURE_LOG_ANALYTICS_NAME" "AZURE_OPENAI_API_VERSION" 
+                      "AZURE_OPENAI_CHAT_DEPLOYMENT" "AZURE_OPENAI_EMBEDDING_DEPLOYMENT" "AZURE_OPENAI_EMBEDDING_MODEL"
+                      "AZURE_OPENAI_ENDPOINT" "AZURE_OPENAI_NAME" "AZURE_PRINCIPAL_ID" "AZURE_RESOURCE_GROUP" 
+                      "AZUREAI_RESOURCE_GROUP" "AZURE_SEARCH_ENDPOINT" "AZURE_SEARCH_INDEX_SAMPLE_DATA"
+                      "AZURE_SEARCH_NAME" "AZURE_STORAGE_ACCOUNT_NAME" "PROMPTFLOW_SERVING_ENGINE" "PROMPTFLOW_WORKER_NUM")
+          for VAR in "${VARIABLES[@]}"; do
+            VALUE_OUTPUT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep $VAR | cut -d'=' -f2 | tr -d '"' || true)
+            VALUE_GHAENV=$(eval echo \${$VAR})
+            [ -n "$VALUE_GHAENV" ] && VALUE=$VALUE_GHAENV || VALUE=$VALUE_OUTPUT
+            [ -n "$VALUE" ] && [ "$VALUE" != "$VALUE_OUTPUT" ] && azd env set $VAR $VALUE
+            echo "$VAR=$VALUE" >> "$GITHUB_OUTPUT"
+          done
         fi
-
         indexSampleData=$([ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ] || [ "$AZURE_SEARCH_INDEX_SAMPLE_DATA" == "true" ] && echo true || echo false)
-        echo indexSampleData=$indexSampleData
-
         if [ $indexSampleData = "true" ]; then
-          echo "🔶 | Post-provisioning - run post-provisioning script to populate sample data."
+          echo "Running post-provisioning script to populate sample data."
           ./infra/hooks/postprovision.sh
-        else
-          echo "🔶 | Post-provisioning - set not to run post-provisioning script to populate sample data."
         fi
 
 outputs:
