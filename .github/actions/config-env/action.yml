@@ -103,7 +103,7 @@ runs:
           fi
 
           # Checking if the resource group exists
-          AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)
+          export AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)
           if [ -z "$AZURE_RESOURCE_GROUP" ]; then
             resource_group_exist=false
           else
@@ -136,7 +136,8 @@ runs:
             VALUE_GHAENV=$(eval echo \${$VAR})
             [ -n "$VALUE_GHAENV" ] && VALUE=$VALUE_GHAENV || VALUE=$VALUE_OUTPUT
             [ -n "$VALUE" ] && [ "$VALUE" != "$VALUE_OUTPUT" ] && azd env set $VAR $VALUE
-            echo "export $VAR=$VALUE" >> "$GITHUB_OUTPUT"
+            echo "$VAR=$VALUE" >> "$GITHUB_OUTPUT"
+            export $VAR=$VALUE
             echo "$VAR=$VALUE"            
           done
 
