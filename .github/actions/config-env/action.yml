@@ -59,11 +59,25 @@ runs:
       shell: bash
       id: setup-env-step
       run: |
+
+        VARIABLES=("AZUREAI_HUB_NAME" "AZUREAI_PROJECT_NAME" "AZURE_APP_INSIGHTS_NAME" "AZURE_APP_SERVICE_NAME"
+                    "AZURE_APP_SERVICE_PLAN_NAME" "AZURE_CONTAINER_REGISTRY_NAME" "AZURE_CONTAINER_REPOSITORY_NAME"
+                    "AZURE_KEY_VAULT_NAME" "AZURE_LOG_ANALYTICS_NAME" "AZURE_OPENAI_API_VERSION" 
+                    "AZURE_OPENAI_CHAT_DEPLOYMENT" "AZURE_OPENAI_EMBEDDING_DEPLOYMENT" "AZURE_OPENAI_EMBEDDING_MODEL"
+                    "AZURE_OPENAI_ENDPOINT" "AZURE_OPENAI_NAME" "AZURE_PRINCIPAL_ID" "AZURE_RESOURCE_GROUP" 
+                    "AZUREAI_RESOURCE_GROUP" "AZURE_SEARCH_ENDPOINT" "AZURE_SEARCH_INDEX_SAMPLE_DATA"
+                    "AZURE_SEARCH_NAME" "AZURE_STORAGE_ACCOUNT_NAME" "PROMPTFLOW_SERVING_ENGINE" "PROMPTFLOW_WORKER_NUM")
+
         manual_environment=${{ inputs.MANUAL_PROVISIONING || 'false' }}
         if [ "$manual_environment" = "true" ]; then
           echo "Manual Provisioning enabled. Action will just output variable values."
+          # Set environment variables
+          for VAR in "${VARIABLES[@]}"; do
+            echo "$VAR=$VALUE_GHAENV" >> "$GITHUB_OUTPUT"
+            echo "$VAR=$VALUE_GHAENV"
+          done
+
         else
-          echo "Provisioning environment..."
           # Initialize azd
           export AZURE_SUBSCRIPTION_ID="${{ inputs.AZURE_SUBSCRIPTION_ID }}"
           export AZURE_LOCATION="${{ inputs.AZURE_LOCATION }}"
@@ -76,28 +90,54 @@ runs:
           set -e
           if [ $exit_code -ne 0 ]; then
             echo "No previous deployment exists."
-            azd provision --no-prompt
+            deployment_exists=false
           else
             echo "Previous deployment exists."
+            deployment_exists=true
+          fi
+
+          # Checking if previous deployment exists
+          if [  "$deploy_exists" = false ]; then
+            echo "Provisioning environment..."
             azd provision --no-prompt
           fi
 
+          # Checking if the resource group exists
+          AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)
+          if [ -z "$AZURE_RESOURCE_GROUP" ]; then
+            resource_group_exist=false
+          else
+            resource_group_exist=$(az group exists --name "$AZURE_RESOURCE_GROUP")  
+          fi        
+          echo "Resource group exist status: $resource_group_exist"
+
+          # Previous deployment exists but the resource group doesn't, need to clean resources.
+          # This situation occurs if you made a deployment and then deleted the resource group.
+          if [ "$deploy_exists" = true ] && [ "$resource_group_exist" = false ]; then
+            echo "Deployment exists but resource group $AZURE_RESOURCE_GROUP doesn't, cleaning resources."
+            azd down --force --purge
+            rm -rf .azure
+            azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $AZURE_LOCATION -s $AZURE_SUBSCRIPTION_ID
+          fi           
+
           # Set environment variables
-          VARIABLES=("AZUREAI_HUB_NAME" "AZUREAI_PROJECT_NAME" "AZURE_APP_INSIGHTS_NAME" "AZURE_APP_SERVICE_NAME"
-                      "AZURE_APP_SERVICE_PLAN_NAME" "AZURE_CONTAINER_REGISTRY_NAME" "AZURE_CONTAINER_REPOSITORY_NAME"
-                      "AZURE_KEY_VAULT_NAME" "AZURE_LOG_ANALYTICS_NAME" "AZURE_OPENAI_API_VERSION" 
-                      "AZURE_OPENAI_CHAT_DEPLOYMENT" "AZURE_OPENAI_EMBEDDING_DEPLOYMENT" "AZURE_OPENAI_EMBEDDING_MODEL"
-                      "AZURE_OPENAI_ENDPOINT" "AZURE_OPENAI_NAME" "AZURE_PRINCIPAL_ID" "AZURE_RESOURCE_GROUP" 
-                      "AZUREAI_RESOURCE_GROUP" "AZURE_SEARCH_ENDPOINT" "AZURE_SEARCH_INDEX_SAMPLE_DATA"
-                      "AZURE_SEARCH_NAME" "AZURE_STORAGE_ACCOUNT_NAME" "PROMPTFLOW_SERVING_ENGINE" "PROMPTFLOW_WORKER_NUM")
           for VAR in "${VARIABLES[@]}"; do
             VALUE_OUTPUT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep $VAR | cut -d'=' -f2 | tr -d '"' || true)
             VALUE_GHAENV=$(eval echo \${$VAR})
             [ -n "$VALUE_GHAENV" ] && VALUE=$VALUE_GHAENV || VALUE=$VALUE_OUTPUT
             [ -n "$VALUE" ] && [ "$VALUE" != "$VALUE_OUTPUT" ] && azd env set $VAR $VALUE
             echo "$VAR=$VALUE" >> "$GITHUB_OUTPUT"
+            echo "$VAR=$VALUE"            
           done
+
+          # Previous deployment exists. Update provisioned resources in case template has changed.
+          if [  "$deploy_exists" = true ]); then
+            echo "Previous deployment exists. Updating provisioned resources..."
+            azd provision --no-prompt
+          fi
         fi
+
+        # Load sample data if needed
         indexSampleData=$([ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ] || [ "$AZURE_SEARCH_INDEX_SAMPLE_DATA" == "true" ] && echo true || echo false)
         if [ $indexSampleData = "true" ]; then
           echo "Running post-provisioning script to populate sample data."
