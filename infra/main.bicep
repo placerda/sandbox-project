@@ -9,6 +9,9 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
+var _abbrs = loadJsonContent('./abbreviations.json')
+param deploymentTimestamp string = utcNow()
+
 // Names parameters
 
 param aiHubName string = '' 
@@ -17,7 +20,9 @@ param resourceGroupName string = ''
 param aiResourceGroupName string = ''
 param appInsightsName string = ''
 param appServiceName string = ''
+var _appServiceName = !empty(appServiceName) ? appServiceName : '${_abbrs.webSitesAppService}${_resourceToken}'
 param appServicePlanName string = ''
+var _appServicePlanName = !empty(appServicePlanName) ? appServicePlanName : '${_abbrs.webSitesAppService}${_resourceToken}'
 param containerRegistryName string = ''
 param containerRepositoryName string = ''
 var _containerRepositoryName = !empty(containerRepositoryName) ? containerRepositoryName : 'rag-project'
@@ -40,7 +45,6 @@ param oaiEmbeddingModel string = 'text-embedding-ada-002'
 param azureSearchIndexSampleData string = ''
 var _azureSearchIndexSampleData = !empty(azureSearchIndexSampleData) ? azureSearchIndexSampleData : 'true'
 
-
 @description('User or service principal identity to assign application roles')
 param principalId string = ''
 param principalType string = 'ServicePrincipal'
@@ -53,10 +57,9 @@ var _promptFlowWorkerNum = !empty(promptFlowWorkerNum) ? promptFlowWorkerNum : '
 param promptFlowServingEngine string = ''
 var _promptFlowServingEngine = !empty(promptFlowServingEngine) ? promptFlowServingEngine : 'fastapi'
  
-var _abbrs = loadJsonContent('./abbreviations.json')
-param deploymentTimestamp string = utcNow()
 var _resourceToken = toLower(uniqueString(subscription().id, environmentName, location, deploymentTimestamp))
 var _keyVaultName = !empty(keyVaultName) ? keyVaultName : '${_abbrs.keyVaultVaults}${_resourceToken}'
+
 
 // tags that should be applied to all resources.
 var _tags = {
@@ -94,7 +97,7 @@ module ai 'core/host/ai-environment.bicep' = {
 }
 
 module appServicePlan './core/host/appserviceplan.bicep' =  if (_deployAppService) {
-  name: 'appserviceplan'
+  name: _appServicePlanName
   scope: rg
   params: {
     name: !empty(appServicePlanName) ? appServicePlanName : '${_abbrs.webServerFarms}${_resourceToken}'
@@ -112,7 +115,7 @@ module appService  'core/host/appservice.bicep'  = if (_deployAppService) {
   name: 'appService'
   scope: rg
   params: {
-    name: !empty(appServiceName) ? appServiceName : '${_abbrs.webSitesAppService}${_resourceToken}'
+    name: _appServiceName
     applicationInsightsName: ai.outputs.appInsightsName
     runtimeName: 'DOCKER'
     runtimeVersion: '${_containerRepositoryName}:dummy'
@@ -269,8 +272,8 @@ output AZURE_SEARCH_ENDPOINT string = ai.outputs.searchEndpoint
 output AZUREAI_HUB_NAME string = ai.outputs.hubName
 output AZUREAI_PROJECT_NAME string = ai.outputs.projectName
 output AZURE_APP_INSIGHTS_NAME string = ai.outputs.appInsightsName 
-output AZURE_APP_SERVICE_NAME string = _deployAppService ? appService.outputs.name : ''
-output AZURE_APP_SERVICE_PLAN_NAME string = _deployAppService ? appServicePlan.outputs.name : ''
+output AZURE_APP_SERVICE_NAME string = _appServiceName
+output AZURE_APP_SERVICE_PLAN_NAME string = _appServicePlanName
 output AZURE_CONTAINER_REGISTRY_NAME string = ai.outputs.containerRegistryName
 output AZURE_CONTAINER_REPOSITORY_NAME string = _containerRepositoryName
 
