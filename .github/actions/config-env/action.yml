@@ -102,11 +102,12 @@ runs:
 
           # Define if will deploy app service and plan
           echo "AZURE_DEPLOY_APP_SERVICE=${{ inputs.AZURE_DEPLOY_APP_SERVICE }}"
+          AZURE_DEPLOY_APP_SERVICE=${{ inputs.AZURE_DEPLOY_APP_SERVICE }}
           [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && azd env set AZURE_DEPLOY_APP_SERVICE $AZURE_DEPLOY_APP_SERVICE || echo "AZURE_DEPLOY_APP_SERVICE is empty"
           
           # Checking if previous deployment exists
           if [  "$deployment_exists" = false ]; then
-            echo "Provisioning environment..."
+            echo "Provisioning environment..." 
             azd provision --no-prompt
           fi
 
