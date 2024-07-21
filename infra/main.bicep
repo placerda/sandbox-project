@@ -45,10 +45,10 @@ param principalType string = 'ServicePrincipal'
 
 // Flow parameters
 
-param promptFlowWorkerNum string = '1'
+param promptFlowWorkerNum string = ''
 var _promptFlowWorkerNum = !empty(promptFlowWorkerNum) ? promptFlowWorkerNum : '1'
 
-param promptFlowServingEngine string = 'fastapi'
+param promptFlowServingEngine string = ''
 var _promptFlowServingEngine = !empty(promptFlowServingEngine) ? promptFlowServingEngine : 'fastapi'
  
 var _abbrs = loadJsonContent('./abbreviations.json')
