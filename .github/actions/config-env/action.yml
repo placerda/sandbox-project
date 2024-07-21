@@ -97,7 +97,7 @@ runs:
           fi
 
           # Checking if previous deployment exists
-          if [  "$deploy_exists" = false ]; then
+          if [  "$deployment_exists" = false ]; then
             echo "Provisioning environment..."
             azd provision --no-prompt
           fi
@@ -113,7 +113,7 @@ runs:
 
           # Previous deployment exists but the resource group doesn't, need to clean resources.
           # This situation occurs if you made a deployment and then deleted the resource group.
-          if [ "$deploy_exists" = true ] && [ "$resource_group_exist" = false ]; then
+          if [ "$deployment_exists" = true ] && [ "$resource_group_exist" = false ]; then
             echo "Deployment exists but resource group $AZURE_RESOURCE_GROUP doesn't, cleaning resources."
             azd down --force --purge
             rm -rf .azure
@@ -131,7 +131,7 @@ runs:
           done
 
           # Previous deployment exists. Update provisioned resources in case template has changed.
-          if [  "$deploy_exists" = true ]; then
+          if [  "$deployment_exists" = true ]; then
             echo "Previous deployment exists. Updating provisioned resources..."
             azd provision --no-prompt
           fi
