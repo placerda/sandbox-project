@@ -112,7 +112,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: AI-Based Flow evaluation
-        env:
+        env: 
           SUBSCRIPTION_ID: ${{needs.config-env-job.outputs.AZURE_SUBSCRIPTION_ID}}
           LOCATION: ${{needs.config-env-job.outputs.AZURE_LOCATION}}
           AZURE_RESOURCE_GROUP: ${{needs.config-env-job.outputs.AZURE_RESOURCE_GROUP}}
