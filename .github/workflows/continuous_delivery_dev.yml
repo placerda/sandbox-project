@@ -137,8 +137,8 @@ jobs:
           az acr login -n "$registry_name"
 
           # Check if the container image exists
-          echo "🔶 | Checking if the container image $acr_image_tag exists..."
-          image_exists=$(az acr repository show --name $registry_name --image $acr_image_tag_dummy --query "name" -o tsv)
+          echo "🔶 | Checking if ${acr_image_tag} exists..."
+          image_exists=$(az acr repository show --name $registry_name --image ${acr_image_tag}dummy --query "name" -o tsv)
 
           if [ -z "$image_exists" ]; then
             echo "❌ | Container image $acr_image_tag does not exist in $registry_name."
