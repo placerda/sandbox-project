@@ -138,15 +138,14 @@ jobs:
 
           # Check if the container image exists
           echo "🔶 | Checking if ${acr_image_tag} exists..."
-
           set +e
           image_exists=$(az acr repository show --name $registry_name --image ${acr_image_tag} --query "name" -o tsv > /dev/null 2>&1 && echo true || echo false)
           set -e
           if [ -z "$image_exists" ]; then
-            echo "❌ | Container image $acr_image_tag does not exist in $registry_name."
+            echo "❌ | $acr_image_tag does not exist"
             exit 1
           else
-            echo "✅ | Container $acr_image_tag exists in $registry_name."
+            echo "✅ | $acr_image_tag exists"
           fi
 
           # Check if the app exists

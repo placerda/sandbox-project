@@ -211,6 +211,18 @@ jobs:
           echo "🔶 | Trying to login to $registry_name..."
           az acr login -n "$registry_name"
 
+          # Check if the container image exists
+          echo "🔶 | Checking if ${acr_image_tag} exists..."
+          set +e
+          image_exists=$(az acr repository show --name $registry_name --image ${acr_image_tag} --query "name" -o tsv > /dev/null 2>&1 && echo true || echo false)
+          set -e
+          if [ -z "$image_exists" ]; then
+            echo "❌ | $acr_image_tag does not exist"
+            exit 1
+          else
+            echo "✅ | $acr_image_tag exists"
+          fi
+
           # Check if the app exists
           echo "🔶 | Checking if the app exists..."
           app_exists=$(az webapp show --name $name --resource-group $resource_group --query "name" -o tsv)
