@@ -63,6 +63,7 @@ jobs:
       AZURE_OPENAI_EMBEDDING_MODEL: ${{ steps.config-env.outputs.AZURE_OPENAI_EMBEDDING_MODEL }}
       AZURE_OPENAI_ENDPOINT: ${{ steps.config-env.outputs.AZURE_OPENAI_ENDPOINT }}
       AZURE_RESOURCE_GROUP: ${{ steps.config-env.outputs.AZURE_RESOURCE_GROUP }}
+      AZUREAI_RESOURCE_GROUP: ${{ steps.config-env.outputs.AZUREAI_RESOURCE_GROUP }}      
       AZURE_SEARCH_ENDPOINT: ${{ steps.config-env.outputs.AZURE_SEARCH_ENDPOINT }}
       AZURE_SUBSCRIPTION_ID: ${{ steps.config-env.outputs.AZURE_SUBSCRIPTION_ID }}
       PROMPTFLOW_SERVING_ENGINE: ${{ steps.config-env.outputs.PROMPTFLOW_SERVING_ENGINE }}
@@ -93,6 +94,7 @@ jobs:
           AZURE_OPENAI_ENDPOINT: ${{ vars.AZURE_OPENAI_ENDPOINT }}
           AZURE_OPENAI_NAME: ${{ vars.AZURE_OPENAI_NAME }}
           AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          AZUREAI_RESOURCE_GROUP: ${{ vars.AZUREAI_RESOURCE_GROUP }}          
           AZURE_SEARCH_ENDPOINT: ${{ vars.AZURE_SEARCH_ENDPOINT }}
           AZURE_SEARCH_INDEX_SAMPLE_DATA: ${{ vars.AZURE_SEARCH_INDEX_SAMPLE_DATA }}
           AZURE_SEARCH_NAME: ${{ vars.AZURE_SEARCH_NAME }}
@@ -117,6 +119,7 @@ jobs:
           SUBSCRIPTION_ID: ${{needs.config-env-job.outputs.AZURE_SUBSCRIPTION_ID}}
           LOCATION: ${{needs.config-env-job.outputs.AZURE_LOCATION}}
           AZURE_RESOURCE_GROUP: ${{needs.config-env-job.outputs.AZURE_RESOURCE_GROUP}}
+          AZUREAI_RESOURCE_GROUP: ${{needs.config-env-job.outputs.AZUREAI_RESOURCE_GROUP}} 
           AZURE_CONTAINER_REGISTRY_NAME: ${{needs.config-env-job.outputs.AZURE_CONTAINER_REGISTRY_NAME}}
           AZURE_CONTAINER_REPOSITORY_NAME: ${{needs.config-env-job.outputs.AZURE_CONTAINER_REPOSITORY_NAME}}
           AZURE_SEARCH_ENDPOINT: ${{needs.config-env-job.outputs.AZURE_SEARCH_ENDPOINT}}
