@@ -128,6 +128,9 @@ runs:
           # - Finally, it adds the variable to the GitHub output for use by the calling job.
 
           echo "${{ inputs.AZURE_ENV_NAME }} environment variables values."
+          
+          # Set environment variables
+          
           for VAR in "${VARIABLES[@]}"; do
             VALUE_OUTPUT=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep $VAR | cut -d'=' -f2 | tr -d '"' || true)
             VALUE_GHAENV=$(eval echo \${$VAR})
