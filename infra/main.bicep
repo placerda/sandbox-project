@@ -26,6 +26,8 @@ param logAnalyticsName string = ''
 param openAiName string = ''
 param searchServiceName string = ''
 param storageAccountName string = ''
+param deployAppService bool = true
+var _deployAppService = deployAppService != null ? deployAppService : true
 
 // Azure OpenAI parameters
 
@@ -91,7 +93,7 @@ module ai 'core/host/ai-environment.bicep' = {
   }
 }
 
-module appServicePlan './core/host/appserviceplan.bicep' =  {
+module appServicePlan './core/host/appserviceplan.bicep' =  if (_deployAppService) {
   name: 'appserviceplan'
   scope: rg
   params: {
@@ -106,7 +108,7 @@ module appServicePlan './core/host/appserviceplan.bicep' =  {
   }
 }
 
-module appService  'core/host/appservice.bicep'  = {
+module appService  'core/host/appservice.bicep'  = if (_deployAppService) {
   name: 'appService'
   scope: rg
   params: {
@@ -206,7 +208,7 @@ module userAiSearchServiceContributor 'core/security/role.bicep' = if (!empty(pr
   }
 }
 
-module openaiRoleBackend 'core/security/role.bicep' = {
+module openaiRoleBackend 'core/security/role.bicep' = if (_deployAppService) {
   scope: rg
   name: 'openai-role-backend'
   params: {
@@ -216,7 +218,7 @@ module openaiRoleBackend 'core/security/role.bicep' = {
   }
 }
 
-module aiSearchServiceContributor 'core/security/role.bicep' = {
+module aiSearchServiceContributor 'core/security/role.bicep' = if (_deployAppService) {
   scope: rg
   name: 'ai-search-service-contributor'
   params: {
@@ -226,7 +228,7 @@ module aiSearchServiceContributor 'core/security/role.bicep' = {
   }
 }
 
-module aiSearchRole 'core/security/role.bicep' = {
+module aiSearchRole 'core/security/role.bicep' = if (_deployAppService) {
   scope: rg
   name: 'ai-search-index-data-contributor'
   params: {
@@ -236,7 +238,7 @@ module aiSearchRole 'core/security/role.bicep' = {
   }
 }
 
-module appserviceAcrRolePull 'core/security/role.bicep' = {
+module appserviceAcrRolePull 'core/security/role.bicep' = if (_deployAppService) {
   scope: rg
   name: 'app-service-acr-role-pull'  
   params: {
@@ -267,8 +269,8 @@ output AZURE_SEARCH_ENDPOINT string = ai.outputs.searchEndpoint
 output AZUREAI_HUB_NAME string = ai.outputs.hubName
 output AZUREAI_PROJECT_NAME string = ai.outputs.projectName
 output AZURE_APP_INSIGHTS_NAME string = ai.outputs.appInsightsName 
-output AZURE_APP_SERVICE_NAME string = appService.outputs.name
-output AZURE_APP_SERVICE_PLAN_NAME string = appServicePlan.outputs.name
+output AZURE_APP_SERVICE_NAME string = _deployAppService ? appService.outputs.name : ''
+output AZURE_APP_SERVICE_PLAN_NAME string = _deployAppService ? appServicePlan.outputs.name : ''
 output AZURE_CONTAINER_REGISTRY_NAME string = ai.outputs.containerRegistryName
 output AZURE_CONTAINER_REPOSITORY_NAME string = _containerRepositoryName
 

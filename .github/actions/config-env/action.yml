@@ -18,6 +18,9 @@ inputs:
   MANUAL_PROVISIONING:
     description: 'Will not provision the environment if value is true, default is false'
     required: false
+  AZURE_DEPLOY_APP_SERVICE:
+    description: 'Will not provision app plan and services if value is false, default is true'
+    required: false    
 runs:
   using: "composite"
   steps:
@@ -93,10 +96,14 @@ runs:
             echo "🔶 | No previous deployment exists."
             deployment_exists=false
           else
-            echo "🔶 | Previous deployment exists."
+            echo "🔶 | Previous deployment exists." 
             deployment_exists=true
           fi
 
+          # Define if will deploy app service and plan
+          echo "AZURE_DEPLOY_APP_SERVICE=${{ inputs.AZURE_DEPLOY_APP_SERVICE }}"
+          [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && azd env set AZURE_DEPLOY_APP_SERVICE $AZURE_DEPLOY_APP_SERVICE || echo "AZURE_DEPLOY_APP_SERVICE is empty"
+          
           # Checking if previous deployment exists
           if [  "$deployment_exists" = false ]; then
             echo "Provisioning environment..."
