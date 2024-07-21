@@ -41,6 +41,8 @@ To find out if you have a quota for the model in a specific region, refer to the
 
 To facilitate the creation of resources, this repository includes Bicep templates (IaaC) to create the following project resources. More details can be found in the [main.bicep](infra/main.bicep) file.
 
+If you want to know how to parametrize deployment, please take a look at [this page](docs/parametrizing.md).
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
