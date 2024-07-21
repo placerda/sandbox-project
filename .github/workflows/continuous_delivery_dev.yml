@@ -140,10 +140,8 @@ jobs:
           echo "🔶 | Checking if ${acr_image_tag} exists..."
 
           set +e
-          # image_exists=$(az acr repository show-tags --name $registry_name --repository $acr_image_tag --query "[?contains(@, '$acr_image_tag')]" --output tsv)
-          image_exists=$(az acr repository show --name $registry_name --image ${acr_image_tag} --query "name" -o tsv)
+          image_exists=$(az acr repository show --name $registry_name --image ${acr_image_tag} --query "name" -o tsv > /dev/null 2>&1 && echo true || echo false)
           set -e
-
           if [ -z "$image_exists" ]; then
             echo "❌ | Container image $acr_image_tag does not exist in $registry_name."
             exit 1
