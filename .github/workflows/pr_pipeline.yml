@@ -50,6 +50,7 @@ jobs:
     if: ${{ github.repository != 'Azure/llmops-project-template' }}        
     runs-on: ubuntu-latest
     environment: dev
+    needs: [unit-testing, static-code-analysis]
     outputs:
       AZURE_APP_SERVICE_NAME: ${{ steps.config-env.outputs.AZURE_APP_SERVICE_NAME }}
       AZURE_APP_SERVICE_PLAN_NAME: ${{ steps.config-env.outputs.AZURE_APP_SERVICE_PLAN_NAME }}
