@@ -217,7 +217,7 @@ module openaiRoleBackend 'core/security/role.bicep' = if (_deployAppService) {
   scope: rg
   name: 'openai-role-backend'
   params: {
-    principalId: appService.outputs.identityPrincipalId
+    principalId: _deployAppService?appService.outputs.identityPrincipalId:''
     roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd' //Cognitive Services OpenAI User
     principalType: principalType
   }
@@ -227,7 +227,7 @@ module aiSearchServiceContributor 'core/security/role.bicep' = if (_deployAppSer
   scope: rg
   name: 'ai-search-service-contributor'
   params: {
-    principalId: appService.outputs.identityPrincipalId
+    principalId: _deployAppService?appService.outputs.identityPrincipalId:''
     roleDefinitionId: '7ca78c08-252a-4471-8644-bb5ff32d4ba0' //Search Service Contributor
     principalType: principalType
   }
@@ -237,7 +237,7 @@ module aiSearchRole 'core/security/role.bicep' = if (_deployAppService) {
   scope: rg
   name: 'ai-search-index-data-contributor'
   params: {
-    principalId: appService.outputs.identityPrincipalId
+    principalId: _deployAppService?appService.outputs.identityPrincipalId:''
     roleDefinitionId: '8ebe5a00-799e-43f5-93ac-243d3dce84a7' //Search Index Data Contributor
     principalType: principalType
   }
@@ -247,7 +247,7 @@ module appserviceAcrRolePull 'core/security/role.bicep' = if (_deployAppService)
   scope: rg
   name: 'app-service-acr-role-pull'  
   params: {
-    principalId: appService.outputs.identityPrincipalId
+    principalId: _deployAppService?appService.outputs.identityPrincipalId:''
     roleDefinitionId: '7f951dda-4ed3-4680-a7ca-43fe172d538d'
     principalType: principalType
   }

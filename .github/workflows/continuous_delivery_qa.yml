@@ -31,6 +31,7 @@ jobs:
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}          
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
           MANUAL_PROVISIONING: ${{ vars.MANUAL_PROVISIONING }}          
+          AZURE_DEPLOY_APP_SERVICE: true          
         env:
           AZUREAI_PROJECT_NAME: ${{ vars.AZUREAI_PROJECT_NAME }}
           AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}

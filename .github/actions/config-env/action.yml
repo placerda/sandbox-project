@@ -17,10 +17,10 @@ inputs:
     required: true
   MANUAL_PROVISIONING:
     description: 'Will not provision the environment if value is true, default is false'
-    required: false
+    required: true
   AZURE_DEPLOY_APP_SERVICE:
     description: 'Will not provision app plan and services if value is false, default is true'
-    required: false
+    required: true
 runs:
   using: "composite"
   steps:
@@ -102,7 +102,7 @@ runs:
           fi
           
           # Define azd input parameters
-          [ -n "${{ inputs.AZURE_DEPLOY_APP_SERVICE }}" ] && azd env set AZURE_DEPLOY_APP_SERVICE $AZURE_DEPLOY_APP_SERVICE || true
+          [ -n "${{ inputs.AZURE_DEPLOY_APP_SERVICE }}" ] && azd env set AZURE_DEPLOY_APP_SERVICE $AZURE_DEPLOY_APP_SERVICE || azd env set AZURE_DEPLOY_APP_SERVICE true
           azd env set AZURE_PRINCIPAL_TYPE 'ServicePrincipal'
 
           # Checking if previous deployment exists
@@ -130,8 +130,8 @@ runs:
             rm -rf .azure
             azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $AZURE_LOCATION -s $AZURE_SUBSCRIPTION_ID
             # Define azd input parameters
-            [ -n "${{ inputs.AZURE_DEPLOY_APP_SERVICE }}" ] && azd env set AZURE_DEPLOY_APP_SERVICE $AZURE_DEPLOY_APP_SERVICE || true
-            azd env set AZURE_PRINCIPAL_TYPE 'ServicePrincipal'
+          [ -n "${{ inputs.AZURE_DEPLOY_APP_SERVICE }}" ] && azd env set AZURE_DEPLOY_APP_SERVICE $AZURE_DEPLOY_APP_SERVICE || azd env set AZURE_DEPLOY_APP_SERVICE true
+          azd env set AZURE_PRINCIPAL_TYPE 'ServicePrincipal'
           fi           
 
           # Set environment variables by getting them from the GitHub environment or the last deployment. 
