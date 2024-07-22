@@ -100,11 +100,6 @@ runs:
             echo "🔶 | Previous deployment exists." 
             deployment_exists=true
           fi
-
-          # Define if will deploy app service and plan
-          echo "🔶 | Deploy app service status: ${{ inputs.AZURE_DEPLOY_APP_SERVICE }}"
-          AZURE_DEPLOY_APP_SERVICE=${{ inputs.AZURE_DEPLOY_APP_SERVICE }}
-          [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && azd env set AZURE_DEPLOY_APP_SERVICE $AZURE_DEPLOY_APP_SERVICE || echo "AZURE_DEPLOY_APP_SERVICE is empty"
           
           # Checking if previous deployment exists
           if [  "$deployment_exists" = false ]; then
@@ -132,6 +127,11 @@ runs:
             azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $AZURE_LOCATION -s $AZURE_SUBSCRIPTION_ID
           fi           
 
+          # Define if will deploy app service and plan
+          echo "🔶 | Deploy app service status: ${{ inputs.AZURE_DEPLOY_APP_SERVICE }}"
+          AZURE_DEPLOY_APP_SERVICE=${{ inputs.AZURE_DEPLOY_APP_SERVICE }}
+          [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && azd env set AZURE_DEPLOY_APP_SERVICE $AZURE_DEPLOY_APP_SERVICE || echo "AZURE_DEPLOY_APP_SERVICE is empty"
+
           # Set environment variables by getting them from the GitHub environment or the last deployment. 
           # GitHub environment variables take precedence over those from the last deployment.
           # Here's how it works for each variable:
@@ -139,7 +139,7 @@ runs:
           # - If the new value differs from the latest deployment, the AZD variable is updated.
           # - Finally, it adds the variable to the GitHub output for use by the calling job.
 
-          echo "${{ inputs.AZURE_ENV_NAME }} environment variables values."
+          echo "${{ inputs.AZURE_ENV_NAME }} environment variables values." 
           
           # Set environment variables and update AZD variables 
           
@@ -173,6 +173,7 @@ runs:
         done 
 
         # Load sample data if needed
+
         indexSampleData=$([ -z "$AZURE_SEARCH_INDEX_SAMPLE_DATA" ] || [ "$AZURE_SEARCH_INDEX_SAMPLE_DATA" == "true" ] && echo true || echo false)
         if [ $indexSampleData = "true" ]; then
           echo "🔶 | Running post-provisioning script to populate sample data." 
