@@ -18,7 +18,7 @@
         "value": "${AZURE_PRINCIPAL_ID}"
       },
       "principalType": {
-        "value": "ServicePrincipal"
+        "value": "${AZURE_PRINCIPAL_TYPE}"
       },
       "aiHubName": {
         "value": "${AZUREAI_HUB_NAME}"
