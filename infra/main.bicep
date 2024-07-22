@@ -31,8 +31,10 @@ param logAnalyticsName string = ''
 param openAiName string = ''
 param searchServiceName string = ''
 param storageAccountName string = ''
+
+@allowed([true, false])
 param deployAppService bool = true
-var _deployAppService = deployAppService != null ? deployAppService : true
+var _deployAppService = deployAppService
 
 // Azure OpenAI parameters
 
@@ -116,26 +118,26 @@ module appService  'core/host/appservice.bicep'  = if (_deployAppService) {
   scope: rg
   params: {
     name: _appServiceName
-    applicationInsightsName: ai.outputs.appInsightsName
+    applicationInsightsName: _deployAppService?ai.outputs.appInsightsName:''
     runtimeName: 'DOCKER'
     runtimeVersion: '${_containerRepositoryName}:dummy'
     keyVaultName: _keyVaultName
     location: location
     tags: union(_tags, { 'azd-service-name': 'rag-flow' })
-    appServicePlanId: appServicePlan.outputs.id
+    appServicePlanId: _deployAppService?appServicePlan.outputs.id:''
     scmDoBuildDuringDeployment: false
     appSettings: { 
       WEBSITES_ENABLE_APP_SERVICE_STORAGE: false
-      DOCKER_REGISTRY_SERVER_URL: 'https://${ai.outputs.containerRegistryName}.azurecr.io'
+      DOCKER_REGISTRY_SERVER_URL: _deployAppService?'https://${ai.outputs.containerRegistryName}.azurecr.io':''
       WEBSITES_PORT: '80'  
       PROMPTFLOW_WORKER_NUM: _promptFlowWorkerNum
       PROMPTFLOW_SERVING_ENGINE: _promptFlowServingEngine
-      AZURE_OPENAI_ENDPOINT: ai.outputs.openAiEndpoint
+      AZURE_OPENAI_ENDPOINT: _deployAppService?ai.outputs.openAiEndpoint:''
       AZURE_OPENAI_CHAT_DEPLOYMENT: oaiChatDeployment
       AZURE_OPENAI_EMBEDDING_DEPLOYMENT: oaiEmbeddingDeployment
       AZURE_OPENAI_EMBEDDING_MODEL: oaiEmbeddingModel
       AZURE_OPENAI_API_VERSION: oaiApiVersion
-      AZURE_SEARCH_ENDPOINT: ai.outputs.searchEndpoint
+      AZURE_SEARCH_ENDPOINT: _deployAppService?ai.outputs.searchEndpoint:''
       acrUseManagedIdentityCreds: true
     }
   }
