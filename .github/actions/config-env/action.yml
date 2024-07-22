@@ -101,8 +101,12 @@ runs:
             deployment_exists=true
           fi
           
-          # Define azd input parameters
-          [ -n "${{ inputs.AZURE_DEPLOY_APP_SERVICE }}" ] && azd env set AZURE_DEPLOY_APP_SERVICE $AZURE_DEPLOY_APP_SERVICE || azd env set AZURE_DEPLOY_APP_SERVICE true
+          # Define azd deployAppService parameter
+          AZURE_DEPLOY_APP_SERVICE=${{ inputs.AZURE_DEPLOY_APP_SERVICE }}
+          [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && echo 'AZURE_DEPLOY_APP_SERVICE is $AZURE_DEPLOY_APP_SERVICE' || echo 'AZURE_DEPLOY_APP_SERVICE is empty defaulting to true'
+          [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && azd env set AZURE_DEPLOY_APP_SERVICE $AZURE_DEPLOY_APP_SERVICE || azd env set AZURE_DEPLOY_APP_SERVICE true
+          
+          # Define azd principalType parameter
           azd env set AZURE_PRINCIPAL_TYPE 'ServicePrincipal'
 
           # Checking if previous deployment exists
@@ -129,9 +133,6 @@ runs:
             azd down --force --purge
             rm -rf .azure
             azd init -e ${{ inputs.AZURE_ENV_NAME }} -l $AZURE_LOCATION -s $AZURE_SUBSCRIPTION_ID
-            # Define azd input parameters
-          [ -n "${{ inputs.AZURE_DEPLOY_APP_SERVICE }}" ] && azd env set AZURE_DEPLOY_APP_SERVICE $AZURE_DEPLOY_APP_SERVICE || azd env set AZURE_DEPLOY_APP_SERVICE true
-          azd env set AZURE_PRINCIPAL_TYPE 'ServicePrincipal'
           fi           
 
           # Set environment variables by getting them from the GitHub environment or the last deployment. 
@@ -154,6 +155,14 @@ runs:
             echo "$VAR=$VALUE"
             export $VAR=$VALUE            
           done
+
+          # Define azd deployAppService parameter
+          AZURE_DEPLOY_APP_SERVICE=${{ inputs.AZURE_DEPLOY_APP_SERVICE }}
+          [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && echo 'AZURE_DEPLOY_APP_SERVICE is $AZURE_DEPLOY_APP_SERVICE' || echo 'AZURE_DEPLOY_APP_SERVICE is empty defaulting to true'
+          [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && azd env set AZURE_DEPLOY_APP_SERVICE $AZURE_DEPLOY_APP_SERVICE || azd env set AZURE_DEPLOY_APP_SERVICE true
+          
+          # Define azd principalType parameter
+          azd env set AZURE_PRINCIPAL_TYPE 'ServicePrincipal'
 
           # Previous deployment exists. Update provisioned resources in case template has changed.
           if [  "$deployment_exists" = true ]; then
