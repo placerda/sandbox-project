@@ -97,10 +97,10 @@ module ai 'core/host/ai-environment.bicep' = {
 }
 
 module appServicePlan './core/host/appserviceplan.bicep' =  if (_deployAppService) {
-  name: _appServicePlanName
+  name: 'appServicePlan'
   scope: rg
   params: {
-    name: !empty(appServicePlanName) ? appServicePlanName : '${_abbrs.webServerFarms}${_resourceToken}'
+    name: _appServicePlanName
     location: location
     tags: _tags
     sku: {

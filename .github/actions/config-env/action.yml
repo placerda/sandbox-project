@@ -24,6 +24,7 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - uses: actions/checkout@v4  
     - name: Check GitHub env variables
       shell: bash
       run: |
@@ -118,7 +119,7 @@ runs:
           else
             resource_group_exist=$(az group exists --name "$AZURE_RESOURCE_GROUP")  
           fi        
-          echo "🔶 | Resource group $AZURE_RESOURCE_GROUP exist status: $resource_group_exist"
+          echo "🔶 | Resource group ${AZURE_RESOURCE_GROUP:-'-'} exist status: $resource_group_exist"
 
           # Previous deployment exists but the resource group doesn't, need to clean resources. 
           # This situation occurs if you made a deployment and then deleted the resource group.
