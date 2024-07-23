@@ -102,9 +102,9 @@ runs:
           fi
           
           # Define azd deployAppService parameter
-          AZURE_DEPLOY_APP_SERVICE=${{ inputs.AZURE_DEPLOY_APP_SERVICE }}
-          [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && echo 'AZURE_DEPLOY_APP_SERVICE is $AZURE_DEPLOY_APP_SERVICE' || echo 'AZURE_DEPLOY_APP_SERVICE is empty defaulting to true'
-          [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && azd env set AZURE_DEPLOY_APP_SERVICE $AZURE_DEPLOY_APP_SERVICE || azd env set AZURE_DEPLOY_APP_SERVICE true
+          export AZURE_DEPLOY_APP_SERVICE=${{ inputs.AZURE_DEPLOY_APP_SERVICE }}
+          [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && echo 'AZURE_DEPLOY_APP_SERVICE is ${AZURE_DEPLOY_APP_SERVICE}' || echo 'AZURE_DEPLOY_APP_SERVICE is empty defaulting to true'
+          [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && azd env set AZURE_DEPLOY_APP_SERVICE ${AZURE_DEPLOY_APP_SERVICE} || azd env set AZURE_DEPLOY_APP_SERVICE true
           
           # Define azd principalType parameter
           azd env set AZURE_PRINCIPAL_TYPE 'ServicePrincipal'
@@ -157,9 +157,9 @@ runs:
           done
 
           # Define azd deployAppService parameter
-          AZURE_DEPLOY_APP_SERVICE=${{ inputs.AZURE_DEPLOY_APP_SERVICE }}
-          [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && echo 'AZURE_DEPLOY_APP_SERVICE is $AZURE_DEPLOY_APP_SERVICE' || echo 'AZURE_DEPLOY_APP_SERVICE is empty defaulting to true'
-          [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && azd env set AZURE_DEPLOY_APP_SERVICE $AZURE_DEPLOY_APP_SERVICE || azd env set AZURE_DEPLOY_APP_SERVICE true
+          export AZURE_DEPLOY_APP_SERVICE=${{ inputs.AZURE_DEPLOY_APP_SERVICE }}
+          [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && echo 'AZURE_DEPLOY_APP_SERVICE is ${AZURE_DEPLOY_APP_SERVICE}' || echo 'AZURE_DEPLOY_APP_SERVICE is empty defaulting to true'
+          [ -n "$AZURE_DEPLOY_APP_SERVICE" ] && azd env set AZURE_DEPLOY_APP_SERVICE ${AZURE_DEPLOY_APP_SERVICE} || azd env set AZURE_DEPLOY_APP_SERVICE true
           
           # Define azd principalType parameter
           azd env set AZURE_PRINCIPAL_TYPE 'ServicePrincipal'

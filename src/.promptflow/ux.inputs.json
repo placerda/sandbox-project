@@ -1,0 +1,15 @@
+{
+  "chat_list": [],
+  "prompty_chat_list": [
+    {
+      "name": "chat.prompty",
+      "inputs": {
+        "documents": 123,
+        "question": "oi"
+      }
+    }
+  ],
+  "init": {
+    "chat.prompty": {}
+  }
+}
