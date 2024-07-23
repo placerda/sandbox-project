@@ -1,6 +1,8 @@
 local/
 dist/
 
+.promptflow/
+
 # Python
 *.py[cod]
 *$py.class
