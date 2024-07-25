@@ -129,7 +129,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}           
 
-      - name: AI-Based evaluation
+      - name: AI-Based prompt evaluation
         env: 
           SUBSCRIPTION_ID: ${{needs.config-env-job.outputs.AZURE_SUBSCRIPTION_ID}}
           LOCATION: ${{needs.config-env-job.outputs.AZURE_LOCATION}}
@@ -149,7 +149,7 @@ jobs:
           AZURE_APP_SERVICE_NAME: ${{needs.config-env-job.outputs.AZURE_APP_SERVICE_NAME}}
           AZURE_APP_SERVICE_PLAN_NAME: ${{needs.config-env-job.outputs.AZURE_APP_SERVICE_PLAN_NAME}}      
         run: |
-          echo "Run AI-Based Flow evaluation"
+          echo "Run AI-Based prompt evaluation"
           export AZURE_OPENAI_API_KEY=$(az cognitiveservices account keys list --resource-group ${AZURE_RESOURCE_GROUP} --name ${AZURE_OPENAI_NAME} --query "key1" --output tsv)
           python evaluations/prompty_eval.py
         shell: bash
