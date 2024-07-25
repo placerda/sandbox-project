@@ -96,7 +96,7 @@ jobs:
           echo "Run Pylint"
 
   flow-evaluation:
-    needs: [setup-env-job , unit-testing, code-standard-check]
+    needs: [setup-env-job, unit-testing, code-standard-check]
     runs-on: ubuntu-latest
     environment: dev
     steps:
@@ -118,25 +118,27 @@ jobs:
 
       - name: AI-Based prompt evaluation
         env: 
-          SUBSCRIPTION_ID: ${{needs.config-env-job.outputs.AZURE_SUBSCRIPTION_ID}}
-          LOCATION: ${{needs.config-env-job.outputs.AZURE_LOCATION}}
-          AZURE_RESOURCE_GROUP: ${{needs.config-env-job.outputs.AZURE_RESOURCE_GROUP}}
-          AZUREAI_RESOURCE_GROUP: ${{needs.config-env-job.outputs.AZUREAI_RESOURCE_GROUP}} 
-          AZURE_CONTAINER_REGISTRY_NAME: ${{needs.config-env-job.outputs.AZURE_CONTAINER_REGISTRY_NAME}}
-          AZURE_CONTAINER_REPOSITORY_NAME: ${{needs.config-env-job.outputs.AZURE_CONTAINER_REPOSITORY_NAME}}
-          AZURE_SEARCH_ENDPOINT: ${{needs.config-env-job.outputs.AZURE_SEARCH_ENDPOINT}}
-          AZURE_OPENAI_CHAT_DEPLOYMENT: ${{needs.config-env-job.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT}}
-          AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{needs.config-env-job.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT}}
-          AZURE_OPENAI_EMBEDDING_MODEL: ${{needs.config-env-job.outputs.AZURE_OPENAI_EMBEDDING_MODEL}}
-          AZURE_OPENAI_API_VERSION: ${{needs.config-env-job.outputs.AZURE_OPENAI_API_VERSION}}
-          AZURE_OPENAI_ENDPOINT: ${{needs.config-env-job.outputs.AZURE_OPENAI_ENDPOINT}}
-          AZURE_OPENAI_NAME: ${{needs.config-env-job.outputs.AZURE_OPENAI_NAME}}
-          PROMPTFLOW_WORKER_NUM: ${{needs.config-env-job.outputs.PROMPTFLOW_WORKER_NUM}}
-          PROMPTFLOW_SERVING_ENGINE: ${{needs.config-env-job.outputs.PROMPTFLOW_SERVING_ENGINE}}
-          AZURE_APP_SERVICE_NAME: ${{needs.config-env-job.outputs.AZURE_APP_SERVICE_NAME}}
-          AZURE_APP_SERVICE_PLAN_NAME: ${{needs.config-env-job.outputs.AZURE_APP_SERVICE_PLAN_NAME}}      
+          SUBSCRIPTION_ID: ${{needs.setup-env-job.outputs.AZURE_SUBSCRIPTION_ID}}
+          LOCATION: ${{needs.setup-env-job.outputs.AZURE_LOCATION}}
+          AZURE_RESOURCE_GROUP: ${{needs.setup-env-job.outputs.AZURE_RESOURCE_GROUP}}
+          AZUREAI_RESOURCE_GROUP: ${{needs.setup-env-job.outputs.AZUREAI_RESOURCE_GROUP}} 
+          AZURE_CONTAINER_REGISTRY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REGISTRY_NAME}}
+          AZURE_CONTAINER_REPOSITORY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REPOSITORY_NAME}}
+          AZURE_SEARCH_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_SEARCH_ENDPOINT}}
+          AZURE_OPENAI_CHAT_DEPLOYMENT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT}}
+          AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT}}
+          AZURE_OPENAI_EMBEDDING_MODEL: ${{needs.setup-env-job.outputs.AZURE_OPENAI_EMBEDDING_MODEL}}
+          AZURE_OPENAI_API_VERSION: ${{needs.setup-env-job.outputs.AZURE_OPENAI_API_VERSION}}
+          AZURE_OPENAI_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_ENDPOINT}}
+          AZURE_OPENAI_NAME: ${{needs.setup-env-job.outputs.AZURE_OPENAI_NAME}}
+          PROMPTFLOW_WORKER_NUM: ${{needs.setup-env-job.outputs.PROMPTFLOW_WORKER_NUM}}
+          PROMPTFLOW_SERVING_ENGINE: ${{needs.setup-env-job.outputs.PROMPTFLOW_SERVING_ENGINE}}
+          AZURE_APP_SERVICE_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_NAME}}
+          AZURE_APP_SERVICE_PLAN_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_PLAN_NAME}}     
         run: |
-          echo "Run AI-Based prompt evaluation"
+          echo "Run AI-Based flow evaluation"
+          echo "AZURE_RESOURCE_GROUP=${AZURE_RESOURCE_GROUP}"
+          echo "AZURE_OPENAI_NAME=${AZURE_OPENAI_NAME}"
           export AZURE_OPENAI_API_KEY=$(az cognitiveservices account keys list --resource-group ${AZURE_RESOURCE_GROUP} --name ${AZURE_OPENAI_NAME} --query "key1" --output tsv)
           python evaluations/flow_eval.py
         shell: bash
@@ -149,7 +151,7 @@ jobs:
 
   build-image:
     runs-on: ubuntu-latest
-    needs: [setup-env-job, unit-testing, code-standard-check]    
+    needs: [setup-env-job, unit-testing, code-standard-check, flow-evaluation]    
     environment: dev 
     steps:
       - uses: actions/checkout@v4      
@@ -173,9 +175,7 @@ jobs:
       - name: Create flow docker files
         run: |
               # reference: https://github.com/microsoft/promptflow/tree/main/examples/tutorials/flow-deploy/azure-app-service
-              pf flow build --source src --output dist --format docker
-              # mkdir -p dist/connections
-              # touch dist/connections/placeholder          
+              pf flow build --source src --output dist --format docker       
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

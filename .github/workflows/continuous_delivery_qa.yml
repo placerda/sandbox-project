@@ -20,6 +20,16 @@ jobs:
       AZURE_RESOURCE_GROUP: ${{ steps.config-env.outputs.AZURE_RESOURCE_GROUP }}
       AZUREAI_RESOURCE_GROUP: ${{ steps.config-env.outputs.AZUREAI_RESOURCE_GROUP }}          
       AZURE_SUBSCRIPTION_ID: ${{ steps.config-env.outputs.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SEARCH_ENDPOINT: ${{ steps.config-env.outputs.AZURE_SEARCH_ENDPOINT }}
+      AZURE_OPENAI_CHAT_DEPLOYMENT: ${{ steps.config-env.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT }}
+      AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{steps.config-env.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT}}
+      AZURE_OPENAI_EMBEDDING_MODEL: ${{steps.config-env.outputs.AZURE_OPENAI_EMBEDDING_MODEL}}
+      AZURE_OPENAI_API_VERSION: ${{steps.config-env.outputs.AZURE_OPENAI_API_VERSION}}
+      AZURE_OPENAI_ENDPOINT: ${{steps.config-env.outputs.AZURE_OPENAI_ENDPOINT}}
+      AZURE_OPENAI_NAME: ${{steps.config-env.outputs.AZURE_OPENAI_NAME}}
+      PROMPTFLOW_WORKER_NUM: ${{steps.config-env.outputs.PROMPTFLOW_WORKER_NUM}}
+      PROMPTFLOW_SERVING_ENGINE: ${{steps.config-env.outputs.PROMPTFLOW_SERVING_ENGINE}}
+
     steps: 
       - uses: actions/checkout@v4   
       - name: Provision qa environment
@@ -59,13 +69,56 @@ jobs:
           AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
 
   qa-flow-evaluation:
-    needs: setup-env-job    
+    needs: [setup-env-job]
     runs-on: ubuntu-latest
     environment: qa
-    steps:        
-      - name: Evaluate Flow
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python 
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Install dependencies
         run: |
-          echo "Run QA AI-Based Flow evaluation"
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Login to Azure CLI
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}           
+
+      - name: AI-Based prompt evaluation
+        env: 
+          SUBSCRIPTION_ID: ${{needs.setup-env-job.outputs.AZURE_SUBSCRIPTION_ID}}
+          LOCATION: ${{needs.setup-env-job.outputs.AZURE_LOCATION}}
+          AZURE_RESOURCE_GROUP: ${{needs.setup-env-job.outputs.AZURE_RESOURCE_GROUP}}
+          AZUREAI_RESOURCE_GROUP: ${{needs.setup-env-job.outputs.AZUREAI_RESOURCE_GROUP}} 
+          AZURE_CONTAINER_REGISTRY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REGISTRY_NAME}}
+          AZURE_CONTAINER_REPOSITORY_NAME: ${{needs.setup-env-job.outputs.AZURE_CONTAINER_REPOSITORY_NAME}}
+          AZURE_SEARCH_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_SEARCH_ENDPOINT}}
+          AZURE_OPENAI_CHAT_DEPLOYMENT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_CHAT_DEPLOYMENT}}
+          AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT}}
+          AZURE_OPENAI_EMBEDDING_MODEL: ${{needs.setup-env-job.outputs.AZURE_OPENAI_EMBEDDING_MODEL}}
+          AZURE_OPENAI_API_VERSION: ${{needs.setup-env-job.outputs.AZURE_OPENAI_API_VERSION}}
+          AZURE_OPENAI_ENDPOINT: ${{needs.setup-env-job.outputs.AZURE_OPENAI_ENDPOINT}}
+          AZURE_OPENAI_NAME: ${{needs.setup-env-job.outputs.AZURE_OPENAI_NAME}}
+          PROMPTFLOW_WORKER_NUM: ${{needs.setup-env-job.outputs.PROMPTFLOW_WORKER_NUM}}
+          PROMPTFLOW_SERVING_ENGINE: ${{needs.setup-env-job.outputs.PROMPTFLOW_SERVING_ENGINE}}
+          AZURE_APP_SERVICE_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_NAME}}
+          AZURE_APP_SERVICE_PLAN_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_PLAN_NAME}}      
+        run: |
+          echo "Run AI-Based prompt evaluation"
+          export AZURE_OPENAI_API_KEY=$(az cognitiveservices account keys list --resource-group ${AZURE_RESOURCE_GROUP} --name ${AZURE_OPENAI_NAME} --query "key1" --output tsv)
+          python evaluations/flow_eval.py
+        shell: bash
+
+      - name: Upload evaluation results
+        uses: actions/upload-artifact@v4
+        with:
+            name: flow-eval-results
+            path: flow-groundedness-eval.xlsx
 
   qa-safety-evaluation:
     needs: setup-env-job    
