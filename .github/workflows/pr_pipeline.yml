@@ -71,7 +71,6 @@ jobs:
 
     steps: 
       - uses: actions/checkout@v4
-
       - name: Get environment variables
         uses: ./.github/actions/config-env
         id: config-env
@@ -108,14 +107,22 @@ jobs:
           AZURE_LOG_ANALYTICS_NAME: ${{ vars.AZURE_LOG_ANALYTICS_NAME }}
           AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
 
-  evaluate-flow:
+  evaluate-prompts:
     needs: [config-env-job]
     runs-on: ubuntu-latest
     environment: dev
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: AI-Based Flow evaluation
+      - name: Setup Python 
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt        
+      - name: AI-Based evaluation
         env: 
           SUBSCRIPTION_ID: ${{needs.config-env-job.outputs.AZURE_SUBSCRIPTION_ID}}
           LOCATION: ${{needs.config-env-job.outputs.AZURE_LOCATION}}
@@ -135,4 +142,11 @@ jobs:
           AZURE_APP_SERVICE_PLAN_NAME: ${{needs.config-env-job.outputs.AZURE_APP_SERVICE_PLAN_NAME}}      
         run: |
           echo "Run AI-Based Flow evaluation"
+          python evaluations/evaluate_prompts.py
         shell: bash
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+            name: prompt-eval-results
+            path: prompty-answer-score-eval.xlsx
