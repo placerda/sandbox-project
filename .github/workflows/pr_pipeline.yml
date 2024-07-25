@@ -7,50 +7,50 @@ on:
       
 jobs:
 
-  # unit-testing:
-  #   if: ${{ github.repository != 'Azure/llmops-project-template' }}    
-  #   runs-on: ubuntu-latest
-  #   environment: dev
-  #   steps:       
-  #     - uses: actions/checkout@v4
-  #     - name: Setup Python 
-  #       uses: actions/setup-python@v5
-  #       with:
-  #         python-version: 3.11
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         pip install pytest
-  #         pip install -r requirements.txt
-  #     - name: Test with pytest
-  #       env:
-  #         PYTHONPATH: src
-  #         PYTHONWARNINGS: ignore::DeprecationWarning,ignore::RemovedInMarshmallow4Warning
-  #       run: pytest tests/ --doctest-modules --junitxml=junit/test-results-3.11.xml
-  #     - name: Upload pytest test results
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: pytest-results-3.11
-  #         path: junit/test-results-3.11.xml
-  #       if: always()
+  unit-testing:
+    if: ${{ github.repository != 'Azure/llmops-project-template' }}    
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:       
+      - uses: actions/checkout@v4
+      - name: Setup Python 
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          pip install -r requirements.txt
+      - name: Test with pytest
+        env:
+          PYTHONPATH: src
+          PYTHONWARNINGS: ignore::DeprecationWarning,ignore::RemovedInMarshmallow4Warning
+        run: pytest tests/ --doctest-modules --junitxml=junit/test-results-3.11.xml
+      - name: Upload pytest test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-results-3.11
+          path: junit/test-results-3.11.xml
+        if: always()
 
-  # static-code-analysis:
-  #   needs: unit-testing
-  #   runs-on: ubuntu-latest
-  #   environment: dev
-  #   steps:
-  #     - name: Finds anti-patterns in code
-  #       run: |
-  #         echo "Run Pylint"
-  #     - name: Run security checks
-  #       run: |
-  #         echo "Run Bandit"
+  static-code-analysis:
+    needs: unit-testing
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Finds anti-patterns in code
+        run: |
+          echo "Run Pylint"
+      - name: Run security checks
+        run: |
+          echo "Run Bandit"
 
   config-env-job:
     if: ${{ github.repository != 'Azure/llmops-project-template' }}        
     runs-on: ubuntu-latest
     environment: dev
-    # needs: [unit-testing, static-code-analysis]
+    needs: [unit-testing, static-code-analysis]
     outputs:
       AZURE_APP_SERVICE_NAME: ${{ steps.config-env.outputs.AZURE_APP_SERVICE_NAME }}
       AZURE_APP_SERVICE_PLAN_NAME: ${{ steps.config-env.outputs.AZURE_APP_SERVICE_PLAN_NAME }}
@@ -154,7 +154,7 @@ jobs:
           python evaluations/prompty_eval.py
         shell: bash
 
-      - name: Upload test results
+      - name: Upload evaluation results
         uses: actions/upload-artifact@v4
         with:
             name: prompt-eval-results
