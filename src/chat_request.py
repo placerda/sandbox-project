@@ -52,5 +52,5 @@ def get_response(question, chat_history):
 
     return {"answer": result, "context": context}
 
-# if __name__ == "__main__":
-#     get_response("What is the size of the moon?", [])
+if __name__ == "__main__":
+    get_response("What is the size of the moon?", [])

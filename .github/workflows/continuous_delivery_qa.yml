@@ -31,6 +31,7 @@ jobs:
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}          
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
           MANUAL_PROVISIONING: ${{ vars.MANUAL_PROVISIONING }}          
+          AZURE_DEPLOY_APP_SERVICE: true          
         env:
           AZUREAI_PROJECT_NAME: ${{ vars.AZUREAI_PROJECT_NAME }}
           AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
@@ -66,6 +67,15 @@ jobs:
         run: |
           echo "Run QA AI-Based Flow evaluation"
 
+  qa-safety-evaluation:
+    needs: setup-env-job    
+    runs-on: ubuntu-latest
+    environment: qa
+    steps:        
+      - name: Safety Risk Evaluation
+        run: |
+          echo "Run Automated Adversarial Testing"
+        
   integration-testing:
     needs: [setup-env-job, qa-flow-evaluation]
     runs-on: ubuntu-latest

@@ -40,7 +40,8 @@ jobs:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}          
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
-          MANUAL_PROVISIONING: ${{ vars.MANUAL_PROVISIONING }}          
+          MANUAL_PROVISIONING: ${{ vars.MANUAL_PROVISIONING }}
+          AZURE_DEPLOY_APP_SERVICE: true
         env:
           AZUREAI_PROJECT_NAME: ${{ vars.AZUREAI_PROJECT_NAME }}
           AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
@@ -56,7 +57,7 @@ jobs:
           AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
           AZUREAI_RESOURCE_GROUP: ${{ vars.AZUREAI_RESOURCE_GROUP }}               
           AZURE_SEARCH_ENDPOINT: ${{ vars.AZURE_SEARCH_ENDPOINT }}
-          AZURE_SEARCH_INDEX_SAMPLE_DATA: "false" # Do not populate sample data since it's already populated during CI
+          AZURE_SEARCH_INDEX_SAMPLE_DATA: "false" # It's already populated during PR
           AZURE_SEARCH_NAME: ${{ vars.AZURE_SEARCH_NAME }}
           PROMPTFLOW_SERVING_ENGINE: ${{ vars.PROMPTFLOW_SERVING_ENGINE }}
           PROMPTFLOW_WORKER_NUM: ${{ vars.PROMPTFLOW_WORKER_NUM }}
