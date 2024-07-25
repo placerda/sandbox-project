@@ -67,6 +67,15 @@ jobs:
         run: |
           echo "Run QA AI-Based Flow evaluation"
 
+  qa-safety-evaluation:
+    needs: setup-env-job    
+    runs-on: ubuntu-latest
+    environment: qa
+    steps:        
+      - name: Safety Risk Evaluation
+        run: |
+          echo "Run Automated Adversarial Testing"
+        
   integration-testing:
     needs: [setup-env-job, qa-flow-evaluation]
     runs-on: ubuntu-latest
