@@ -108,7 +108,7 @@ jobs:
           AZURE_LOG_ANALYTICS_NAME: ${{ vars.AZURE_LOG_ANALYTICS_NAME }}
           AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
 
-  prompt-evaluation:
+  evaluate-flow:
     needs: [config-env-job]
     runs-on: ubuntu-latest
     environment: dev
