@@ -62,6 +62,7 @@ jobs:
       AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${{ steps.config-env.outputs.AZURE_OPENAI_EMBEDDING_DEPLOYMENT }}
       AZURE_OPENAI_EMBEDDING_MODEL: ${{ steps.config-env.outputs.AZURE_OPENAI_EMBEDDING_MODEL }}
       AZURE_OPENAI_ENDPOINT: ${{ steps.config-env.outputs.AZURE_OPENAI_ENDPOINT }}
+      AZURE_OPENAI_NAME: ${{ steps.config-env.outputs.AZURE_OPENAI_NAME }}
       AZURE_RESOURCE_GROUP: ${{ steps.config-env.outputs.AZURE_RESOURCE_GROUP }}
       AZUREAI_RESOURCE_GROUP: ${{ steps.config-env.outputs.AZUREAI_RESOURCE_GROUP }}      
       AZURE_SEARCH_ENDPOINT: ${{ steps.config-env.outputs.AZURE_SEARCH_ENDPOINT }}
@@ -71,7 +72,6 @@ jobs:
 
     steps: 
       - uses: actions/checkout@v4
-
       - name: Get environment variables
         uses: ./.github/actions/config-env
         id: config-env
@@ -81,6 +81,7 @@ jobs:
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
           MANUAL_PROVISIONING: ${{ vars.MANUAL_PROVISIONING }}
+          AZURE_DEPLOY_APP_SERVICE: false
         env:
           AZUREAI_PROJECT_NAME: ${{ vars.AZUREAI_PROJECT_NAME }}
           AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
@@ -114,7 +115,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: AI-Based Flow evaluation
+      - name: Setup Python 
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Login to Azure CLI
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}           
+
+      - name: AI-Based prompt evaluation
         env: 
           SUBSCRIPTION_ID: ${{needs.config-env-job.outputs.AZURE_SUBSCRIPTION_ID}}
           LOCATION: ${{needs.config-env-job.outputs.AZURE_LOCATION}}
@@ -128,10 +143,19 @@ jobs:
           AZURE_OPENAI_EMBEDDING_MODEL: ${{needs.config-env-job.outputs.AZURE_OPENAI_EMBEDDING_MODEL}}
           AZURE_OPENAI_API_VERSION: ${{needs.config-env-job.outputs.AZURE_OPENAI_API_VERSION}}
           AZURE_OPENAI_ENDPOINT: ${{needs.config-env-job.outputs.AZURE_OPENAI_ENDPOINT}}
+          AZURE_OPENAI_NAME: ${{needs.config-env-job.outputs.AZURE_OPENAI_NAME}}
           PROMPTFLOW_WORKER_NUM: ${{needs.config-env-job.outputs.PROMPTFLOW_WORKER_NUM}}
           PROMPTFLOW_SERVING_ENGINE: ${{needs.config-env-job.outputs.PROMPTFLOW_SERVING_ENGINE}}
           AZURE_APP_SERVICE_NAME: ${{needs.config-env-job.outputs.AZURE_APP_SERVICE_NAME}}
           AZURE_APP_SERVICE_PLAN_NAME: ${{needs.config-env-job.outputs.AZURE_APP_SERVICE_PLAN_NAME}}      
         run: |
-          echo "Run AI-Based Flow evaluation"
+          echo "Run AI-Based prompt evaluation"
+          export AZURE_OPENAI_API_KEY=$(az cognitiveservices account keys list --resource-group ${AZURE_RESOURCE_GROUP} --name ${AZURE_OPENAI_NAME} --query "key1" --output tsv)
+          python evaluations/prompty_eval.py
         shell: bash
+
+      - name: Upload evaluation results
+        uses: actions/upload-artifact@v4
+        with:
+            name: prompt-eval-results
+            path: prompty-answer-score-eval.xlsx

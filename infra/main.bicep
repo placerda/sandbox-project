@@ -9,6 +9,9 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
+var _abbrs = loadJsonContent('./abbreviations.json')
+param deploymentTimestamp string = utcNow()
+
 // Names parameters
 
 param aiHubName string = '' 
@@ -17,7 +20,9 @@ param resourceGroupName string = ''
 param aiResourceGroupName string = ''
 param appInsightsName string = ''
 param appServiceName string = ''
+var _appServiceName = !empty(appServiceName) ? appServiceName : '${_abbrs.webSitesAppService}${_resourceToken}'
 param appServicePlanName string = ''
+var _appServicePlanName = !empty(appServicePlanName) ? appServicePlanName : '${_abbrs.webSitesAppService}${_resourceToken}'
 param containerRegistryName string = ''
 param containerRepositoryName string = ''
 var _containerRepositoryName = !empty(containerRepositoryName) ? containerRepositoryName : 'rag-project'
@@ -26,6 +31,10 @@ param logAnalyticsName string = ''
 param openAiName string = ''
 param searchServiceName string = ''
 param storageAccountName string = ''
+
+@allowed([true, false])
+param deployAppService bool = true
+var _deployAppService = deployAppService
 
 // Azure OpenAI parameters
 
@@ -37,7 +46,6 @@ param oaiEmbeddingModel string = 'text-embedding-ada-002'
 // Use sample data for Azure Search Index?
 param azureSearchIndexSampleData string = ''
 var _azureSearchIndexSampleData = !empty(azureSearchIndexSampleData) ? azureSearchIndexSampleData : 'true'
-
 
 @description('User or service principal identity to assign application roles')
 param principalId string = ''
@@ -51,10 +59,9 @@ var _promptFlowWorkerNum = !empty(promptFlowWorkerNum) ? promptFlowWorkerNum : '
 param promptFlowServingEngine string = ''
 var _promptFlowServingEngine = !empty(promptFlowServingEngine) ? promptFlowServingEngine : 'fastapi'
  
-var _abbrs = loadJsonContent('./abbreviations.json')
-param deploymentTimestamp string = utcNow()
 var _resourceToken = toLower(uniqueString(subscription().id, environmentName, location, deploymentTimestamp))
 var _keyVaultName = !empty(keyVaultName) ? keyVaultName : '${_abbrs.keyVaultVaults}${_resourceToken}'
+
 
 // tags that should be applied to all resources.
 var _tags = {
@@ -91,11 +98,11 @@ module ai 'core/host/ai-environment.bicep' = {
   }
 }
 
-module appServicePlan './core/host/appserviceplan.bicep' =  {
-  name: 'appserviceplan'
+module appServicePlan './core/host/appserviceplan.bicep' =  if (_deployAppService) {
+  name: 'appServicePlan'
   scope: rg
   params: {
-    name: !empty(appServicePlanName) ? appServicePlanName : '${_abbrs.webServerFarms}${_resourceToken}'
+    name: _appServicePlanName
     location: location
     tags: _tags
     sku: {
@@ -106,31 +113,31 @@ module appServicePlan './core/host/appserviceplan.bicep' =  {
   }
 }
 
-module appService  'core/host/appservice.bicep'  = {
+module appService  'core/host/appservice.bicep'  = if (_deployAppService) {
   name: 'appService'
   scope: rg
   params: {
-    name: !empty(appServiceName) ? appServiceName : '${_abbrs.webSitesAppService}${_resourceToken}'
-    applicationInsightsName: ai.outputs.appInsightsName
+    name: _appServiceName
+    applicationInsightsName: _deployAppService?ai.outputs.appInsightsName:''
     runtimeName: 'DOCKER'
     runtimeVersion: '${_containerRepositoryName}:dummy'
     keyVaultName: _keyVaultName
     location: location
     tags: union(_tags, { 'azd-service-name': 'rag-flow' })
-    appServicePlanId: appServicePlan.outputs.id
+    appServicePlanId: _deployAppService?appServicePlan.outputs.id:''
     scmDoBuildDuringDeployment: false
     appSettings: { 
       WEBSITES_ENABLE_APP_SERVICE_STORAGE: false
-      DOCKER_REGISTRY_SERVER_URL: 'https://${ai.outputs.containerRegistryName}.azurecr.io'
+      DOCKER_REGISTRY_SERVER_URL: _deployAppService?'https://${ai.outputs.containerRegistryName}.azurecr.io':''
       WEBSITES_PORT: '80'  
       PROMPTFLOW_WORKER_NUM: _promptFlowWorkerNum
       PROMPTFLOW_SERVING_ENGINE: _promptFlowServingEngine
-      AZURE_OPENAI_ENDPOINT: ai.outputs.openAiEndpoint
+      AZURE_OPENAI_ENDPOINT: _deployAppService?ai.outputs.openAiEndpoint:''
       AZURE_OPENAI_CHAT_DEPLOYMENT: oaiChatDeployment
       AZURE_OPENAI_EMBEDDING_DEPLOYMENT: oaiEmbeddingDeployment
       AZURE_OPENAI_EMBEDDING_MODEL: oaiEmbeddingModel
       AZURE_OPENAI_API_VERSION: oaiApiVersion
-      AZURE_SEARCH_ENDPOINT: ai.outputs.searchEndpoint
+      AZURE_SEARCH_ENDPOINT: _deployAppService?ai.outputs.searchEndpoint:''
       acrUseManagedIdentityCreds: true
     }
   }
@@ -206,41 +213,41 @@ module userAiSearchServiceContributor 'core/security/role.bicep' = if (!empty(pr
   }
 }
 
-module openaiRoleBackend 'core/security/role.bicep' = {
+module openaiRoleBackend 'core/security/role.bicep' = if (_deployAppService) {
   scope: rg
   name: 'openai-role-backend'
   params: {
-    principalId: appService.outputs.identityPrincipalId
+    principalId: _deployAppService?appService.outputs.identityPrincipalId:''
     roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd' //Cognitive Services OpenAI User
     principalType: principalType
   }
 }
 
-module aiSearchServiceContributor 'core/security/role.bicep' = {
+module aiSearchServiceContributor 'core/security/role.bicep' = if (_deployAppService) {
   scope: rg
   name: 'ai-search-service-contributor'
   params: {
-    principalId: appService.outputs.identityPrincipalId
+    principalId: _deployAppService?appService.outputs.identityPrincipalId:''
     roleDefinitionId: '7ca78c08-252a-4471-8644-bb5ff32d4ba0' //Search Service Contributor
     principalType: principalType
   }
 }
 
-module aiSearchRole 'core/security/role.bicep' = {
+module aiSearchRole 'core/security/role.bicep' = if (_deployAppService) {
   scope: rg
   name: 'ai-search-index-data-contributor'
   params: {
-    principalId: appService.outputs.identityPrincipalId
+    principalId: _deployAppService?appService.outputs.identityPrincipalId:''
     roleDefinitionId: '8ebe5a00-799e-43f5-93ac-243d3dce84a7' //Search Index Data Contributor
     principalType: principalType
   }
 }
 
-module appserviceAcrRolePull 'core/security/role.bicep' = {
+module appserviceAcrRolePull 'core/security/role.bicep' = if (_deployAppService) {
   scope: rg
   name: 'app-service-acr-role-pull'  
   params: {
-    principalId: appService.outputs.identityPrincipalId
+    principalId: _deployAppService?appService.outputs.identityPrincipalId:''
     roleDefinitionId: '7f951dda-4ed3-4680-a7ca-43fe172d538d'
     principalType: principalType
   }
@@ -267,8 +274,8 @@ output AZURE_SEARCH_ENDPOINT string = ai.outputs.searchEndpoint
 output AZUREAI_HUB_NAME string = ai.outputs.hubName
 output AZUREAI_PROJECT_NAME string = ai.outputs.projectName
 output AZURE_APP_INSIGHTS_NAME string = ai.outputs.appInsightsName 
-output AZURE_APP_SERVICE_NAME string = appService.outputs.name
-output AZURE_APP_SERVICE_PLAN_NAME string = appServicePlan.outputs.name
+output AZURE_APP_SERVICE_NAME string = _appServiceName
+output AZURE_APP_SERVICE_PLAN_NAME string = _appServicePlanName
 output AZURE_CONTAINER_REGISTRY_NAME string = ai.outputs.containerRegistryName
 output AZURE_CONTAINER_REPOSITORY_NAME string = _containerRepositoryName
 
