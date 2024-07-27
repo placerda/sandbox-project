@@ -44,7 +44,7 @@ async def main():
     azure_subscription_id = os.getenv("AZURE_SUBSCRIPTION_ID")
     azure_resource_group = os.getenv("AZUREAI_RESOURCE_GROUP")
     azure_project_name = os.getenv("AZUREAI_PROJECT_NAME")
-    prefix = os.getenv("PREFIX", datetime.now().strftime("%y%m%d%H%M%S"))
+    prefix = os.getenv("PREFIX", datetime.now().strftime("%y%m%d%H%M%S"))[:14] 
 
     print("AZURE_LOCATION=", azure_location)
     print("AZURE_SUBSCRIPTION_ID=", azure_subscription_id)

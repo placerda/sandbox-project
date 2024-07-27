@@ -119,7 +119,7 @@ jobs:
       - name: AI-Based prompt evaluation
         env: 
           AZURE_SUBSCRIPTION_ID: ${{needs.setup-env-job.outputs.AZURE_SUBSCRIPTION_ID}}          
-          LOCATION: ${{needs.setup-env-job.outputs.AZURE_LOCATION}}
+          AZURE_LOCATION: ${{needs.setup-env-job.outputs.AZURE_LOCATION}}
           AZURE_RESOURCE_GROUP: ${{needs.setup-env-job.outputs.AZURE_RESOURCE_GROUP}}
           AZUREAI_RESOURCE_GROUP: ${{needs.setup-env-job.outputs.AZUREAI_RESOURCE_GROUP}} 
           AZUREAI_PROJECT_NAME: ${{needs.setup-env-job.outputs.AZUREAI_PROJECT_NAME}}           
