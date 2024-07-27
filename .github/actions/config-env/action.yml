@@ -220,7 +220,7 @@ outputs:
     value: ${{ steps.setup-env-step.outputs.AZUREAI_PROJECT_NAME }}
   AZUREAI_RESOURCE_GROUP:
     description: 'Azure AI Resource Group Name'
-    value: ${{ steps.setup-env-step.outputs.AZUREAI_RESOURCE_GROUP }}
+    value: ${{ steps.setup-env-step.outputs.AZURE_RESOURCE_GROUP }}
   AZURE_APP_INSIGHTS_NAME:
     description: 'Azure App Insights Name'
     value: ${{ steps.setup-env-step.outputs.AZURE_APP_INSIGHTS_NAME }}
