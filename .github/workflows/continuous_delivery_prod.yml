@@ -278,10 +278,12 @@ jobs:
           echo "🔗 [View Resources Deployed Here]($deep_link)" >> $GITHUB_STEP_SUMMARY
 
   smoke-tests:
-    needs: deploy-flow
+    needs: [setup-env-job, deploy-flow]     
     runs-on: ubuntu-latest
     environment: prod
+    env: 
+      AZURE_APP_SERVICE_NAME: ${{needs.setup-env-job.outputs.AZURE_APP_SERVICE_NAME}}
     steps:
       - name: Smoke Tests
         run: |
-          echo "Run Smoke Tests"
+          curl https://${{AZURE_APP_SERVICE_NAME}}.azurewebsites.net/score --data '{"question":"What is the size of the moon?", "chat_history":[]}' -X POST  -H "Content-Type: application/json"
